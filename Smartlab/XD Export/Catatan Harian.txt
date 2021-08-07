@@ -1,0 +1,41 @@
+27/07/2021
+1. PHP post login
+
+#GET AKTIFITAS
+2. Buat php get (idaktivitas)
+
+#POST TRACIKING (
+3. Buat php post (idkupa, idaktivitas, idpetugas, waktu) array
+
+#GET HASIL ANALISA
+4. Buat php get (nomor_lab, parameter kupa, parameter sampel, dari id kupa)
+
+29/07/2021
+# QRCODE UNTUK TRACKING DATA PELANGGAN DIKIRIM MELALUI EMAIL
+# ID KUPA LINK TRACKING DIENCRIPSI
+https://slab.srs-ssms.com/admin/tracking?id=1 jadi
+https://slab.srs-ssms.com/admin/tracking?id=asiunnwduwbvvv@nb
+
+#GET PARAMETER
+http://localhost/SmartlabLV8/api/admin/getjenissampel
+APABILA DATA KOSONG (RESPON)
+	success          = 0;
+	messages         = 'DATA TIDAK DITEMUKAN';
+APABIL DATA TIDAK KOSONG (RESPON)
+	id               = daftar id jenis sampel;
+        jenis_sampel     = daftar jenis sampel;
+        lambang_sampel   = daftar lambang jenis sampel;
+        success          = 1;
+
+#GET JENIS SAMPEL
+
+
+tinyIncrements(3)
+tinyInteger(4)
+
+smallIncrements(5)
+smallInteger(6)
+
+integerIncrements(10)
+integer(11)
+

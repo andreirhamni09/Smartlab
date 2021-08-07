@@ -1,0 +1,317 @@
+# 1. PARAMETER
+# MIGRATION
+    public function up()
+    {
+        Schema::create('parameters', function (Blueprint $table) {
+            $table->tinyIncrements('id');
+            $table->string('simbol', 4);
+            $table->string('nama_unsur', 45);
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('parameters');
+    }
+# MIGRATION
+# 1. PARAMETER
+
+# 2. JENIS SAMPEL
+# MIGRATION
+    public function up()
+    {
+        Schema::create('jenis_sampels', function (Blueprint $table) {
+            $table->tinyIncrements('id');
+            $table->string('jenis_sampel', 45);
+            $table->string('lambang_sampel', 4);
+        });
+    }
+    public function down()
+    {
+        Schema::dropIfExists('jenis_sampels');
+    }
+# MIGRATION
+# 2. JENIS SAMPEL
+
+# 3. PELANGGAN 
+    # MODEL 
+        class Pelanggan extends Model
+        {
+            use HasFactory;    
+            public $timestamps = false;    
+        }
+    # MODEL
+
+    # MIGRATION 
+        public function up()
+        {
+            Schema::create('pelanggans', function (Blueprint $table) {
+                $table->increments('id');
+                $table->string('email')->unique();
+                $table->string('password');
+                $table->string('nama');
+                $table->string('perusahaan');
+                $table->string('nomor_telepon');
+                $table->text('alamat');            
+                $table->date('tanggal_registrasi');
+            });
+        }
+        public function down()
+        {
+            Schema::dropIfExists('pelanggans');
+        }
+    # MIGRATION
+# 3. PELANGGAN
+
+# 4. AKSESLEVEL 
+    # MODEL
+        class AksesLevel extends Model
+        {
+            use HasFactory;
+            public $timestamps = false;     
+        }
+    # MODEL
+
+    # MIGRATION
+        public function up()
+        {
+            Schema::create('akses_levels', function (Blueprint $table) {
+                $table->tinyInteger('id')->primary()->autoincrement();
+                $table->string('jabatan')->unique();
+            });
+        }
+        public function down()
+        {
+            Schema::dropIfExists('akses_levels');
+        }
+    # MIGRATION
+# 4. AKSESLEVEL 
+
+# 5. METODE
+    #MODEL
+        class Metode extends Model
+        {
+            use HasFactory;
+            public $timestamps = false;     
+        }
+    #MODEL
+
+    # MIGRATION
+        public function up()
+        {
+            Schema::create('metodes', function (Blueprint $table) {
+                $table->smallIncrements('id');
+                $table->string('metode', 45);
+                $table->string('pengukuran', 45);
+            });
+        }
+        public function down()
+        {
+            Schema::dropIfExists('metodes');
+        }
+    # MIGRATION
+# 5. METODE
+
+# 6. AKTIVITAS
+    # MIGRATION
+        public function up()
+        {
+            Schema::create('aktivitas', function (Blueprint $table) {
+                $table->tinyIncrements('id');
+                $table->string('aktivitas', 45);
+            });
+        }
+        public function down()
+        {
+            Schema::dropIfExists('metodes');
+        }
+    # MIGRATION
+# 6. AKTIVITAS
+
+# 7. PAKET
+    #MODEL
+        class Paket extends Model
+        {
+            use HasFactory;
+            public $timestamps = false;     
+        }
+    #MODEL
+
+    # MIGRATION CREATE
+        public function up()
+        {
+            Schema::create('pakets', function (Blueprint $table) {
+                $table->smallIncrements('id');
+                $table->unsignedTinyInteger('jenis_sampels_id');
+                $table->string('paket', 45);
+                $table->string('parameters_id', 45);
+                $table->integer('harga');
+            });
+        }
+        public function down()
+        {
+            Schema::dropIfExists('pakets');
+        }
+    # MIGRATION
+
+    # MIGRATION UPDATE
+        public function up()
+        {
+            Schema::table('pakets', function (Blueprint $table) {
+                $table->foreign('jenis_sampels_id')->references('id')->on('jenis_sampels')->onUpdate('cascade');
+            
+            });
+        }
+        public function down()
+        {
+            $table->dropIfExists(['jenis_sampels_id']);        
+        }
+    # MIGRATION
+# 7. PAKET
+
+# 8. DATA SAMPEL
+    # MODEL
+        class DataSampel extends Model
+        {
+            use HasFactory;
+            public $timestamps = false;     
+        }
+    # MODEL
+
+    # MIGRATION CREATE
+        public function up()
+        {
+            Schema::create('data_sampels', function (Blueprint $table) {
+                $table->smallInteger('id')->primary()->autoIncrement();
+                $table->unsignedTinyInteger('jenis_sampels_id');
+                $table->unsignedInteger('pelanggans_id');
+                $table->string('paket_id', 45);
+                $table->dateTime('tanggal_masuk');
+                $table->tinyInteger('tanggal_selesai');
+                $table->string('nomor_surat');
+                $table->integer('jumlah_sampel');
+                $table->string('status');
+            });
+        }
+        public function down()
+        {
+            Schema::dropIfExists('data_sampels');
+        }
+    # MIGRATION
+# 8. DATA SAMPEL
+
+# 9. HASIL ANALISA 
+    # MODEL
+        class HasilAnalisa extends Model
+        {
+            use HasFactory;
+            public $timestamps = false;     
+        }
+    # MODEL
+
+    # MIGRATION CREATE
+        public function up()
+        {
+            Schema::create('hasil_analisas', function (Blueprint $table) {
+                $table->increments('id');
+                $table->unsignedTinyInteger('jenis_sampels_id');
+                $table->smallInteger('data_sampels_id');
+                $table->string('tahun', 2);
+                $table->integer('no_lab');
+                $table->string('kode_contoh', 45);
+                $table->text('lab_akuns_id');
+                $table->string('parameters_id', 45);
+                $table->text('hasil');
+                $table->enum('status', ['0', '1']);
+                $table->integer('retry');
+            });
+        }
+    # MIGRATION CREATE
+
+    # MIGRATION UPDATE
+        public function up()
+        {
+            Schema::table('hasil_analisas', function (Blueprint $table) {
+                $table->foreign('jenis_sampels_id')->references('id')->on('jenis_sampels')->onUpdate('cascade');
+                $table->foreign('data_sampels_id')->references('id')->on('data_sampels')->onUpdate('cascade');
+            });
+        }
+        public function down()
+        {
+            $table->dropIfExists(['jenis_sampels_id']);    
+            $table->dropIfExists(['data_sampels_id']);        
+        }
+    # MIGRATION
+# 9. HASIL ANALISA 
+
+# 10. LAB AKUN
+    # MODEL
+        class LabAkun extends Model
+        {
+            use HasFactory;
+            public $timestamps = false;     
+        }
+    # MODEL
+
+    # MIGRATION CREATE
+        public function up()
+        {
+            Schema::create('lab_akuns', function (Blueprint $table) {
+                $table->tinyIncrements('id');
+                $table->tinyInteger('akses_levels_id');
+                $table->string('metodes_id',45);
+                $table->string('nama', 100);
+                $table->string('email');
+                $table->string('password');
+                $table->string('jabatan', 45);
+                $table->enum('status_akun', ['0', '1']);
+            });
+        }
+    # MIGRATION CREATE
+
+    # MIGRATION UPDATE
+        public function up()
+        {
+            Schema::table('lab_akuns', function (Blueprint $table) {
+                $table->foreign('metodes_id')->references('id')->on('metodes')->onUpdate('cascade');
+                $table->foreign('akses_levels_id')->references('id')->on('akses_levels')->onUpdate('cascade');
+            });
+        }
+        public function down()
+        {
+            $table->dropIfExists(['metodes_id']);    
+            $table->dropIfExists(['akses_levels_id']);        
+        }
+    # MIGRATION UPDATE
+# 10. LAB AKUN
+
+# 11. DETAIL TRACKING
+    # MIGRATION CREATE
+        public function up()
+        {
+            Schema::create('detail_trackings', function (Blueprint $table) {
+                $table->dateTime('aktivitas_waktu');
+                $table->smallInteger('data_sampels_id');
+                $table->unsignedTinyInteger('aktivitas_id');
+                $table->unsignedTinyInteger('lab_akuns_id');
+            });
+        }
+    # MIGRATION CREATE
+
+    # MIGRATION UPDATE
+        public function up()
+        {
+            Schema::table('detail_trackings', function (Blueprint $table) {
+                $table->foreign('data_sampels_id')->references('id')->on('data_sampels')->onUpdate('cascade');
+                $table->foreign('aktivitas_id')->references('id')->on('aktivitas')->onUpdate('cascade');
+                $table->foreign('lab_akuns_id')->references('id')->on('lab_akuns')->onUpdate('cascade');
+            });
+        }
+        public function down()
+        {
+            $table->dropIfExists(['data_sampels_id']);    
+            $table->dropIfExists(['aktivitas_id']);    
+            $table->dropIfExists(['lab_akuns_id']);        
+        }
+    # MIGRATION
+# 11. DETAIL TRACKING

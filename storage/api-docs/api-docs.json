@@ -1,0 +1,246 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "SMARTLAB API",
+        "description": "LIST API SMARTLAB",
+        "contact": {
+            "email": "darius@matulionis.lt"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "8.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://slab.srs-ssms.com/api/admin",
+            "description": "L5 Swagger OpenApi Server"
+        }
+    ],
+    "paths": {
+        "/loginuserlab/{email}/{password}": {
+            "post": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get project information",
+                "description": "Returns project data",
+                "operationId": "getProjectById",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "email user",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "path",
+                        "description": "password user",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2_security_example": [
+                            "write:projects",
+                            "read:projects"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/getaktivitas": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Mendapatkan List Aktivitas",
+                "description": "Mendapatkan List Aktivitas",
+                "operationId": "getProjectsList",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        },
+        "/updateproses/{aktivitas_waktu}/{kupa_id}/{aktivitas_id}/{petugas_id}": {
+            "post": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get project information",
+                "description": "Returns project data",
+                "operationId": "getProjectById",
+                "parameters": [
+                    {
+                        "name": "aktivitas_waktu",
+                        "in": "path",
+                        "description": "Waktu",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "kupa_id",
+                        "in": "path",
+                        "description": "Kupa ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "aktivitas_id",
+                        "in": "path",
+                        "description": "Tracking ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "petugas_id",
+                        "in": "path",
+                        "description": "Tracking ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2_security_example": [
+                            "write:projects",
+                            "read:projects"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/getjenissampel": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Mendapatkan List Jenis Sampel",
+                "description": "Mendapatkan List Jenis Sampel",
+                "operationId": "getProjectsList",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        },
+        "/getparameter": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Mendapatkan List Aktivitas",
+                "description": "Mendapatkan List Parameter",
+                "operationId": "getProjectsList",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        },
+        "/gethasilanalisa/{kupa_id}": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Mendapatkan List Aktivitas",
+                "description": "Mendapatkan List Parameter",
+                "operationId": "getProjectsList",
+                "parameters": [
+                    {
+                        "name": "kupa_id",
+                        "in": "path",
+                        "description": "ID Kupa",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        }
+    },
+    "security": [
+        []
+    ]
+}

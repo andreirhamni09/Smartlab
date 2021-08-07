@@ -1,0 +1,13 @@
+1. php artisan db:seed --class=AksesLevel
+8. php artisan db:seed --class=AktivitasSeeder
+4. php artisan db:seed --class=Parameter
+2. php artisan db:seed --class=UserLabs
+3. php artisan db:seed --class=JenisSampel
+5. php artisan db:seed --class=Pelanggans
+6. php artisan db:seed --class=DataSampels
+7. php artisan db:seed --class=HasilAnalisa
+9. php artisan db:seed --class=Trackings
+
+1. Parameter
+2. JenisSampel
+3. AksesLevel

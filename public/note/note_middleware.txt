@@ -1,0 +1,6 @@
+DAFTAR MIDDLEWARE
+- LabAkunValidation
+	Middle untuk memvalidasi apakah inputan user yang mendaftar sebagai
+	bagian dari lab sudah benar atau tidak
+	syarat :
+	1. 

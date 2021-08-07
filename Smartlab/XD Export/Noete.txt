@@ -1,0 +1,21 @@
+$table->increments('id');
+            $table->integer('id_kupa')->unsigned();
+            $table->string('id_petugas');
+            $table->string('no_lab');
+            $table->string('kode_contoh');
+            $table->float('N');
+            $table->float('P');
+            $table->float('K');
+            $table->float('Mg');
+            $table->float('Ca');
+            $table->float('B');
+            $table->float('Cu');
+            $table->float('Zn');
+            $table->float('Fe');
+            $table->float('Mn');
+            $table->enum('status', ['draft', 'hasil']);
+            $table->enum('retry', [0, 1]);
+            $table->timestamps();
+
+$table->foreign('id_kupa')->references('id')->on('data_sampels')->constrained()->onUpdate('cascade');
+        
