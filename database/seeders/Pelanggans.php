@@ -4,8 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class Pelanggans extends Seeder
 {
@@ -18,14 +16,14 @@ class Pelanggans extends Seeder
     {
         DB::table('pelanggans')->insert(array(
             array(
-                'email'                 => 'andre09@gmail.com',
-                'password'              => 'asdasdasd',
-                'nama'                  => 'Andre Septio Irhamni Wicaksana',
-                'perusahaan'            => 'SSMS',
-                'nomor_telepon'         => '085236178019',
-                'alamat'                => 'RND',
+                'email'                 => '1-2-3',
+                'password'              => '3',
+                'nama'                  => 'Indah',
+                'perusahaan'            => 'indah09@gmail.com',
+                'nomor_telepon'         => 'asdasdasd',
+                'alamat'                => 'penyelia',
                 'tanggal_registrasi'    => '2021-07-21'
-            ),
-        ));
+            )
+        )); 
     }
 }

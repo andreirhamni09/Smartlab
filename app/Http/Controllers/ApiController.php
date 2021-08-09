@@ -7,14 +7,17 @@ use Illuminate\Support\Facades\DB;
 
 use Exception;
 
-class usr{}
+class usr
+{
+}
 class ApiController extends Controller
 {
+    #POST LOGIN
     /**
      * @OA\Post(
      *      path="/loginuserlab/{email}/{password}",
      *      operationId="getProjectById",
-     *      tags={"Projects"},
+     *      tags={"Login"},
      *      summary="Get project information",
      *      description="Returns project data",
      *      @OA\Parameter(
@@ -49,7 +52,6 @@ class ApiController extends Controller
      *     },
      * )
      */
-    #POST LOGIN
     function LoginUserLab(Request $request, $email=null, $password=null)
     {
         $response     = new usr();
@@ -106,11 +108,188 @@ class ApiController extends Controller
     }
     #POST LOGIN
 
+    #GET PARAMETER
+    /**
+     * @OA\Get(
+     *      path="/getparameter",
+     *      operationId="getProjectsList",
+     *      tags={"Parameter"},
+     *      summary="Mendapatkan List Aktivitas",
+     *      description="Mendapatkan List Parameter",
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           {"api_key_security_example": {}}
+     *       }
+     *     )
+     *
+     * Returns list of projects
+     */
+    function GetParameters()
+    {
+        $response                   = new usr();
+        $parameter                  = DB::table('parameters')
+        ->get();
+        $parameter                  = json_decode(json_encode($parameter), true);
+        if(count($parameter) == 0)
+        {
+            $response->success          = 0;
+            $response->messages         = 'DATA PARAMETER TIDAK DITEMUKAN';
+        }
+        elseif (count($parameter) !== 0) {
+            $str_id                     = '';
+            $str_simbol                 = '';
+            $str_nama_unsur             = '';
+
+            $j_parameter                = count($parameter) - 1;
+            for ($i = 0; $i < count($parameter); $i++) { 
+                if($i == $j_parameter){
+                    $str_id            .= $parameter[$i]['id'];
+                    $str_simbol        .= $parameter[$i]['simbol'];
+                    $str_nama_unsur    .= $parameter[$i]['nama_unsur'];
+                }
+                elseif ($i !== $j_parameter) {
+                    $str_id            .= $parameter[$i]['id'].'-';
+                    $str_simbol        .= $parameter[$i]['simbol'].'-';
+                    $str_nama_unsur    .= $parameter[$i]['nama_unsur'].'-';
+                }
+            }
+
+            $response->id               = $str_id;
+            $response->simbol           = $str_simbol;
+            $response->nama_unsur       = $str_nama_unsur;
+            $response->success          = 1;
+        }
+        die(json_encode($response));
+    }
+    #GET PARAMETER
+
+    #GET JENIS SAMPEL
+    /**
+     * @OA\Get(
+     *      path="/getjenissampel",
+     *      operationId="getProjectsList",
+     *      tags={"Jenis Sampels"},
+     *      summary="Mendapatkan List Jenis Sampel",
+     *      description="Mendapatkan List Jenis Sampel",
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           {"api_key_security_example": {}}
+     *       }
+     *     )
+     *
+     * Returns list of projects
+     */
+    function GetJenisSampels()
+    {
+        $response                   = new usr();
+        $jenisSampel                = DB::table('jenis_sampels')
+        ->get();
+        $jenisSampel                = json_decode(json_encode($jenisSampel), true);
+        
+        if(count($jenisSampel) == 0)
+        {
+            $response->success          = 0;
+            $response->messages         = 'DATA JENIS SAMPEL TIDAK DITEMUKAN';
+        }
+        else if(count($jenisSampel) !== 0)
+        {
+            $str_id          = '';
+            $str_jenisSampel            = '';
+            $str_lambangSampel          = '';
+            
+            foreach ($jenisSampel as $key => $value) {
+                $str_id                 .= $value['id'] . '-';
+                $str_jenisSampel        .= $value['jenis_sampel'] . '-';
+                $str_lambangSampel      .= $value['lambang_sampel'] . '-';
+            }
+
+            $str_id                     = substr($str_id, 0, -1);
+            $str_jenisSampel            = substr($str_jenisSampel, 0, -1);
+            $str_lambangSampel          = substr($str_lambangSampel, 0, -1);
+
+            $response->id               = $str_id;
+            $response->jenis_sampel     = $str_jenisSampel;
+            $response->lambang_sampel   = $str_lambangSampel;
+            $response->success          = 1;
+        }
+        die(json_encode($response));
+    }
+    #GET JENIS SAMPEL
+    
+    #GET AKSES LEVEL
+    /**
+     * @OA\Get(
+     *      path="/getakseslevels",
+     *      operationId="getProjectsList",
+     *      tags={"Akses Level"},
+     *      summary="Mendapatkan List Jenis Sampel",
+     *      description="Mendapatkan List Jenis Sampel",
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           {"api_key_security_example": {}}
+     *       }
+     *     )
+     *
+     * Returns list of projects
+     */
+    function GetAksesLevels()
+    {
+        $response                   = new usr();
+        $aksesLevels                = DB::table('akses_levels')
+        ->get();
+        $aksesLevels                = json_decode(json_encode($aksesLevels), true);
+        
+        if(count($aksesLevels) == 0)
+        {
+            $response->success          = 0;
+            $response->messages         = 'DATA JENIS SAMPEL TIDAK DITEMUKAN';
+        }
+        else if(count($aksesLevels) !== 0)
+        {
+            $str_id                     = '';
+            $str_jabatan            = '';
+            $str_halamans_id_s          = '';
+            $j_akseslevels              = count($aksesLevels) - 1;
+            for ($i = 0; $i < count($aksesLevels); $i++) {
+                if($i < $j_akseslevels)
+                {
+                    $str_id                 .= $aksesLevels[$i]['id'].'-'; 
+                    $str_jabatan        .= $aksesLevels[$i]['jabatan'].'-'; 
+                    $str_halamans_id_s      .= $aksesLevels[$i]['halamans_id_s'].'-'; 
+                } 
+                elseif ($i >= $j_akseslevels) {
+                    $str_id                 .= $aksesLevels[$i]['id']; 
+                    $str_jabatan            .= $aksesLevels[$i]['jabatan']; 
+                    $str_halamans_id_s      .= $aksesLevels[$i]['halamans_id_s']; 
+                }
+            }
+            $response->id               = $str_id;
+            $response->jabatan          = $str_jabatan;
+            $response->halamans_id_s    = $str_halamans_id_s;
+            $response->success          = 1;
+        }
+        die(json_encode($response));
+    }
+    #GET AKSES LEVEL
+
+    #GET AKTIVITAS
     /**
      * @OA\Get(
      *      path="/getaktivitas",
      *      operationId="getProjectsList",
-     *      tags={"Projects"},
+     *      tags={"Aktivitas"},
      *      summary="Mendapatkan List Aktivitas",
      *      description="Mendapatkan List Aktivitas",
      *      @OA\Response(
@@ -125,11 +304,10 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    #GET AKTIVITAS
     function GetAktivitas()
     {
         $response           = new usr();
-        $getaktivitas       = DB::table('tabel_aktivitas')
+        $getaktivitas       = DB::table('aktivitas')
         ->get();
         $getaktivitas       = json_decode(json_encode($getaktivitas), true);
         $str_aktivitas_id   = '';
@@ -140,27 +318,30 @@ class ApiController extends Controller
             $response->message = 'DATA AKTIVITAS TIDAK DITEMUKAN';
         }
         else{
+            $str_id   = '';
+            $str_aktivitas      = '';
+            
             foreach ($getaktivitas as $key => $value) {
-                $str_aktivitas_id   .= $value['id'].'-';
-                $str_aktivitas      .= $value['aktivitas'].'-';
+                $str_id             .= $value['id'] . '-';
+                $str_aktivitas      .= $value['aktivitas'] . '-';
             }
-            $str_aktivitas_id   = substr($str_aktivitas_id, 0, -1);
+            $str_id             = substr($str_aktivitas_id, 0, -1);
             $str_aktivitas      = substr($str_aktivitas, 0, -1);
-    
-            $response->id           = $str_aktivitas_id;
-            $response->aktivitas    = $str_aktivitas; 
-            $response->success      = 1; 
+
+            $response->id           = $str_id;
+            $response->aktivitas    = $str_aktivitas;
+            $response->success      = 1;
         }
         die(json_encode($response));
     }
     #GET AKTIVITAS
-    
+
     #POST TRACKING
     /**
      * @OA\Post(
-     *      path="/updateproses/{aktivitas_waktu}/{kupa_id}/{aktivitas_id}/{petugas_id}",
+     *      path="/updateproses/{aktivitas_waktu}/{data_sampels_id}/{aktivitas_id}/{lab_akuns_id}",
      *      operationId="getProjectById",
-     *      tags={"Projects"},
+     *      tags={"Update Proses"},
      *      summary="Get project information",
      *      description="Returns project data",
      *      @OA\Parameter(
@@ -173,8 +354,8 @@ class ApiController extends Controller
      *          )
      *      ),
      *      @OA\Parameter(
-     *          name="kupa_id",
-     *          description="Kupa ID",
+     *          name="data_sampels_id",
+     *          description="data_sampels_id ID",
      *          required=true,
      *          in="path",
      *          @OA\Schema(
@@ -183,7 +364,7 @@ class ApiController extends Controller
      *      ),
      *      @OA\Parameter(
      *          name="aktivitas_id",
-     *          description="Tracking ID",
+     *          description="aktivitas_id",
      *          required=true,
      *          in="path",
      *          @OA\Schema(
@@ -191,8 +372,8 @@ class ApiController extends Controller
      *          )
      *      ),
      *      @OA\Parameter(
-     *          name="petugas_id",
-     *          description="Tracking ID",
+     *          name="lab_akuns_id",
+     *          description="lab_akuns_id",
      *          required=true,
      *          in="path",
      *          @OA\Schema(
@@ -212,202 +393,62 @@ class ApiController extends Controller
      *     },
      * )
      */
-    
-    function UpdateProses(Request $request, $aktivitas_waktu = null, $kupa_id = null, $aktivitas_id = null, $petugas_id = null)
+    function UpdateProses(Request $request, $aktivitas_waktu = null, $data_sampels_id = null, $aktivitas_id = null, $lab_akuns_id = null)
     {
-        $response               = new usr();
-        $s_aktivitas_waktu      = '';
-        $s_kupa_id              = '';
-        $s_aktivitas_id         = '';
-        $s_petugas_id           = '';
+        $response                       = new usr();
+        $s_aktivitas_waktu              = '';
+        $s_data_sampels_id              = '';
+        $s_aktivitas_id                 = '';
+        $s_lab_akuns_id                 = '';
 
-        if(!isset($aktivitas_waktu) OR !isset($kupa_id) OR !isset($aktivitas_id) OR !isset($petugas_id))
-        {
-            if(empty($request->aktivitas_waktu) AND empty($request->kupa_id) AND empty($request->aktivitas_id) AND empty($request->petugas_id))
-            {
-                $response->success     = 0; 
-                $response->message     = 'ADA DATA YANG KOSONG';  
-            }
-            else if(!empty($request->aktivitas_waktu) AND !empty($request->kupa_id) AND !empty($request->aktivitas_id) AND !empty($request->petugas_id))
-            {
-                $s_aktivitas_waktu      = $request->aktivitas_waktu;
-                $s_kupa_id              = $request->kupa_id;
-                $s_aktivitas_id         = $request->aktivitas_id;
-                $s_petugas_id           = $request->petugas_id;
-            }
+        if (!empty($request->aktivitas_waktu) and !empty($request->data_sampels_id) and !empty($request->aktivitas_id) and !empty($request->lab_akuns_id)) {
+            $s_aktivitas_waktu              = $request->aktivitas_waktu;
+            $s_data_sampels_id              = $request->data_sampels_id;
+            $s_aktivitas_id                 = $request->aktivitas_id;
+            $s_lab_akuns_id                 = $request->lab_akuns_id;
+        } elseif (isset($aktivitas_waktu) and isset($data_sampels_id) and isset($aktivitas_id) and isset($lab_akuns_id)) {
+            $s_aktivitas_waktu              = $aktivitas_waktu;
+            $s_data_sampels_id              = $data_sampels_id;
+            $s_aktivitas_id                 = $aktivitas_id;
+            $s_lab_akuns_id                 = $lab_akuns_id;
+        } elseif (
+            !isset($aktivitas_waktu) or !isset($data_sampels_id) or !isset($aktivitas_id) or !isset($lab_akuns_id)
+            or empty($request->aktivitas_waktu) and empty($request->data_sampels_id) and empty($request->aktivitas_id) and empty($request->lab_akuns_id)
+        ) {
+            $response->success     = 0;
+            $response->message     = 'ADA DATA YANG KOSONG';
+            die(json_encode($response));
         }
-        elseif (isset($aktivitas_waktu) AND isset($kupa_id) AND isset($aktivitas_id) AND isset($petugas_id)) {
-            $s_aktivitas_waktu      = $aktivitas_waktu;
-            $s_kupa_id              = $kupa_id;
-            $s_aktivitas_id         = $aktivitas_id;
-            $s_petugas_id           = $petugas_id;
-        }
-
 
         try {
             DB::table('detail_trackings')->insert([
-                'aktivitas_waktu'   => $s_aktivitas_waktu,
-                'kupa_id'           => $s_kupa_id,
-                'aktivitas_id'      => $s_aktivitas_id,
-                'petugas_id'        => $s_petugas_id
+                'aktivitas_waktu'           => $s_aktivitas_waktu,
+                'data_sampels_id'           => $s_data_sampels_id,
+                'aktivitas_id'              => $s_aktivitas_id,
+                'lab_akuns_id'              => $s_lab_akuns_id
             ]);
             $response->success     = 1;
-            $response->message     = 'BERHASIL MANAMBAHKAN AKTIVITAS TRACKING BARU'; 
+            $response->message     = 'BERHASIL MANAMBAHKAN AKTIVITAS TRACKING BARU';
         } catch (Exception $e) {
             $response->success     = 0;
-            $response->message     = $e->getMessage(); 
+            $response->message     = $e->getMessage();
         }
 
         die(json_encode($response));
-        
     }
     #POST TRACKING
-
-    /**
-     * @OA\Get(
-     *      path="/getjenissampel",
-     *      operationId="getProjectsList",
-     *      tags={"Projects"},
-     *      summary="Mendapatkan List Jenis Sampel",
-     *      description="Mendapatkan List Jenis Sampel",
-     *      @OA\Response(
-     *          response=200,
-     *          description="successful operation"
-     *       ),
-     *       @OA\Response(response=400, description="Bad request"),
-     *       security={
-     *           {"api_key_security_example": {}}
-     *       }
-     *     )
-     *
-     * Returns list of projects
-     */
-
-    #GET JENIS SAMPEL
-    function GetJenisSampel()
-    {
-        $response                   = new usr();
-        $jenisSampel                = DB::table('jenis_sampels')
-        ->get();
-        $jenisSampel                = json_decode(json_encode($jenisSampel), true);
-        
-        if(count($jenisSampel) == 0)
-        {
-            $response->success          = 0;
-            $response->messages         = 'DATA JENIS SAMPEL TIDAK DITEMUKAN';
-        }
-        else if(count($jenisSampel) !== 0)
-        {
-            $str_idJenisSampel          = '';
-            $str_jenisSampel            = '';
-            $str_lambangSampel          = '';
-            $j_jenisSampel              = count($jenisSampel) - 1;
-            for ($i = 0; $i < count($jenisSampel); $i++) {
-                if($i < $j_jenisSampel)
-                {
-                    $str_idJenisSampel      .= $jenisSampel[$i]['id'].'-'; 
-                    $str_jenisSampel        .= $jenisSampel[$i]['jenis_sampel'].'-'; 
-                    $str_lambangSampel      .= $jenisSampel[$i]['lambang_sampel'].'-'; 
-                } 
-                elseif ($i >= $j_jenisSampel) {
-                    $str_idJenisSampel      .= $jenisSampel[$i]['id']; 
-                    $str_jenisSampel        .= $jenisSampel[$i]['jenis_sampel']; 
-                    $str_lambangSampel      .= $jenisSampel[$i]['lambang_sampel'];
-                }
-            }
-            $response->id               = $str_idJenisSampel;
-            $response->jenis_sampel     = $str_jenisSampel;
-            $response->lambang_sampel   = $str_lambangSampel;
-            $response->success          = 1;
-        }
-        die(json_encode($response));
-    }
-    #GET JENIS SAMPEL
-
-    #GET PARAMETER
-    /**
-     * @OA\Get(
-     *      path="/getparameter",
-     *      operationId="getProjectsList",
-     *      tags={"Projects"},
-     *      summary="Mendapatkan List Aktivitas",
-     *      description="Mendapatkan List Parameter",
-     *      @OA\Response(
-     *          response=200,
-     *          description="successful operation"
-     *       ),
-     *       @OA\Response(response=400, description="Bad request"),
-     *       security={
-     *           {"api_key_security_example": {}}
-     *       }
-     *     )
-     *
-     * Returns list of projects
-     */
-    function GetParameter()
-    {
-        $response                   = new usr();
-        $parameter                  = DB::table('parameters')
-        ->join('jenis_sampels', 'parameters.id_jenis_sampel', '=', 'jenis_sampels.id')
-        ->select('parameters.*', 'jenis_sampels.jenis_sampel as jenis_sampel', 'jenis_sampels.lambang_sampel as lambang')
-        ->get();
-        $parameter                  = json_decode(json_encode($parameter), true);
-        if(count($parameter) == 0)
-        {
-            $response->success          = 0;
-            $response->messages         = 'DATA PARAMETER TIDAK DITEMUKAN';
-        }
-        elseif (count($parameter) !== 0) {
-            $str_idParameter            = '';
-            $str_parameter              = '';
-            $str_harga                  = '';
-            $str_idJenisSampel          = '';
-            $str_jenisSampel            = '';
-            $str_lambang                = '';
-
-            $j_parameter                = count($parameter) - 1;
-            for ($i = 0; $i < count($parameter); $i++) { 
-                if($i == $j_parameter){
-                    $str_idParameter            .= $parameter[$i]['id'];
-                    $str_parameter              .= $parameter[$i]['parameter'];
-                    $str_harga                  .= $parameter[$i]['harga'];
-                    $str_idJenisSampel          .= $parameter[$i]['id_jenis_sampel'];
-                    $str_jenisSampel            .= $parameter[$i]['jenis_sampel'];
-                    $str_lambang                .= $parameter[$i]['lambang'];
-                }
-                elseif ($i !== $j_parameter) {
-                    $str_idParameter            .= $parameter[$i]['id'].'-';
-                    $str_parameter              .= $parameter[$i]['parameter'].'-';
-                    $str_harga                  .= $parameter[$i]['harga'].'-';
-                    $str_idJenisSampel          .= $parameter[$i]['id_jenis_sampel'].'-';
-                    $str_jenisSampel            .= $parameter[$i]['jenis_sampel'].'-';
-                    $str_lambang                .= $parameter[$i]['lambang'].'-';
-                }
-            }
-            $response->id               = $str_idParameter;
-            $response->parameter        = $str_parameter;
-            $response->harga            = $str_harga;
-            $response->id_jenis_sampel  = $str_idJenisSampel;
-            $response->jenis_sampel     = $str_jenisSampel;
-            $response->lambang          = $str_lambang;
-            $response->success          = 1;
-        }
-        die(json_encode($response));
-    }
-    #GET PARAMETER
-
 
     #GET HASILANALISA
     /**
      * @OA\Get(
-     *      path="/gethasilanalisa/{kupa_id}",
+     *      path="/gethasilanalisa/{data_sampels_id}",
      *      operationId="getProjectsList",
-     *      tags={"Projects"},
-     *      summary="Mendapatkan List Aktivitas",
-     *      description="Mendapatkan List Parameter",
+     *      tags={"Hasil Analisa"},
+     *      summary="Mendapatkan List Hasil Analisa dari ID",
+     *      description="Mendapatkan List Hasil Analisa dari ID",
      *      @OA\Parameter(
-     *          name="kupa_id",
-     *          description="ID Kupa",
+     *          name="data_sampels_id",
+     *          description="data_sampels_id",
      *          required=true,
      *          in="path",
      *          @OA\Schema(
@@ -426,475 +467,60 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    function GetHasilAnalisa($kupa_id=null)
+    function GetHasilAnalisa($data_sampels_id = null)
     {
         $response   = new usr();
-        if(isset($kupa_id))
-        {
+        if (isset($data_sampels_id)) {
             $hasilanalisa    = DB::table('hasil_analisas')
-            ->where('id_kupa', $kupa_id)
-            ->get();
+                ->where('data_sampels_id', $data_sampels_id)
+                ->get();
 
-            $hasilanalisa                  = json_decode(json_encode($hasilanalisa), true);
-            if(count($hasilanalisa) <= 0){
+            $hasilanalisa           = json_decode(json_encode($hasilanalisa), true);
+            if (count($hasilanalisa) <= 0) {
                 $response->success  = 0;
                 $response->message  = "DATA TIDAK DITEMUKAN";
-            }
-            else{
+                die(json_encode($response));
+            } else {
                 $s_id                 = '';
-                $s_id_kupa            = '';
                 $s_tahun              = '';
-                $s_id_jenis_sampel    = '';
+                $s_jenis_samples_id   = '';
+                $s_parameters_id_s    = '';
                 $s_no_lab             = '';
-                $s_kode_contoh        = '';
-                $s_id_petugas         = '';
-                $s_N                  = '';
-                $s_P                  = '';
-                $s_K                  = '';
-                $s_Mg                 = '';
-                $s_Ca                 = '';
-                $s_B                  = '';
-                $s_Cu                 = '';
-                $s_Zn                 = '';
-                $s_Fe                 = '';
-                $s_Mn                 = '';
+                $s_hasil              = '';
                 $s_status             = '';
-                $s_retry              = '';
 
-                $j_hasilanalisa        = count($hasilanalisa) - 1;
-                for ($i = 0; $i < count($hasilanalisa); $i++) { 
-                    if($i != $j_hasilanalisa)
-                    {
-                        #ID
-                        if($hasilanalisa[$i]['id'] != '')
-                        {
-                            $s_id .= $hasilanalisa[$i]['id'].'-';
-                        }
-                        else{
-                            $s_id .= '-';
-                        }
-                        #ID
+                foreach ($hasilanalisa as $key => $value) {
 
-                        #ID KUPA
-                        if($hasilanalisa[$i]['id_kupa'] != '')
-                        {
-                            $s_id_kupa .= $hasilanalisa[$i]['id_kupa'].'-';
-                        }
-                        else{
-                            $s_id_kupa .= '-';
-                        }
-                        #ID KUPA
-
-                        #TAHUN
-                        if($hasilanalisa[$i]['tahun'] != '')
-                        {
-                            $s_tahun .= $hasilanalisa[$i]['tahun'].'-';
-                        }
-                        else{
-                            $s_tahun .= '-';
-                        }
-                        #TAHUN
-
-                        #ID JENIS SAMPEL
-                        if($hasilanalisa[$i]['id_jenis_sampel'] != '')
-                        {
-                            $s_id_jenis_sampel .= $hasilanalisa[$i]['id_jenis_sampel'].'-';
-                        }
-                        else{
-                            $s_id_jenis_sampel .= '-';
-                        }
-                        #ID JENIS SAMPEL
-
-                        #NO LAB
-                        if($hasilanalisa[$i]['no_lab'] != '')
-                        {
-                            $s_no_lab .= $hasilanalisa[$i]['no_lab'].'-';
-                        }
-                        else{
-                            $s_no_lab .= '-';
-                        }
-                        #NO LAB
-
-                        #KODE CONTOH
-                        if($hasilanalisa[$i]['kode_contoh'] != '')
-                        {
-                            $s_kode_contoh .= $hasilanalisa[$i]['kode_contoh'].'-';
-                        }
-                        else{
-                            $s_kode_contoh .= '-';
-                        }
-                        #KODE CONTOH
-                        
-                        #ID PETUGAS
-                        if($hasilanalisa[$i]['id_petugas'] != '')
-                        {
-                            $s_id_petugas .= $hasilanalisa[$i]['id_petugas'].';';
-                        }
-                        else{
-                            $s_id_petugas .= ';';
-                        }
-                        #ID PETUGAS
-
-                        #N
-                        if($hasilanalisa[$i]['N'] != '')
-                        {
-                            $s_N .= $hasilanalisa[$i]['N'].'-';
-                        }
-                        else{
-                            $s_N .= '-';
-                        }
-                        #N
-
-                        #P
-                        if($hasilanalisa[$i]['P'] != '')
-                        {
-                            $s_P .= $hasilanalisa[$i]['P'].'-';
-                        }
-                        else{
-                            $s_P .= '-';
-                        }
-                        #P
-
-                        #K
-                        if($hasilanalisa[$i]['K'] != '')
-                        {
-                            $s_K .= $hasilanalisa[$i]['K'].'-';
-                        }
-                        else{
-                            $s_K .= '-';
-                        }
-                        #K
-
-                        #Mg
-                        if($hasilanalisa[$i]['Mg'] != '')
-                        {
-                            $s_Mg .= $hasilanalisa[$i]['Mg'].'-';
-                        }
-                        else{
-                            $s_Mg .= '-';
-                        }
-                        #Mg
-
-                        #Ca
-                        if($hasilanalisa[$i]['Ca'] != '')
-                        {
-                            $s_Ca .= $hasilanalisa[$i]['Ca'].'-';
-                        }
-                        else{
-                            $s_Ca .= '-';
-                        }
-                        #Ca
-
-                        #B
-                        if($hasilanalisa[$i]['B'] != '')
-                        {
-                            $s_B .= $hasilanalisa[$i]['B'].'-';
-                        }
-                        else{
-                            $s_B .= '-';
-                        }
-                        #B
-
-                        #Cu
-                        if($hasilanalisa[$i]['Cu'] != '')
-                        {
-                            $s_Cu .= $hasilanalisa[$i]['Cu'].'-';
-                        }
-                        else{
-                            $s_Cu .= '-';
-                        }
-                        #Cu
-
-                        #Zn
-                        if($hasilanalisa[$i]['Zn'] != '')
-                        {
-                            $s_Zn .= $hasilanalisa[$i]['Zn'].'-';
-                        }
-                        else{
-                            $s_Zn .= '-';
-                        }
-                        #Zn
-
-                        #Fe
-                        if($hasilanalisa[$i]['Fe'] != '')
-                        {
-                            $s_Fe .= $hasilanalisa[$i]['Fe'].'-';
-                        }
-                        else{
-                            $s_Fe .= '-';
-                        }
-                        #Fe
-                        
-                        #Mn
-                        if($hasilanalisa[$i]['Mn'] != '')
-                        {
-                            $s_Mn .= $hasilanalisa[$i]['Mn'].'-';
-                        }
-                        else{
-                            $s_Mn .= '-';
-                        }
-                        #Mn
-
-                        #STATUS
-                        if($hasilanalisa[$i]['status'] != '')
-                        {
-                            $s_status .= $hasilanalisa[$i]['status'].'-';
-                        }
-                        else{
-                            $s_status .= '-';
-                        }
-                        #STATUS
-                        
-                        #RETRY
-                        if($hasilanalisa[$i]['retry'] != '')
-                        {
-                            $s_retry .= $hasilanalisa[$i]['retry'].'-';
-                        }
-                        else{
-                            $s_retry .= '-';
-                        }
-                        #RETRY
-                    }
-                    else{
-                        #ID
-                        if($hasilanalisa[$i]['id'] != '')
-                        {
-                            $s_id .= $hasilanalisa[$i]['id'];
-                        }
-                        else{
-                            $s_id .= '';
-                        }
-                        #ID
-                        
-                        #ID KUPA
-                        if($hasilanalisa[$i]['id_kupa'] != '')
-                        {
-                            $s_id_kupa .= $hasilanalisa[$i]['id_kupa'];
-                        }
-                        else{
-                            $s_id_kupa .= '';
-                        }
-                        #ID KUPA
-
-                        #TAHUN
-                        if($hasilanalisa[$i]['tahun'] != '')
-                        {
-                            $s_tahun .= $hasilanalisa[$i]['tahun'];
-                        }
-                        else{
-                            $s_tahun .= '';
-                        }
-                        #TAHUN
-
-                        #ID JENIS SAMPEL
-                        if($hasilanalisa[$i]['id_jenis_sampel'] != '')
-                        {
-                            $s_id_jenis_sampel .= $hasilanalisa[$i]['id_jenis_sampel'];
-                        }
-                        else{
-                            $s_id_jenis_sampel .= '';
-                        }
-                        #ID JENIS SAMPEL
-
-                        #NO LAB
-                        if($hasilanalisa[$i]['no_lab'] != '')
-                        {
-                            $s_no_lab .= $hasilanalisa[$i]['no_lab'];
-                        }
-                        else{
-                            $s_no_lab .= '';
-                        }
-                        #NO LAB
-
-                        #KODE CONTOH
-                        if($hasilanalisa[$i]['kode_contoh'] != '')
-                        {
-                            $s_kode_contoh .= $hasilanalisa[$i]['kode_contoh'];
-                        }
-                        else{
-                            $s_kode_contoh .= '';
-                        }
-                        #KODE CONTOH
-                        
-                        #ID PETUGAS
-                        if($hasilanalisa[$i]['id_petugas'] != '')
-                        {
-                            $s_id_petugas .= $hasilanalisa[$i]['id_petugas'];
-                        }
-                        else{
-                            $s_id_petugas .= '';
-                        }
-                        #ID PETUGAS
-
-                        #N
-                        if($hasilanalisa[$i]['N'] != '')
-                        {
-                            $s_N .= $hasilanalisa[$i]['N'];
-                        }
-                        else{
-                            $s_N .= '';
-                        }
-                        #N
-
-                        #P
-                        if($hasilanalisa[$i]['P'] != '')
-                        {
-                            $s_P .= $hasilanalisa[$i]['P'];
-                        }
-                        else{
-                            $s_P .= '';
-                        }
-                        #P
-
-                        #K
-                        if($hasilanalisa[$i]['K'] != '')
-                        {
-                            $s_K .= $hasilanalisa[$i]['K'];
-                        }
-                        else{
-                            $s_K .= '';
-                        }
-                        #K
-
-                        #Mg
-                        if($hasilanalisa[$i]['Mg'] != '')
-                        {
-                            $s_Mg .= $hasilanalisa[$i]['Mg'];
-                        }
-                        else{
-                            $s_Mg .= '';
-                        }
-                        #Mg
-
-                        #Ca
-                        if($hasilanalisa[$i]['Ca'] != '')
-                        {
-                            $s_Ca .= $hasilanalisa[$i]['Ca'];
-                        }
-                        else{
-                            $s_Ca .= '';
-                        }
-                        #Ca
-
-                        #B
-                        if($hasilanalisa[$i]['B'] != '')
-                        {
-                            $s_B .= $hasilanalisa[$i]['B'];
-                        }
-                        else{
-                            $s_B .= '';
-                        }
-                        #B
-
-                        #Cu
-                        if($hasilanalisa[$i]['Cu'] != '')
-                        {
-                            $s_Cu .= $hasilanalisa[$i]['Cu'];
-                        }
-                        else{
-                            $s_Cu .= '';
-                        }
-                        #Cu
-
-                        #Zn
-                        if($hasilanalisa[$i]['Zn'] != '')
-                        {
-                            $s_Zn .= $hasilanalisa[$i]['Zn'];
-                        }
-                        else{
-                            $s_Zn .= '';
-                        }
-                        #Zn
-
-                        #Fe
-                        if($hasilanalisa[$i]['Fe'] != '')
-                        {
-                            $s_Fe .= $hasilanalisa[$i]['Fe'];
-                        }
-                        else{
-                            $s_Fe .= '';
-                        }
-                        #Fe
-                        
-                        #Mn
-                        if($hasilanalisa[$i]['Mn'] != '')
-                        {
-                            $s_Mn .= $hasilanalisa[$i]['Mn'];
-                        }
-                        else{
-                            $s_Mn .= '';
-                        }
-                        #Mn
-
-                        #STATUS
-                        if($hasilanalisa[$i]['status'] != '')
-                        {
-                            $s_status .= $hasilanalisa[$i]['status'];
-                        }
-                        else{
-                            $s_status .= '';
-                        }
-                        #STATUS
-                        
-                        #RETRY
-                        if($hasilanalisa[$i]['retry'] != '')
-                        {
-                            $s_retry .= $hasilanalisa[$i]['retry'];
-                        }
-                        else{
-                            $s_retry .= '';
-                        }
-                        #RETRY
-                    }
+                    $s_id                 .= $value['id'] . '-';
+                    $s_tahun              .= $value['tahun'] . '-';
+                    $s_jenis_samples_id   .= $value['jenis_samples_id'] . '-';
+                    $s_parameters_id_s    .= $value['parameters_id_s'] . '-';
+                    $s_no_lab             .= $value['no_lab'] . '-';
+                    $s_hasil              .= $value['hasil'] . '-';
+                    $s_status             .= $value['status'] . '-';
                 }
 
-                $response->id = $s_id;
-                $response->id_kupa = $s_id_kupa;
-                $response->tahun = $s_tahun;
-                $response->id_jenis_sampel = $s_id_jenis_sampel;
-                $response->no_lab = $s_no_lab;
-                $response->kode_contoh = $s_kode_contoh;
-                $response->id_petugas = $s_id_petugas;
-                $response->N = $s_N;
-                $response->P = $s_P;
-                $response->K = $s_K;
-                $response->Mg = $s_Mg;
-                $response->Ca = $s_Ca;
-                $response->B = $s_B;
-                $response->Cu = $s_Cu;
-                $response->Zn = $s_Zn;
-                $response->Fe = $s_Fe;
-                $response->Mn = $s_Mn;
-                $response->status = $s_status;
-                $response->retry = $s_retry;
+                $s_id                 = substr($s_id, 0, -1);
+                $s_tahun              = substr($s_tahun, 0, -1);
+                $s_jenis_samples_id   = substr($s_jenis_samples_id, 0, -1);
+                $s_parameters_id_s    = substr($s_parameters_id_s, 0, -1);
+                $s_no_lab             = substr($s_no_lab, 0, -1);
+                $s_hasil              = substr($s_hasil, 0, -1);
+                $s_status             = substr($s_status, 0, -1);
 
+                $response->id               = $s_id;
+                $response->tahun            = $s_tahun;
+                $response->jenis_samples_id = $s_jenis_samples_id;
+                $response->parameters_id_s  = $s_parameters_id_s;
+                $response->no_lab           = $s_no_lab;
+                $response->hasil            = $s_hasil;
+                $response->status           = $s_status;
             }
-        }
-        else
-        {
+        } else {
             $response->success = 0;
             $response->message = "KUPA TIDAK BOLEH KOSONG";
         }
         die(json_encode($response));
     }
     #GET HASILANALISA
-
-    #POST HASILANALISA
-    function PostHasilAnalisa(Request $request, $id = null, $v_parameter = null)
-    {
-        $s_id           = '';
-        $s_parameter    = '';
-        if(!isset($id) OR !isset($v_parameter))
-        {
-            if(!isset($request->id) AND !isset($request->v_parameter))
-            {
-
-            }
-            else
-            {
-
-            }
-        }
-    }
-    #POST HASILANALISA
 }

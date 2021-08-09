@@ -42,11 +42,6 @@
                                             <div class="form-group">
                                                 <label>Parameter</label>
                                                 <input type="text" name="parameter" class="form-control" placeholder="Parameter ..." autofocus>
-                                                @if(session('error_insert'))
-                                                    @if ($errors->has('parameter'))
-                                                    <span class="text-danger">{{ $errors->first('parameter') }}</span>
-                                                    @endif
-                                                @endif
                                             </div>
                                         </div>
                                         <div class="col-sm-3">                                            
@@ -60,11 +55,6 @@
                                                         <input type="text" id="rupiah" name="harga" class="form-control" placeholder="Harga ...">
                                                     </div>
                                                 </div>
-                                                @if(session('error_insert'))
-                                                    @if ($errors->has('harga'))
-                                                    <span class="text-danger">{{ $errors->first('harga') }}</span>
-                                                    @endif
-                                                @endif
                                             </div>
                                         </div>
                                         
@@ -73,15 +63,7 @@
                                                 <label>Jenis Sampel</label>
                                                 <select class="form-control" name="jenis_sampel">
                                                     <option disabled selected>--PILIH JANIS SAMPEL--</option>
-                                                    @foreach($jenis_sampel as $jenis_sampels)
-                                                        <option value="{{ $jenis_sampels->id }}">{{ strtoupper($jenis_sampels->jenis_sampel) }}</option>                                                                
-                                                    @endforeach
                                                 </select>
-                                                @if(session('error_insert'))
-                                                    @if ($errors->has('jenis_sampel'))
-                                                    <span class="text-danger">{{ $errors->first('jenis_sampel') }}</span>
-                                                    @endif
-                                                @endif
                                             </div>
                                         </div>
                                         <div class="col-sm-2">
@@ -114,71 +96,20 @@
                                     <thead>
                                         <tr>
                                             <th class="hijau">NO</th>
-                                            <th class="biru" style="width:40%;">PARAMETER</th>
-                                            <th class="biru" style="width: 27%;">HARGA</th>
-                                            <th class="biru" style="width: 15%;">JENIS SAMPEL</th>
+                                            <th class="biru" style="width:40%;">SIMBOL</th>
+                                            <th class="biru" style="width: 27%;">NAMA UNSUR</th>
                                             <th class="biru "style="width: 18%;">ACTION</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if(count($parameter) == 0)
+                                        @if(count($parameters) == 0)
                                             <tr>
                                                 <td colspan="5"><h4>BELUM ADA DATA YANG DIINPUTKAN</h4></td>
                                             </tr>
                                         @else
-                                            @foreach($parameter as $parameters)
-                                            <form action="{{ url('admin/crud_parameter') }}" method="post">
+                                            @foreach($parameters as $p)
+                                            <form action="{{ url('admin/crud_parameters') }}" method="post">
                                                 {{ csrf_field() }}
-                                                <input type="hidden" name="u_id" value="{{ $parameters->id }}">
-                                                <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>
-                                                        <input class="form-control" type="text" name="u_jenis_analisis_{{ $parameters->id }}" value="{{ $parameters->parameter }}">
-                                                        @if(session('error_update'))
-                                                            @if ($errors->has('u_jenis_analisis_'.$parameters->id.''))
-                                                            <span class="text-danger">{{ $errors->first('u_jenis_analisis_'.$parameters->id.'') }}</span>
-                                                            @endif
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        <div class="row">
-                                                            <div class="col-sm-2">
-                                                                <label for="">Rp.</label>
-                                                            </div>                                                    
-                                                            <div class="col-sm-10">
-                                                                <input class="form-control harga" type="text" name="u_harga_{{ $parameters->id }}" value="{{ $parameters->harga }}">
-                                                            </div>
-                                                        </div>
-                                                        @if(session('error_update'))
-                                                            @if ($errors->has('u_harga_'.$parameters->id.''))
-                                                            <span class="text-danger">{{ $errors->first('u_harga_'.$parameters->id.'') }}</span>
-                                                            @endif
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        <select class="form-control" name="u_id_jenis_sampels_{{ $parameters->id }}">
-                                                            <option selected value="{{ $parameters->id_jenis_sampel }}">{{ strtoupper($parameters->jenis_sampel) }}</option>
-                                                            @foreach($jenis_sampel as $jenis_sampels)
-                                                                <option value="{{ $jenis_sampels->id }}">{{ strtoupper($jenis_sampels->jenis_sampel) }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                        @if(session('error_update'))
-                                                            @if ($errors->has('id_jenis_sampel'.$parameters->id.''))
-                                                            <span class="text-danger">{{ $errors->first('id_jenis_sampel'.$parameters->id.'') }}</span>
-                                                            @endif
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        <div class="row" style="margin-left: auto; margin-right:auto;">
-                                                            <div class="col-sm-6">
-                                                                <button class="btn btn-success" name="action" value="update"><abbr title="UPDATE"><i class="fas fa-redo"></i></abbr></button>
-                                                            </div>
-                                                            <div class="col-sm-6">
-                                                                <button class="btn btn-danger" name="action" value="delete"><abbr title="DELETE"><i class="fas fa-trash"></i></abbr></button>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
                                             </form>
                                             @endforeach
                                         @endif

@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class JenisSampel extends Seeder
+class JenisSampels extends Seeder
 {
     /**
      * Run the database seeds.
@@ -16,13 +16,13 @@ class JenisSampel extends Seeder
     {
         DB::table('jenis_sampels')->insert(array(
             array(
-                'jenis_sampel'      => 'daun',
-                'lambang_sampel'    => 'L'
+                'jenis_sampel'                => 'daun',
+                'lambang_sampel'              => 'L'
             ),
             array(
-                'jenis_sampel'      => 'racis',
-                'lambang_sampel'    => 'R'
+                'jenis_sampel'                => 'racis',
+                'lambang_sampel'              => 'R'
             )
-        ));
+        )); 
     }
 }

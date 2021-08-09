@@ -1,0 +1,36 @@
+1.  Parameters
+php artisan make:seeder Parameters
+php artisan db:seed --class=Parameters
+2.  JenisSampels
+php artisan make:seeder JenisSampels
+php artisan db:seed --class=JenisSampels
+3.  AksesLevels
+php artisan make:seeder AksesLevels
+php artisan db:seed --class=AksesLevels
+4.  Aktivitas
+php artisan make:seeder Aktivitas
+php artisan db:seed --class=Aktivitas
+5.  Metodes
+php artisan make:seeder Metodes
+php artisan db:seed --class=Metodes
+6.  Pakets
+php artisan make:seeder Pakets
+php artisan db:seed --class=Pakets
+7.  Pelanggans
+php artisan make:seeder Pelanggans
+php artisan db:seed --class=Pelanggans
+8.  DataSampel
+php artisan make:seeder DataSampel
+php artisan db:seed --class=DataSampel
+9.  HasilAnalisas
+php artisan make:seeder HasilAnalisas
+php artisan db:seed --class=HasilAnalisas
+10. LabAkuns
+php artisan make:seeder LabAkuns
+php artisan db:seed --class=LabAkuns
+11. DetailTrackings
+php artisan make:seeder DetailTrackings
+php artisan db:seed --class=DetailTrackings
+12. Halamans
+php artisan make:seeder Halamans
+php artisan db:seed --class=Halamans

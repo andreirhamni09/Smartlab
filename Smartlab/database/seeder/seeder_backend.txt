@@ -1,0 +1,332 @@
+#PARAMETER
+    DB::table('parameters')->insert(array(
+        array(
+            'simbol'                  => 'N',
+            'nama_unsur'              => 'nitrogen'
+        ),
+        array(
+            'simbol'                  => 'P',
+            'nama_unsur'              => 'pospor'
+        ),
+        array(
+            'simbol'                  => 'K',
+            'nama_unsur'              => 'kalium'
+        ),array(
+            'simbol'                  => 'Mg',
+            'nama_unsur'              => 'magnesium'
+        ),
+        array(
+            'simbol'                  => 'Ca',
+            'nama_unsur'              => 'kalsium'
+        ),array(
+            'simbol'                  => 'Cu',
+            'nama_unsur'              => 'tembaga'
+        ),
+        array(
+            'simbol'                  => 'Zn',
+            'nama_unsur'              => 'seng'
+        ),array(
+            'simbol'                  => 'Mn',
+            'nama_unsur'              => 'mangan'
+        ),
+        array(
+            'simbol'                  => 'Fe',
+            'nama_unsur'              => 'beso'
+        ),array(
+            'simbol'                  => 'B',
+            'nama_unsur'              => 'born'
+        )
+    ));
+#PARAMETER
+
+#JENISSAMPELS
+    DB::table('jenis_sampels')->insert(array(
+        array(
+            'jenis_sampel'                => 'daun',
+            'lambang_sampel'              => 'L'
+        ),
+        array(
+            'jenis_sampel'                => 'racis',
+            'lambang_sampel'              => 'R'
+        )
+    )); 
+#JENISSAMPELS
+
+#AKSESLEVELS 
+    DB::table('akses_levels')->insert(array(
+        array(
+            'id'                          => '1',
+            'jabatan'                     => 'analis',
+            'halamans_id_s'               => ''
+        ),
+        array(
+            'id'                          => '2',
+            'jabatan'                     => 'admin',
+            'halamans_id_s'               => ''
+        ),
+        array(
+            'id'                          => '3',
+            'jabatan'                     => 'penyelia',
+            'halamans_id_s'               => ''
+        ),
+        array(
+            'id'                          => '4',
+            'jabatan'                     => 'qc',
+            'halamans_id_s'               => ''
+        ),
+        array(
+            'id'                          => '5',
+            'jabatan'                     => 'penyelia',
+            'halamans_id_s'               => ''
+        )
+    )); 
+#AKSESLEVELS
+
+#AKTIVITAS 
+    DB::table('aktivitas')->insert(array(
+        array(
+            'aktivitas'     => 'registrasi_sampel'
+        ),
+        array(
+            'aktivitas'     => 'verifikasi_lab'
+        ),
+        array(
+            'aktivitas'     => 'verifikasi_pelanggan'
+        )
+    )); 
+#AKTIVITAS
+
+#METODES 
+    DB::table('metodes')->insert(array(
+        array(
+            'metode'            => 'Flamephotometry/AAS',
+            'parameters_id_s'   => '3-4-5-6-7-8-9'    
+        ),
+        array(
+            'metode'            => 'Spektrophotometry',
+            'parameters_id_s'   => '2-10'    
+        ),
+        array(
+            'metode'            => 'Kjedahl',
+            'parameters_id_s'   => '1'
+        )
+    )); 
+#METODES
+
+#PAKETS 
+    DB::table('pakets')->insert(array(
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'N',
+            'parameters_id_s'   => '1',
+            'harga'             => '40000'
+        ),
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'P',
+            'parameters_id_s'   => '2',
+            'harga'             => '35000'
+        ),
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'K',
+            'parameters_id_s'   => '3',
+            'harga'             => '35000'
+        ),
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'Mg',
+            'parameters_id_s'   => '4',
+            'harga'             => '35000'
+        ),
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'Ca',
+            'parameters_id_s'   => '5',
+            'harga'             => '35000'
+        ),
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'Cu',
+            'parameters_id_s'   => '6',
+            'harga'             => '35000'
+        ),
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'Zn',
+            'parameters_id_s'   => '7',
+            'harga'             => '35000'
+        ),
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'Mn',
+            'parameters_id_s'   => '8',
+            'harga'             => '35000'
+        ),
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'Fe',
+            'parameters_id_s'   => '9',
+            'harga'             => '35000'
+        ),
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'N,P,K',
+            'parameters_id_s'   => '1-2-3',
+            'harga'             => '100000'
+        ),
+        
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'N,P,K,B',
+            'parameters_id_s'   => '1-2-3-10',
+            'harga'             => '135000'
+        ),
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'N,P,K,Mg',
+            'parameters_id_s'   => '1-2-3-4',
+            'harga'             => '130000'
+        ),
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'N,P,K,Mg,B',
+            'parameters_id_s'   => '1-2-3-4-10',
+            'harga'             => '160000'
+        ),
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'N,P,K,Mg,Ca',
+            'parameters_id_s'   => '1-2-3-4-5',
+            'harga'             => '150000'
+        ),
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'N,P,K,Mg,Ca,B',
+            'parameters_id_s'   => '1-2-3-4-5-10',
+            'harga'             => '190000'
+        ),
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'P,K',
+            'parameters_id_s'   => '2-3',
+            'harga'             => '56000'
+        ),
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'P,K,Mg',
+            'parameters_id_s'   => '2-3-4',
+            'harga'             => '84000'
+        ),
+        array(
+            'jenis_sampels_id'  => '1',
+            'paket'             => 'P,K,Mg,Ca',
+            'parameters_id_s'   => '2-3-4-5',
+            'harga'             => '110000'
+        )
+    )); 
+#PAKETS
+
+#LABAKUNS  
+    DB::table('lab_akuns')->insert(array(
+        array(
+            'metodes_id_s'      => '1-2-3',
+            'akses_levels_id'   => '3',
+            'nama'              => 'Indah',
+            'email'             => 'indah09@gmail.com',
+            'password'          => 'asdasd',
+            'jabatan'           => 'Penyelia',
+            'status_akun'       => '1'
+        ),
+        array(
+            'metodes_id_s'      => '1-2-3',
+            'akses_levels_id'   => '1',
+            'nama'              => 'Yolanda Aptria',
+            'email'             => 'yolanda_aptria09@gmail.com',
+            'password'          => 'asdasdasd',
+            'jabatan'           => 'Analis',
+            'status_akun'       => '1'
+        )
+    )); 
+#LABAKUNS 
+
+#PELANGGANS  
+    DB::table('pelanggans')->insert(array(
+        array(
+            'email'                 => '1-2-3',
+            'password'              => '3',
+            'nama'                  => 'Indah',
+            'perusahaan'            => 'indah09@gmail.com',
+            'nomor_telepon'         => 'asdasdasd',
+            'alamat'                => 'penyelia',
+            'tanggal_registrasi'    => '2021-07-21'
+        )
+    )); 
+#PELANGGANS 
+
+#DATASAMPELS  
+    DB::table('data_sampels')->insert(array(
+        array(
+            'jenis_sampels_id'      => '1',
+            'pelanggans_id'         => '1',
+            'pakets_id_s'           => '1-2-3',
+            'tanggal_masuk'         => '2021-08-09',
+            'tanggal_selesai'       => '10',
+            'nomor_surat'           => '1010',
+            'jumlah_sampel'         => '100',
+            'status'                => '0'
+        )
+    )); 
+#DATASAMPELS
+
+#HASILANALISAS 
+    for ($i = 1; $i <= 100; $i++) { 
+        DB::table('hasil_analisas')->insert(array(
+            array(
+                'jenis_sampels_id'      => '1',
+                'data_sampels_id'       => '1',
+                'tahun'                 => '21',
+                'no_lab'                => $i,
+                'kode_contoh'           => '',
+                'parameters_id_s'       => '1-2-3',
+                'hasil'                 => '',
+                'status'                => '0',
+                'retry'                 => 0
+            )
+        )); 
+    }
+#HASILANALISAS
+
+#LABAKUNS
+    DB::table('lab_akuns')->insert(array(
+        array(
+            'metodes_id_s'          => '1-2-3',
+            'akses_levels_id'       => '3',
+            'nama'                  => 'Indah',
+            'email'                 => 'indah09@gmail.com',
+            'password'              => 'asdasdasd',
+            'jabatan'               => 'penyelia',
+            'status_akun'           => '1'
+        ),
+        array(
+            'metodes_id_s'          => '1-2-3',
+            'akses_levels_id'       => '1',
+            'nama'                  => 'Yolanda Aptria',
+            'email'                 => 'yolanda_aptria09@gmail.com',
+            'password'              => 'asdasdasd',
+            'jabatan'               => 'analis',
+            'status_akun'           => '1'
+        )
+    )); 
+#LABAKUNS
+
+#DETAILTRACKINGS
+    DB::table('detail_trackings')->insert(array(
+        array(
+            'aktivitas_waktu'          => '2021-08-09 11:00:00',
+            'data_sampels_id'          => '1',
+            'aktivitas_id'             => '1',
+            'lab_akuns_id'             => '1'
+        )
+    )); 
+#DETAILTRACKINGS

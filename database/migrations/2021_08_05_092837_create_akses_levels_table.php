@@ -14,8 +14,8 @@ class CreateAksesLevelsTable extends Migration
     public function up()
     {
         Schema::create('akses_levels', function (Blueprint $table) {
-            $table->tinyInteger('id')->primary()->autoIncrement();
-            $table->string('jabatan')->unique();
+            $table->tinyInteger('id')->primary();
+            $table->string('jabatan');
             $table->string('halamans_id_s', 45);
         });
     }

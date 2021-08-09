@@ -21,23 +21,23 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::prefix('admin')->group(function () {
     # LOGIN USERLAB 
-        # LINK : https://slab.srs-ssms.com/api/admin/loginuserlab 
-        # FUNGSI UNTUK LOGIN APLIKASI SMARTLAB ANDROID
-        # PARAMETER PARSING DARI APLIKASI SMARTLAB ANDROID
-            # ~ email, ~ password
-        # RESPON
-            # BEHASIL   : ~ success = 1, ~ id, ~ nama, ~ id_akses, ~ jabatan, ~ email, ~ password
-            # GAGAL     : ~ success = 0, ~ message
     Route::match(['get', 'post'], 'loginuserlab/{email?}/{password?}', [ApiController::class, 'LoginUserLab']);
     # LOGIN USERLAB
 
+    #PARAMETER
+    Route::get('getparameter', [ApiController::class, 'GetParameters']);
+    #PARAMETER
+
+    #GET JENIS SAMPEL
+    Route::get('getjenissampel', [ApiController::class, 'GetJenisSampels']);
+    #GET JENIS SAMPEL
+
+    #GET AKSES LEVEL
+    Route::get('getakseslevels', [ApiController::class, 'GetAksesLevels']);
+    #GET AKSES LEVEL
+
     #GET DATA AKTIVITAS 
-        # LINK : https://slab.srs-ssms.com/api/admin/getaktivitas 
-        # FUNGSI UNTUK MENDAPATKAN DAFTAR AKTIVITAS YANG TERDAPAT DALAM DATABASE
-        # RESPON
-            # DATA = 0      : ~ success = 0, ~ message
-            # DATA != 0     : ~ success = 1, ~ aktivitas_id, ~ aktivitas
-    Route::match(['get', 'post'], 'getaktivitas', [ApiController::class, 'GetAktivitas']);
+    Route::get('getaktivitas', [ApiController::class, 'GetAktivitas']);
     #GET DATA AKTIVITAS 
 
     #UPDATE PROSES
@@ -53,22 +53,12 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'updateproses/{aktivitas_waktu?}/{tracking_id?}/{aktivitas_id?}/{petugas_id?}', [ApiController::class, 'UpdateProses']);
     #UPDATE PROSES
 
-    #GET JENIS SAMPEL
-        # LINK : https://slab.srs-ssms.com/api/admin/getjenissampel 
-        # FUNGSI UNTUK MENDAPATKAN DAFTAR JENIS SAMPEL YANG TERDAPAT DALAM DATABASE
-        # RESPON
-            # DATA = 0      : ~ success = 0, ~ message
-            # DATA != 0     : ~ success = 1, ~ id, ~ jenis_sampel, ~ lambang_sampel
-    Route::match(['get', 'post'], 'getjenissampel', [ApiController::class, 'GetJenisSampel']);
-    #GET JENIS SAMPEL
-
     #GET PARAMETER
         # LINK : https://slab.srs-ssms.com/api/admin/getparameter 
         # FUNGSI UNTUK MENDAPATKAN DAFTAR PARAMETER YANG TERDAPAT DALAM DATABASE
         # RESPON
             # DATA = 0      : ~ success = 0, ~ message
             # DATA != 0     : ~ success = 1, ~ id_parameter, ~ parameter, ~ harga, ~ id_jenis_sampel, ~ jenis_sampel, ~ lambang
-    Route::match(['get', 'post'], 'getparameter', [ApiController::class, 'GetParameter']);
     #GET PARAMETER
 
 
