@@ -22,7 +22,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::prefix('admin')->group(function () {
     # LOGIN USERLAB 
     Route::match(['get', 'post'], 'loginuserlab/{email?}/{password?}', [ApiController::class, 'LoginUserLab']);
-    # LOGIN USERLAB
+    # LOGIN USERLAB sdsds
 
     #PARAMETER
     Route::get('getparameter', [ApiController::class, 'GetParameters']);
