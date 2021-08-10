@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use Exception;
+use PHPUnit\Framework\Constraint\Count;
+
+use function PHPUnit\Framework\isEmpty;
 
 class usr
 {
@@ -27,7 +30,6 @@ class ApiController extends Controller
      *          in="path",
      *          @OA\Schema(
      *              type="string",
-     *              format="int64",
      *          )
      *      ),
      *      @OA\Parameter(
@@ -52,59 +54,54 @@ class ApiController extends Controller
      *     },
      * )
      */
-    function LoginUserLab(Request $request, $email=null, $password=null)
+    function LoginUserLab(Request $request, $email = null, $password = null)
     {
-        $response     = new usr();
-        $s_email      = '';
-        $s_password   = '';
+        $response       = new usr();
+        $str_email      = '';
+        $str_password   = '';
 
-        if(isset($email) AND isset($password))
-        {
-            $s_email      = $email;
-            $s_password   = $password;
+        if (isset($email) and isset($password)) {
+            $str_email      = $email;
+            $str_password   = $password;
+        } elseif (!empty($request->email) and !empty($request->password)) {
+            $str_email      = $request->email;
+            $str_password   = $request->password;
+        } elseif (!isset($email) || !isset($password) || empty($request->email) || empty($request->password)) {
+            $response->success = 0;
+            $response->message = "Kolom tidak boleh kosong";
+            die(json_encode($response));
         }
-        elseif(!isset($email) || !isset($password))
-        {
-            if(empty($request->email) || empty($request->password))
-            {
-                $response->success = 0;
-                $response->message = "Kolom tidak boleh kosong"; 
+
+        $userLabLogin   = DB::table('lab_akuns')
+            ->where('email', '=', $str_email)
+            ->first();
+        $userLabLogin   = json_decode(json_encode($userLabLogin), true);
+
+        try {
+            if ($userLabLogin == []) {
+                $response->success      = 0;
+                $response->message      = "USER TIDAK DITEMUKAN";
+                die(json_encode($response));
+            } elseif ($userLabLogin['password'] != $str_password) {
+                $response->success      = 0;
+                $response->message      = "INVALID PASSWORD";
+                die(json_encode($response));
+            } else {
+                $response->id                       = $userLabLogin['id'];
+                $response->nama                     = $userLabLogin['nama'];
+                $response->akses_levels_id          = $userLabLogin['akses_levels_id'];
+                $response->jabatan                  = $userLabLogin['jabatan'];
+                $response->email                    = $userLabLogin['email'];
+                $response->password                 = $userLabLogin['password'];
+                $response->metode_id_s              = $userLabLogin['metodes_id_s'];
+                $response->success                  = 1;
                 die(json_encode($response));
             }
-            elseif(!empty($request->email) || !empty($request->password))
-            {
-                $s_email      = $request->email;
-                $s_password   = $request->password;
-            }
-        }
-        try {
-            $userLabLogin   = DB::table('lab_akuns')
-            ->where('email', $s_email)
-            ->where('password', $s_password)
-            ->get();
-            
-            $userLabLogin   = json_decode(json_encode($userLabLogin), true);
-
-            if(count($userLabLogin) <= 0)
-            {
-                $response->success      = 0;
-                $response->message      = "DATA TIDAK DITEMUKAN";
-            }
-            foreach ($userLabLogin as $key => $value) {
-                $response->id           = $value['id'];
-                $response->nama         = $value['nama'];
-                $response->id_akses     = $value['id_akses'];
-                $response->jabatan      = $value['jabatan'];
-                $response->email        = $value['email'];
-                $response->password     = $value['password'];
-                $response->success      = 1;
-            } 
-            
         } catch (Exception $e) {
             $response->success      = 0;
             $response->message      = $e->getMessage();
+            die(json_encode($response));
         }
-        die(json_encode($response));
     }
     #POST LOGIN
 
@@ -132,31 +129,25 @@ class ApiController extends Controller
     {
         $response                   = new usr();
         $parameter                  = DB::table('parameters')
-        ->get();
+            ->get();
         $parameter                  = json_decode(json_encode($parameter), true);
-        if(count($parameter) == 0)
-        {
+        if (count($parameter) < 1) {
             $response->success          = 0;
             $response->messages         = 'DATA PARAMETER TIDAK DITEMUKAN';
-        }
-        elseif (count($parameter) !== 0) {
+        } elseif (count($parameter) > 0) {
             $str_id                     = '';
             $str_simbol                 = '';
             $str_nama_unsur             = '';
 
-            $j_parameter                = count($parameter) - 1;
-            for ($i = 0; $i < count($parameter); $i++) { 
-                if($i == $j_parameter){
-                    $str_id            .= $parameter[$i]['id'];
-                    $str_simbol        .= $parameter[$i]['simbol'];
-                    $str_nama_unsur    .= $parameter[$i]['nama_unsur'];
-                }
-                elseif ($i !== $j_parameter) {
-                    $str_id            .= $parameter[$i]['id'].'-';
-                    $str_simbol        .= $parameter[$i]['simbol'].'-';
-                    $str_nama_unsur    .= $parameter[$i]['nama_unsur'].'-';
-                }
+            foreach ($parameter as $key => $value) {
+                $str_id                 .= $value['id'] . '-';
+                $str_simbol             .= $value['simbol'] . '-';
+                $str_nama_unsur         .= $value['nama_unsur'] . '-';
             }
+
+            $str_id                     = substr($str_id, 0, -1);
+            $str_simbol                 = substr($str_simbol, 0, -1);
+            $str_nama_unsur             = substr($str_nama_unsur, 0, -1);
 
             $response->id               = $str_id;
             $response->simbol           = $str_simbol;
@@ -191,20 +182,17 @@ class ApiController extends Controller
     {
         $response                   = new usr();
         $jenisSampel                = DB::table('jenis_sampels')
-        ->get();
+            ->get();
         $jenisSampel                = json_decode(json_encode($jenisSampel), true);
-        
-        if(count($jenisSampel) == 0)
-        {
+
+        if (count($jenisSampel) == 0) {
             $response->success          = 0;
             $response->messages         = 'DATA JENIS SAMPEL TIDAK DITEMUKAN';
-        }
-        else if(count($jenisSampel) !== 0)
-        {
-            $str_id          = '';
+        } else if (count($jenisSampel) !== 0) {
+            $str_id                     = '';
             $str_jenisSampel            = '';
             $str_lambangSampel          = '';
-            
+
             foreach ($jenisSampel as $key => $value) {
                 $str_id                 .= $value['id'] . '-';
                 $str_jenisSampel        .= $value['jenis_sampel'] . '-';
@@ -223,7 +211,7 @@ class ApiController extends Controller
         die(json_encode($response));
     }
     #GET JENIS SAMPEL
-    
+
     #GET AKSES LEVEL
     /**
      * @OA\Get(
@@ -248,31 +236,26 @@ class ApiController extends Controller
     {
         $response                   = new usr();
         $aksesLevels                = DB::table('akses_levels')
-        ->get();
+            ->get();
         $aksesLevels                = json_decode(json_encode($aksesLevels), true);
-        
-        if(count($aksesLevels) == 0)
-        {
+
+        if (count($aksesLevels) < 1) {
             $response->success          = 0;
             $response->messages         = 'DATA JENIS SAMPEL TIDAK DITEMUKAN';
-        }
-        else if(count($aksesLevels) !== 0)
-        {
+        } else if (count($aksesLevels) > 0) {
             $str_id                     = '';
             $str_jabatan            = '';
             $str_halamans_id_s          = '';
             $j_akseslevels              = count($aksesLevels) - 1;
             for ($i = 0; $i < count($aksesLevels); $i++) {
-                if($i < $j_akseslevels)
-                {
-                    $str_id                 .= $aksesLevels[$i]['id'].'-'; 
-                    $str_jabatan        .= $aksesLevels[$i]['jabatan'].'-'; 
-                    $str_halamans_id_s      .= $aksesLevels[$i]['halamans_id_s'].'-'; 
-                } 
-                elseif ($i >= $j_akseslevels) {
-                    $str_id                 .= $aksesLevels[$i]['id']; 
-                    $str_jabatan            .= $aksesLevels[$i]['jabatan']; 
-                    $str_halamans_id_s      .= $aksesLevels[$i]['halamans_id_s']; 
+                if ($i < $j_akseslevels) {
+                    $str_id                 .= $aksesLevels[$i]['id'] . '-';
+                    $str_jabatan            .= $aksesLevels[$i]['jabatan'] . '-';
+                    $str_halamans_id_s      .= $aksesLevels[$i]['halamans_id_s'] . '-';
+                } elseif ($i >= $j_akseslevels) {
+                    $str_id                 .= $aksesLevels[$i]['id'];
+                    $str_jabatan            .= $aksesLevels[$i]['jabatan'];
+                    $str_halamans_id_s      .= $aksesLevels[$i]['halamans_id_s'];
                 }
             }
             $response->id               = $str_id;
@@ -308,19 +291,17 @@ class ApiController extends Controller
     {
         $response           = new usr();
         $getaktivitas       = DB::table('aktivitas')
-        ->get();
+            ->get();
         $getaktivitas       = json_decode(json_encode($getaktivitas), true);
         $str_aktivitas_id   = '';
         $str_aktivitas      = '';
-        if(count($getaktivitas) == 0)
-        {
+        if (count($getaktivitas) == 0) {
             $response->success = 0;
             $response->message = 'DATA AKTIVITAS TIDAK DITEMUKAN';
-        }
-        else{
+        } else {
             $str_id   = '';
             $str_aktivitas      = '';
-            
+
             foreach ($getaktivitas as $key => $value) {
                 $str_id             .= $value['id'] . '-';
                 $str_aktivitas      .= $value['aktivitas'] . '-';
@@ -523,4 +504,25 @@ class ApiController extends Controller
         die(json_encode($response));
     }
     #GET HASILANALISA
+
+
+    #TES
+    function Tes()
+    {
+        $response       = new usr();
+        $jenisSampel    = DB::table('jenis_sampels')
+            ->get();
+        $jenisSampel    = json_decode(json_encode($jenisSampel), true);
+        foreach ($jenisSampel as $key => $value) {
+            $response->id               .= $value['id'] . '-';
+            $response->jenis_sampel     .= $value['jenis_sampel'] . '-';
+            $response->lambang_sampel   .= $value['lambang_sampel'] . '-';
+        }
+        return view('admin.test.tes', ['jenis_sampel' => $response]);
+    }
+
+    function PostTes(Request $request)
+    {
+    }
+    #TES
 }
