@@ -160,7 +160,7 @@
                 ]
             }
         },
-        "/updateproses/{aktivitas_waktu}/{data_sampels_id}/{aktivitas_id}/{lab_akuns_id}": {
+        "/insertdetailtracking/{aktivitas_waktu}/{data_sampels_id}/{aktivitas_id}/{lab_akuns_id}": {
             "post": {
                 "tags": [
                     "Update Proses"
@@ -227,10 +227,10 @@
                 ]
             }
         },
-        "/gethasilanalisas/{data_sampels_id}": {
+        "/updatehasilanalisa/{data_sampels_id}": {
             "get": {
                 "tags": [
-                    "Hasil Analisa"
+                    "Update Hasil Analisa"
                 ],
                 "summary": "Mendapatkan List Hasil Analisa dari ID",
                 "description": "Mendapatkan List Hasil Analisa dari ID",
