@@ -84,7 +84,7 @@ Route::prefix('admin')->group(function () {
     #INSERT PAKETS
 
     #UPDATE PAKETS
-    Route::post('updatepakets', [ApiController::class, 'UpdatePakets']);
+    Route::post('updatepakets/{id?}/{jenis_sampels_id?}/{paket?}/{parameters_id_s?}/{harga?}', [ApiController::class, 'UpdatePakets']);
     #UPDATE PAKETS
 
     #DELETE PAKETS

@@ -529,6 +529,169 @@ class ApiController extends Controller
     #GET HASILANALISA
 
 #PAKETS
+
+    #UPDATE PAKETS
+    /**
+     * @OA\Post(
+     *      path="/updatepakets/{id}/{jenis_sampels_id}/{paket}/{parameters_id_s}/{harga}",
+     *      operationId="getProjectsList",
+     *      tags={"UPDATE PAKETS"},
+     *      summary="Mendapatkan List Jenis Sampel",
+     *      description="Mendapatkan List Jenis Sampel",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="ID PAKETS",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="jenis_sampels_id",
+     *          description="JENIS SAMPELS ID",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="paket",
+     *          description="PAKETS",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="parameters_id_s",
+     *          description="HARGA PAKETS",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="harga",
+     *          description="HARGA PAKETS",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           {"api_key_security_example": {}}
+     *       }
+     *     )
+     *
+     * Returns list of projects
+     */
+    public static function UpdatePakets(Request $request, $id = null, $jenis_sampels_id = null, $paket = null, $parameters_id_s = null, $harga = null)
+    {
+        $update = '';
+        $response = new usr();
+
+        $s_id = ''; $s_jenis_sampels_id = ''; $s_paket = ''; $s_parameters_id_s = ''; $s_harga = '';
+        if  (
+                (!isset($id) or !isset($jenis_sampels_id) or !isset($paket) or !isset($parameters_id_s) or !isset($harga)) AND
+                (!isset($request->id) or !isset($request->jenis_sampels_id) or !isset($request->paket) or !isset($request->parameters_id_s) or !isset($request->harga))
+            )   
+        {
+            $response->message      = 'DATA SWAGGER ATAU REQUEST KOSONG';
+        }
+        if(isset($id) or isset($jenis_sampels_id) or isset($paket) or isset($parameters_id_s) or isset($harga))
+        {
+            $s_id                   = $id;
+            $s_jenis_sampels_id     = $jenis_sampels_id;
+            $s_paket                = $paket;
+            $s_parameters_id_s      = $parameters_id_s;
+            $s_harga                = $harga;
+        }
+        elseif  (isset($request->id)  or isset($request->jenis_sampels_id)  or isset($request->paket)  or isset($request->parameters_id_s)  or isset($request->harga))   
+        {
+            $s_id                   = $request->id;
+            $s_jenis_sampels_id     = $request->jenis_sampels_id;
+            $s_paket                = $request->paket;
+            $s_parameters_id_s      = $request->parameters_id_s;
+            $s_harga                = $request->harga;
+        }
+
+        try {
+            $update     = DB::table('pakets')
+            ->where('id', '=', $s_id)
+            ->first();
+            
+            $update = json_decode(json_encode($update), true);
+        } catch (Exception $e) {
+            $response->success = 0;
+            $response->message = 'QUERY SELECT BERMASALAH : '.$e->getMessage();
+        } 
+
+        if(empty($update))
+        {
+            $response->success = 0;
+            $response->message = 'DATA TIDAK DITEMUKAN';
+        }
+        else{
+            try {
+                $update = DB::table('pakets')
+                ->update([
+                    'jenis_sampels_id'  => $s_jenis_sampels_id,
+                    'paket'             => $s_paket,
+                    'parameters_id_s'   => $s_parameters_id_s,
+                    'harga'             => $s_harga
+                ]);
+
+                $response->success = 1;
+                $response->message = 'BERHASIL MELAKUKAN UPDATE DATA';
+            } catch (\Throwable $th) {
+                $response->success = 0;
+                $response->message = 'GAGAL MELAKUKAN UPDATE : '.$e->getMessage();
+            }
+        }
+
+        //die(json_encode($response));
+    }
+    #UPDATE PAKETS
+
+    #DELETE PAKETS
+    /**
+     * @OA\Get(
+     *      path="/deletepakets/{id}",
+     *      operationId="getProjectsList",
+     *      tags={"DELETE PAKETS"},
+     *      summary="Mendapatkan List Jenis Sampel",
+     *      description="Mendapatkan List Jenis Sampel",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="ID PAKETS",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           {"api_key_security_example": {}}
+     *       }
+     *     )
+     *
+     * Returns list of projects
+     */
     public static function DeletePakets($id = null)
     {
         $delete = '';
@@ -567,8 +730,9 @@ class ApiController extends Controller
                 $response->success = 0;
                 $response->message = $e->getMessage();
             }
-            die(json_encode($response));
         }
+        die(json_encode($response));
     }
+    #DELETE PAKETS
 #PAKETS
 }
