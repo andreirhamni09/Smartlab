@@ -227,10 +227,10 @@
                 ]
             }
         },
-        "/updatehasilanalisa/{data_sampels_id}": {
+        "/gethasilanalisa/{data_sampels_id}": {
             "get": {
                 "tags": [
-                    "Update Hasil Analisa"
+                    "Get Hasil Analisa"
                 ],
                 "summary": "Mendapatkan List Hasil Analisa dari ID",
                 "description": "Mendapatkan List Hasil Analisa dari ID",

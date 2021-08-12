@@ -482,11 +482,11 @@ class ApiController extends Controller
         $response   = new usr();
         if (isset($data_sampels_id)) {
             $hasilanalisa    = DB::table('hasil_analisas')
-                ->where('data_sampels_id', $data_sampels_id)
+                ->where('data_sampels_id', '=', $data_sampels_id)
                 ->get();
 
             $hasilanalisa           = json_decode(json_encode($hasilanalisa), true);
-            if (empty($hasilanalisa)) {
+            if ($hasilanalisa == []) {
                 $response->success  = 0;
                 $response->message  = "DATA TIDAK DITEMUKAN";
                 die(json_encode($response));
