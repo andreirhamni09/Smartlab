@@ -141,7 +141,7 @@ class ApiController extends Controller
                 $str_simbol                 = '';
                 $str_nama_unsur             = '';
 
-                foreach ($parameter as $key => $value) {
+                foreach ($parameter as $value) {
                     $str_id                 .= $value['id'] . '-';
                     $str_simbol             .= $value['simbol'] . '-';
                     $str_nama_unsur         .= $value['nama_unsur'] . '-';
@@ -201,7 +201,7 @@ class ApiController extends Controller
                 $str_jenisSampel            = '';
                 $str_lambangSampel          = '';
 
-                foreach ($jenisSampel as $key => $value) {
+                foreach ($jenisSampel as $value) {
                     $str_id                 .= $value['id'] . '-';
                     $str_jenisSampel        .= $value['jenis_sampel'] . '-';
                     $str_lambangSampel      .= $value['lambang_sampel'] . '-';
@@ -248,35 +248,45 @@ class ApiController extends Controller
     function GetAksesLevels()
     {
         $response                   = new usr();
-        $aksesLevels                = DB::table('akses_levels')
-            ->get();
-        $aksesLevels                = json_decode(json_encode($aksesLevels), true);
+        try {
+            $aksesLevels                = DB::table('akses_levels')
+                ->get();
+            $aksesLevels                = json_decode(json_encode($aksesLevels), true);
 
-        if (count($aksesLevels) < 1) {
-            $response->success          = 0;
-            $response->messages         = 'DATA JENIS SAMPEL TIDAK DITEMUKAN';
-        } else if (count($aksesLevels) > 0) {
-            $str_id                     = '';
-            $str_jabatan            = '';
-            $str_halamans_id_s          = '';
-            $j_akseslevels              = count($aksesLevels) - 1;
-            for ($i = 0; $i < count($aksesLevels); $i++) {
-                if ($i < $j_akseslevels) {
-                    $str_id                 .= $aksesLevels[$i]['id'] . '-';
-                    $str_jabatan            .= $aksesLevels[$i]['jabatan'] . '-';
-                    $str_halamans_id_s      .= $aksesLevels[$i]['halamans_id_s'] . '-';
-                } elseif ($i >= $j_akseslevels) {
-                    $str_id                 .= $aksesLevels[$i]['id'];
-                    $str_jabatan            .= $aksesLevels[$i]['jabatan'];
-                    $str_halamans_id_s      .= $aksesLevels[$i]['halamans_id_s'];
+            if (count($aksesLevels) < 1) {
+                $response->success          = 0;
+                $response->messages         = 'DATA JENIS SAMPEL TIDAK DITEMUKAN';
+            } else if (count($aksesLevels) > 0) {
+                $str_id                     = '';
+                $str_jabatan                = '';
+                $str_halamans_id_s          = '';
+
+                foreach ($aksesLevels as $value) {
+                    $str_id                 .= $value['id'] . '-';
+                    $str_jabatan            .= $value['jabatan'] . '-';
+                    $str_halamans_id_s      .= $value['halamans_id_s'] . '-';
                 }
+
+                $str_id                     = substr($str_id, 0, -1);
+                $str_jabatan                = substr($str_jabatan, 0, -1);
+                $str_halamans_id_s          = substr($str_halamans_id_s, 0, -1);
+
+                $response->id               = $str_id;
+                $response->jabatan          = $str_jabatan;
+                $response->halamans_id_s    = $str_halamans_id_s;
+                $response->success          = 1;
+
+                $response->id               = $str_id;
+                $response->jabatan          = $str_jabatan;
+                $response->halamans_id_s    = $str_halamans_id_s;
+                $response->success          = 1;
             }
-            $response->id               = $str_id;
-            $response->jabatan          = $str_jabatan;
-            $response->halamans_id_s    = $str_halamans_id_s;
-            $response->success          = 1;
+            die(json_encode($response));
+        } catch (Exception $e) {
+            $response->success      = 0;
+            $response->message      = $e->getMessage();
+            die(json_encode($response));
         }
-        die(json_encode($response));
     }
     #GET AKSES LEVEL
 
