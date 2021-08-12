@@ -264,7 +264,7 @@
         "/updatepakets/{id}/{jenis_sampels_id}/{paket}/{parameters_id_s}/{harga}": {
             "post": {
                 "tags": [
-                    "UPDATE PAKETS"
+                    "Update Pakets"
                 ],
                 "summary": "Mendapatkan List Jenis Sampel",
                 "description": "Mendapatkan List Jenis Sampel",
@@ -276,7 +276,7 @@
                         "description": "ID PAKETS",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     },
                     {
@@ -312,7 +312,7 @@
                         "description": "HARGA PAKETS",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],

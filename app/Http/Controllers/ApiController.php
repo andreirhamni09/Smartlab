@@ -535,7 +535,7 @@ class ApiController extends Controller
      * @OA\Post(
      *      path="/updatepakets/{id}/{jenis_sampels_id}/{paket}/{parameters_id_s}/{harga}",
      *      operationId="getProjectsList",
-     *      tags={"UPDATE PAKETS"},
+     *      tags={"Update Pakets"},
      *      summary="Mendapatkan List Jenis Sampel",
      *      description="Mendapatkan List Jenis Sampel",
      *      @OA\Parameter(
@@ -544,7 +544,7 @@ class ApiController extends Controller
      *          required=true,
      *          in="path",
      *          @OA\Schema(
-     *              type="string",
+     *              type="integer",
      *          )
      *      ),
      *      @OA\Parameter(
@@ -580,7 +580,7 @@ class ApiController extends Controller
      *          required=true,
      *          in="path",
      *          @OA\Schema(
-     *              type="string",
+     *              type="integer",
      *          )
      *      ),
      *      @OA\Response(
@@ -600,7 +600,7 @@ class ApiController extends Controller
         $update = '';
         $response = new usr();
 
-        $s_id = ''; $s_jenis_sampels_id = ''; $s_paket = ''; $s_parameters_id_s = ''; $s_harga = '';
+        $s_id = 0; $s_jenis_sampels_id = ''; $s_paket = ''; $s_parameters_id_s = ''; $s_harga = 0;
         if  (
                 (!isset($id) or !isset($jenis_sampels_id) or !isset($paket) or !isset($parameters_id_s) or !isset($harga)) AND
                 (!isset($request->id) or !isset($request->jenis_sampels_id) or !isset($request->paket) or !isset($request->parameters_id_s) or !isset($request->harga))
@@ -643,7 +643,8 @@ class ApiController extends Controller
         }
         else{
             try {
-                $update = DB::table('pakets')
+                DB::table('pakets')
+                ->where('id', '=', $s_id)
                 ->update([
                     'jenis_sampels_id'  => $s_jenis_sampels_id,
                     'paket'             => $s_paket,
@@ -659,7 +660,7 @@ class ApiController extends Controller
             }
         }
 
-        //die(json_encode($response));
+        die(json_encode($response));
     }
     #UPDATE PAKETS
 
