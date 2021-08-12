@@ -36,9 +36,11 @@ Route::prefix('admin')->group(function () {
     Route::get('getakseslevels', [ApiController::class, 'GetAksesLevels']);
     #GET AKSES LEVEL
 
+#AKTIVITAS
     #GET DATA AKTIVITAS 
     Route::get('getaktivitas', [ApiController::class, 'GetAktivitas']);
     #GET DATA AKTIVITAS 
+#AKTIVITAS
 
     #UPDATE PROSES
         # LINK : https://slab.srs-ssms.com/api/admin/updateproses 

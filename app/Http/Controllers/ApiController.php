@@ -287,6 +287,7 @@ class ApiController extends Controller
     }
     #GET AKSES LEVEL
 
+#AKTIVITAS
     #GET AKTIVITAS
     /**
      * @OA\Get(
@@ -345,6 +346,7 @@ class ApiController extends Controller
         }
     }
     #GET AKTIVITAS
+#AKTIVITAS
 
 #METODES
     #GET METODES
@@ -514,6 +516,7 @@ class ApiController extends Controller
     }
     #POST TRACKING
 
+#HASIL ANALISA
     #GET HASILANALISA
     /**
      * @OA\Get(
@@ -599,6 +602,8 @@ class ApiController extends Controller
         die(json_encode($response));
     }
     #GET HASILANALISA
+#HASIL ANALISA
+
 
 #PAKETS
     #INSERT PAKETS
@@ -629,7 +634,7 @@ class ApiController extends Controller
      *      ),
      *      @OA\Parameter(
      *          name="parameters_id_s",
-     *          description="HARGA PAKETS",
+     *          description="PARAMETERS ID",
      *          required=true,
      *          in="path",
      *          @OA\Schema(
@@ -694,15 +699,13 @@ class ApiController extends Controller
             'jenis_sampels_id.required'     => 'Jenis Sampel Wajib Diisi',
             'jenis_sampels_id.numeric'      => 'Jenis Sampel Harus Angka',
             'jenis_sampels_id.min'          => 'Jenis Sampel Minimal 1',
-            'paket.required'                => 'Nama Wajib Diisi',
-            'paket.string'                  => 'Nama Wajib Diisi',
-            'paket.min'                     => 'Nama Wajib Diisi',
-            'parameters_id_s.required'      => 'Nama Wajib Diisi',
-            'parameters_id_s.string'        => 'Nama Wajib Diisi',
-            'parameters_id_s.min'           => 'Nama Wajib Diisi',
-            'harga.required'                => 'Nama Wajib Diisi',
-            'harga.numeric'                 => 'Nama Wajib Diisi',
-            'harga.min'                     => 'Nama Wajib Diisi'
+            'paket.required'                => 'Paket Wajib Diisi',
+            'paket.min'                     => 'Paket Wajib Diisi Minimal 1 Huruf',
+            'parameters_id_s.required'      => 'Parameters ID Wajib Diisi',
+            'parameters_id_s.min'           => 'Parameters ID Wajib Diisi Minimal 1 Huruf',
+            'harga.required'                => 'Harga Wajib Diisi',
+            'harga.numeric'                 => 'Harga Wajib Diisi Dengan Angka',
+            'harga.min'                     => 'Harga Minimal Adalah 10000'
         ];
         
         $reqAll = [
@@ -719,7 +722,8 @@ class ApiController extends Controller
             $response->message = $validator->errors()->first();
         }
         else{
-
+            $response->success = 1;
+            $response->message = 'MANTAP';
         }
         
         try {

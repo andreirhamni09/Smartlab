@@ -314,7 +314,7 @@
                     {
                         "name": "parameters_id_s",
                         "in": "path",
-                        "description": "HARGA PAKETS",
+                        "description": "PARAMETERS ID",
                         "required": true,
                         "schema": {
                             "type": "string"
