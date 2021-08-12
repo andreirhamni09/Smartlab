@@ -71,5 +71,11 @@ Route::prefix('admin')->group(function () {
         # LINK : https://slab.srs-ssms.com/api/admin/posthasilanalisa
         Route::match(['get', 'post'], 'posthasilanalisa/{id?}/{v_parameter?}', [ApiController::class, 'PostHasilAnalisa']);
     #POST HASIL ANALISISA
+
+
+
+#PAKETS
+    Route::get('deletepakets/{id?}', [ApiController::class, 'DeletePakets']);
+#PAKETS
 });
 
