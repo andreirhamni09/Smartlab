@@ -528,24 +528,47 @@ class ApiController extends Controller
     }
     #GET HASILANALISA
 
-
-    #TES
-    function Tes()
+#PAKETS
+    public static function DeletePakets($id = null)
     {
-        $response       = new usr();
-        $jenisSampel    = DB::table('jenis_sampels')
-            ->get();
-        $jenisSampel    = json_decode(json_encode($jenisSampel), true);
-        foreach ($jenisSampel as $key => $value) {
-            $response->id               .= $value['id'] . '-';
-            $response->jenis_sampel     .= $value['jenis_sampel'] . '-';
-            $response->lambang_sampel   .= $value['lambang_sampel'] . '-';
+        $delete = '';
+        $response = new usr();
+        if(!isset($id))
+        {
+            $response->success = 0;
+            $response->message = 'PARAMETER ID TIDAK DITEMUKAN';
         }
-        return view('admin.test.tes', ['jenis_sampel' => $response]);
-    }
+        else{
+            try {
+                $delete = DB::table('pakets')
+                ->where('id', '=', $id)
+                ->first();
+    
+                $delete = json_decode(json_encode($delete), true);
+    
+                if(empty($delete)){
+                    $response->success = 0;
+                    $response->message = 'DATA TIDAK DITEMUKAN';
+                }
+                else{
+                    try {
+                        $delete = DB::table('pakets')
+                        ->where('id', '=', $id)
+                        ->delete();
 
-    function PostTes(Request $request)
-    {
+                        $response->success = 1;
+                        $response->message = 'BERHASIL MENGHAPUS DATA';
+                    } catch (Exception $e) {
+                        $response->success = 0;
+                        $response->message = $e->getMessage();
+                    }
+                }
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = $e->getMessage();
+            }
+            die(json_encode($response));
+        }
     }
-    #TES
+#PAKETS
 }
