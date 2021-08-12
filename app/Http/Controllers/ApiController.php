@@ -10,6 +10,8 @@ use PHPUnit\Framework\Constraint\Count;
 
 use function PHPUnit\Framework\isEmpty;
 
+use Illuminate\Support\Facades\Validator;
+
 class usr
 {
 }
@@ -445,7 +447,7 @@ class ApiController extends Controller
     #GET HASILANALISA
     /**
      * @OA\Get(
-     *      path="/gethasilanalisa/{data_sampels_id}",
+     *      path="/gethasilanalisas/{data_sampels_id}",
      *      operationId="getProjectsList",
      *      tags={"Hasil Analisa"},
      *      summary="Mendapatkan List Hasil Analisa dari ID",
@@ -471,7 +473,7 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    function GetHasilAnalisa($data_sampels_id = null)
+    function GetHasilAnalisas($data_sampels_id = null)
     {
         $response   = new usr();
         if (isset($data_sampels_id)) {
@@ -480,7 +482,7 @@ class ApiController extends Controller
                 ->get();
 
             $hasilanalisa           = json_decode(json_encode($hasilanalisa), true);
-            if (count($hasilanalisa) <= 0) {
+            if (empty($hasilanalisa)) {
                 $response->success  = 0;
                 $response->message  = "DATA TIDAK DITEMUKAN";
                 die(json_encode($response));
@@ -529,6 +531,135 @@ class ApiController extends Controller
     #GET HASILANALISA
 
 #PAKETS
+    #INSERT PAKETS
+    /**
+     * @OA\Post(
+     *      path="/insertpakets/{jenis_sampels_id}/{paket}/{parameters_id_s}/{harga}",
+     *      operationId="getProjectsList",
+     *      tags={"Insert Pakets"},
+     *      summary="Mendapatkan List Jenis Sampel",
+     *      description="Mendapatkan List Jenis Sampel",
+     *      @OA\Parameter(
+     *          name="jenis_sampels_id",
+     *          description="JENIS SAMPELS ID",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="paket",
+     *          description="PAKETS",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="parameters_id_s",
+     *          description="HARGA PAKETS",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="harga",
+     *          description="HARGA PAKETS",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer",
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           {"api_key_security_example": {}}
+     *       }
+     *     )
+     *
+     * Returns list of projects
+     */
+    public static function InsertPakets(Request $request, $jenis_sampels_id = null, $paket = null, $parameters_id_s = null, $harga = null)
+    {
+        $insert = '';
+        $response = new usr();
+
+        $s_jenis_sampels_id = ''; $s_paket = ''; $s_parameters_id_s = ''; $s_harga = 0;
+        if  ((isset($jenis_sampels_id) or !isset($paket) or !isset($parameters_id_s) or !isset($harga)) AND
+             (!isset($request->jenis_sampels_id) or !isset($request->paket) or !isset($request->parameters_id_s) or !isset($request->harga)))   
+        {
+            $response->message      = 'DATA SWAGGER ATAU REQUEST KOSONG';
+        }
+        if(isset($jenis_sampels_id) or isset($paket) or isset($parameters_id_s) or isset($harga))
+        {
+            $s_jenis_sampels_id     = $jenis_sampels_id;
+            $s_paket                = $paket;
+            $s_parameters_id_s      = $parameters_id_s;
+            $s_harga                = $harga;
+        }
+        elseif(isset($request->jenis_sampels_id)  or isset($request->paket)  or isset($request->parameters_id_s)  or isset($request->harga))   
+        {
+            $s_jenis_sampels_id     = $request->jenis_sampels_id;
+            $s_paket                = $request->paket;
+            $s_parameters_id_s      = $request->parameters_id_s;
+            $s_harga                = $request->harga;
+        }
+
+        $rules = [
+            'jenis_sampels_id'  => 'required|numeric|min:1',
+            'paket'             => 'required|string|min:1',
+            'parameters_id_s'   => 'required|string|min:1',
+            'harga'             => 'required|numeric|min:10000'
+        ];
+
+        $messages   = [
+            'jenis_sampels_id.required'     => 'Jenis Sampel Wajib Diisi',
+            'jenis_sampels_id.numeric'      => 'Jenis Sampel Harus Angka',
+            'jenis_sampels_id.min'          => 'Jenis Sampel Minimal 1',
+            'paket.required'                => 'Nama Wajib Diisi',
+            'paket.string'                  => 'Nama Wajib Diisi',
+            'paket.min'                     => 'Nama Wajib Diisi',
+            'parameters_id_s.required'      => 'Nama Wajib Diisi',
+            'parameters_id_s.string'        => 'Nama Wajib Diisi',
+            'parameters_id_s.min'           => 'Nama Wajib Diisi',
+            'harga.required'                => 'Nama Wajib Diisi',
+            'harga.numeric'                 => 'Nama Wajib Diisi',
+            'harga.min'                     => 'Nama Wajib Diisi'
+        ];
+        
+        $reqAll = [
+            'jenis_sampels_id'  => $s_jenis_sampels_id,
+            'paket'             => $s_paket,
+            'parameters_id_s'   => $s_parameters_id_s,
+            'harga'             => str_replace('.', '',$s_harga)
+        ];
+
+        $validator = Validator::make($reqAll, $rules, $messages);
+
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = $validator->errors()->first();
+        }
+        else{
+
+        }
+        
+        try {
+        } catch (Exception $e) {
+            //throw $th;
+        }
+
+        die(json_encode($response));
+    }
+    #INSERT PAKETS
 
     #UPDATE PAKETS
     /**

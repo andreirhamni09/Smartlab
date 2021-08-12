@@ -23,7 +23,13 @@ class Aktivitas extends Seeder
             ),
             array(
                 'aktivitas'     => 'verifikasi_pelanggan'
-            )
+            ),
+            array(
+                'aktivitas'     => 'oven'
+            ),
+            array(
+                'aktivitas'     => 'preparasi'
+            ),
         )); 
     }
 }

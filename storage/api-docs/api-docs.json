@@ -227,7 +227,7 @@
                 ]
             }
         },
-        "/gethasilanalisa/{data_sampels_id}": {
+        "/gethasilanalisas/{data_sampels_id}": {
             "get": {
                 "tags": [
                     "Hasil Analisa"
@@ -243,6 +243,67 @@
                         "required": true,
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        },
+        "/insertpakets/{jenis_sampels_id}/{paket}/{parameters_id_s}/{harga}": {
+            "post": {
+                "tags": [
+                    "Insert Pakets"
+                ],
+                "summary": "Mendapatkan List Jenis Sampel",
+                "description": "Mendapatkan List Jenis Sampel",
+                "operationId": "getProjectsList",
+                "parameters": [
+                    {
+                        "name": "jenis_sampels_id",
+                        "in": "path",
+                        "description": "JENIS SAMPELS ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "paket",
+                        "in": "path",
+                        "description": "PAKETS",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "parameters_id_s",
+                        "in": "path",
+                        "description": "HARGA PAKETS",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "harga",
+                        "in": "path",
+                        "description": "HARGA PAKETS",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
                         }
                     }
                 ],
