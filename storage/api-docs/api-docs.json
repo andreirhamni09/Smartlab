@@ -160,6 +160,29 @@
                 ]
             }
         },
+        "/getmetodes": {
+            "get": {
+                "tags": [
+                    "Metode"
+                ],
+                "summary": "Mendapatkan List Metode",
+                "description": "Mendapatkan List Metode",
+                "operationId": "getProjectsList",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        },
         "/insertdetailtracking/{aktivitas_waktu}/{data_sampels_id}/{aktivitas_id}/{lab_akuns_id}": {
             "post": {
                 "tags": [
@@ -227,7 +250,7 @@
                 ]
             }
         },
-        "/gethasilanalisa/{data_sampels_id}": {
+        "/gethasilanalisas/{data_sampels_id}": {
             "get": {
                 "tags": [
                     "Get Hasil Analisa"

@@ -64,7 +64,7 @@ Route::prefix('admin')->group(function () {
 
     #GET HASIL ANALISISA
         # LINK : https://slab.srs-ssms.com/api/admin/gethasilanalisa
-    Route::match(['get', 'post'], 'gethasilanalisas/{data_sampels_id?}', [ApiController::class, 'GetHasilAnalisas']);
+    Route::get('gethasilanalisas/{data_sampels_id?}', [ApiController::class, 'GetHasilAnalisas']);
     #GET HASIL ANALISISA
     
     #POST HASIL ANALISISA

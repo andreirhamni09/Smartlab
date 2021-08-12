@@ -346,7 +346,8 @@ class ApiController extends Controller
     }
     #GET AKTIVITAS
 
-        #GET METODES
+#METODES
+    #GET METODES
     /**
      * @OA\Get(
      *      path="/getmetodes",
@@ -409,6 +410,7 @@ class ApiController extends Controller
         }
     }
     #GET METODES
+#METODES
 
     #POST TRACKING
     /**
@@ -515,7 +517,7 @@ class ApiController extends Controller
     #GET HASILANALISA
     /**
      * @OA\Get(
-     *      path="/gethasilanalisa/{data_sampels_id}",
+     *      path="/gethasilanalisas/{data_sampels_id}",
      *      operationId="getProjectsList",
      *      tags={"Get Hasil Analisa"},
      *      summary="Mendapatkan List Hasil Analisa dari ID",
@@ -541,7 +543,7 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    function GetHasilAnalisa($data_sampels_id = null)
+    function GetHasilAnalisas($data_sampels_id = null)
     {
         $response   = new usr();
         if (isset($data_sampels_id)) {
@@ -563,11 +565,11 @@ class ApiController extends Controller
                 $str_hasil              = '';
                 $str_status             = '';
 
-                foreach ($hasilanalisa as $value) {
+                foreach ($hasilanalisa as $keys => $value) {
 
                     $str_id                 .= $value['id'] . '-';
                     $str_tahun              .= $value['tahun'] . '-';
-                    $str_jenis_samples_id   .= $value['jenis_samples_id'] . '-';
+                    $str_jenis_samples_id   .= $value['jenis_sampels_id'] . '-';
                     $str_parameters_id_s    .= $value['parameters_id_s'] . '-';
                     $str_no_lab             .= $value['no_lab'] . '-';
                     $str_hasil              .= $value['hasil'] . '-';
