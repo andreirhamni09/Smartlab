@@ -72,7 +72,11 @@ Route::prefix('admin')->group(function () {
         Route::match(['get', 'post'], 'posthasilanalisa/{id?}/{v_parameter?}', [ApiController::class, 'PostHasilAnalisa']);
     #POST HASIL ANALISISA
 
-
+#METODES    
+    #GET METODES
+    Route::post('getmetodes', [ApiController::class, 'GetMetodes']);
+    #GET METODES
+#METODES
 
 #PAKETS
     #SELECT PAKETS
