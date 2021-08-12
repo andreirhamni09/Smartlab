@@ -188,34 +188,40 @@ class ApiController extends Controller
     function GetJenisSampels()
     {
         $response                   = new usr();
-        $jenisSampel                = DB::table('jenis_sampels')
-            ->get();
-        $jenisSampel                = json_decode(json_encode($jenisSampel), true);
+        try {
+            $jenisSampel                = DB::table('jenis_sampels')
+                ->get();
+            $jenisSampel                = json_decode(json_encode($jenisSampel), true);
 
-        if (count($jenisSampel) == 0) {
-            $response->success          = 0;
-            $response->messages         = 'DATA JENIS SAMPEL TIDAK DITEMUKAN';
-        } else if (count($jenisSampel) !== 0) {
-            $str_id                     = '';
-            $str_jenisSampel            = '';
-            $str_lambangSampel          = '';
+            if (count($jenisSampel) < 1) {
+                $response->success          = 0;
+                $response->messages         = 'DATA JENIS SAMPEL TIDAK DITEMUKAN';
+            } else if (count($jenisSampel) > 0) {
+                $str_id                     = '';
+                $str_jenisSampel            = '';
+                $str_lambangSampel          = '';
 
-            foreach ($jenisSampel as $key => $value) {
-                $str_id                 .= $value['id'] . '-';
-                $str_jenisSampel        .= $value['jenis_sampel'] . '-';
-                $str_lambangSampel      .= $value['lambang_sampel'] . '-';
+                foreach ($jenisSampel as $key => $value) {
+                    $str_id                 .= $value['id'] . '-';
+                    $str_jenisSampel        .= $value['jenis_sampel'] . '-';
+                    $str_lambangSampel      .= $value['lambang_sampel'] . '-';
+                }
+
+                $str_id                     = substr($str_id, 0, -1);
+                $str_jenisSampel            = substr($str_jenisSampel, 0, -1);
+                $str_lambangSampel          = substr($str_lambangSampel, 0, -1);
+
+                $response->id               = $str_id;
+                $response->jenis_sampel     = $str_jenisSampel;
+                $response->lambang_sampel   = $str_lambangSampel;
+                $response->success          = 1;
             }
-
-            $str_id                     = substr($str_id, 0, -1);
-            $str_jenisSampel            = substr($str_jenisSampel, 0, -1);
-            $str_lambangSampel          = substr($str_lambangSampel, 0, -1);
-
-            $response->id               = $str_id;
-            $response->jenis_sampel     = $str_jenisSampel;
-            $response->lambang_sampel   = $str_lambangSampel;
-            $response->success          = 1;
+            die(json_encode($response));
+        } catch (Exception $e) {
+            $response->success      = 0;
+            $response->message      = $e->getMessage();
+            die(json_encode($response));
         }
-        die(json_encode($response));
     }
     #GET JENIS SAMPEL
 
