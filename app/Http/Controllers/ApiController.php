@@ -451,9 +451,9 @@ class ApiController extends Controller
     #GET HASILANALISA
     /**
      * @OA\Get(
-     *      path="/updatehasilanalisa/{data_sampels_id}",
+     *      path="/gethasilanalisa/{data_sampels_id}",
      *      operationId="getProjectsList",
-     *      tags={"Update Hasil Analisa"},
+     *      tags={"Get Hasil Analisa"},
      *      summary="Mendapatkan List Hasil Analisa dari ID",
      *      description="Mendapatkan List Hasil Analisa dari ID",
      *      @OA\Parameter(
@@ -477,7 +477,7 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    function UpdateHasilAnalisa($data_sampels_id = null)
+    function GetHasilAnalisa($data_sampels_id = null)
     {
         $response   = new usr();
         if (isset($data_sampels_id)) {
