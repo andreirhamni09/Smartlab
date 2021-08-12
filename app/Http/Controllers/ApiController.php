@@ -128,33 +128,40 @@ class ApiController extends Controller
     function GetParameters()
     {
         $response                   = new usr();
-        $parameter                  = DB::table('parameters')
-            ->get();
-        $parameter                  = json_decode(json_encode($parameter), true);
-        if (count($parameter) < 1) {
-            $response->success          = 0;
-            $response->messages         = 'DATA PARAMETER TIDAK DITEMUKAN';
-        } elseif (count($parameter) > 0) {
-            $str_id                     = '';
-            $str_simbol                 = '';
-            $str_nama_unsur             = '';
+        try {
 
-            foreach ($parameter as $key => $value) {
-                $str_id                 .= $value['id'] . '-';
-                $str_simbol             .= $value['simbol'] . '-';
-                $str_nama_unsur         .= $value['nama_unsur'] . '-';
+            $parameter                  = DB::table('parameters')
+                ->get();
+            $parameter                  = json_decode(json_encode($parameter), true);
+            if (count($parameter) < 1) {
+                $response->success          = 0;
+                $response->messages         = 'DATA PARAMETER TIDAK DITEMUKAN';
+            } elseif (count($parameter) > 0) {
+                $str_id                     = '';
+                $str_simbol                 = '';
+                $str_nama_unsur             = '';
+
+                foreach ($parameter as $key => $value) {
+                    $str_id                 .= $value['id'] . '-';
+                    $str_simbol             .= $value['simbol'] . '-';
+                    $str_nama_unsur         .= $value['nama_unsur'] . '-';
+                }
+
+                $str_id                     = substr($str_id, 0, -1);
+                $str_simbol                 = substr($str_simbol, 0, -1);
+                $str_nama_unsur             = substr($str_nama_unsur, 0, -1);
+
+                $response->id               = $str_id;
+                $response->simbol           = $str_simbol;
+                $response->nama_unsur       = $str_nama_unsur;
+                $response->success          = 1;
             }
-
-            $str_id                     = substr($str_id, 0, -1);
-            $str_simbol                 = substr($str_simbol, 0, -1);
-            $str_nama_unsur             = substr($str_nama_unsur, 0, -1);
-
-            $response->id               = $str_id;
-            $response->simbol           = $str_simbol;
-            $response->nama_unsur       = $str_nama_unsur;
-            $response->success          = 1;
+            die(json_encode($response));
+        } catch (Exception $e) {
+            $response->success      = 0;
+            $response->message      = $e->getMessage();
+            die(json_encode($response));
         }
-        die(json_encode($response));
     }
     #GET PARAMETER
 
