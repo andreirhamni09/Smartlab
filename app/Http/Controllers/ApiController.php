@@ -344,6 +344,70 @@ class ApiController extends Controller
     }
     #GET AKTIVITAS
 
+        #GET METODES
+    /**
+     * @OA\Get(
+     *      path="/getmetodes",
+     *      operationId="getProjectsList",
+     *      tags={"Metode"},
+     *      summary="Mendapatkan List Metode",
+     *      description="Mendapatkan List Metode",
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           {"api_key_security_example": {}}
+     *       }
+     *     )
+     *
+     * Returns list of projects
+     */
+    function GetMetodes()
+    {
+        $response               = new usr();
+        try {
+            $metodes          = DB::table('metodes')
+                ->get();
+            $metodes          = json_decode(json_encode($metodes), true);
+
+            $str_id                     = '';
+            $str_metode                 = '';
+            $str_parameters_id_s        = '';
+
+            if (count($metodes) < 1) {
+                $response->success          = 0;
+                $response->messages         = 'DATA METODE TIDAK DITEMUKAN';
+            } else if (count($metodes) > 0) {
+                $str_id                     = '';
+                $str_metode                 = '';
+                $str_parameters_id_s        = '';
+
+                foreach ($metodes as $value) {
+                    $str_id                 .= $value['id'] . '-';
+                    $str_metode             .= $value['metode'] . '-';
+                    $str_parameters_id_s    .= $value['parameters_id_s'] . '-';
+                }
+
+                $str_id                     = substr($str_id, 0, -1);
+                $str_metode                 = substr($str_metode, 0, -1);
+                $str_parameters_id_s        = substr($str_parameters_id_s, 0, -1);
+
+                $response->id                 = $str_id;
+                $response->metode             = $str_metode;
+                $response->parameters_id_s    = $str_parameters_id_s;
+                $response->success            = 1;
+            }
+            die(json_encode($response));
+        } catch (Exception $e) {
+            $response->success      = 0;
+            $response->message      = $e->getMessage();
+            die(json_encode($response));
+        }
+    }
+    #GET METODES
+
     #POST TRACKING
     /**
      * @OA\Post(
