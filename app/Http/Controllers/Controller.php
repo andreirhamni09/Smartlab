@@ -24,9 +24,9 @@ use Illuminate\Routing\Controller as BaseController;
 
  /**
  *  @OA\Server(
- *      url="https://slab.srs-ssms.com/api/admin",
- *      description="L5 Swagger OpenApi Server"
- * )
+ *      url=L5_SWAGGER_CONST_HOST,
+ *      description="L5 Swagger OpenApi dynamic host server"
+ *  )
  */
 class Controller extends BaseController
 {

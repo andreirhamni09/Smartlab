@@ -14,15 +14,15 @@
     },
     "servers": [
         {
-            "url": "https://slab.srs-ssms.com/api/admin",
-            "description": "L5 Swagger OpenApi Server"
+            "url": "http://localhost/slab/Smartlab/api/admin",
+            "description": "L5 Swagger OpenApi dynamic host server"
         }
     ],
     "paths": {
         "/loginuserlab/{email}/{password}": {
             "post": {
                 "tags": [
-                    "Projects"
+                    "Login"
                 ],
                 "summary": "Get project information",
                 "description": "Returns project data",
@@ -34,8 +34,7 @@
                         "description": "email user",
                         "required": true,
                         "schema": {
-                            "type": "string",
-                            "format": "int64"
+                            "type": "string"
                         }
                     },
                     {
@@ -69,10 +68,79 @@
                 ]
             }
         },
+        "/getparameter": {
+            "get": {
+                "tags": [
+                    "Parameter"
+                ],
+                "summary": "Mendapatkan List Aktivitas",
+                "description": "Mendapatkan List Parameter",
+                "operationId": "getProjectsList",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        },
+        "/getjenissampel": {
+            "get": {
+                "tags": [
+                    "Jenis Sampels"
+                ],
+                "summary": "Mendapatkan List Jenis Sampel",
+                "description": "Mendapatkan List Jenis Sampel",
+                "operationId": "getProjectsList",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        },
+        "/getakseslevels": {
+            "get": {
+                "tags": [
+                    "Akses Level"
+                ],
+                "summary": "Mendapatkan List Jenis Sampel",
+                "description": "Mendapatkan List Jenis Sampel",
+                "operationId": "getProjectsList",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        },
         "/getaktivitas": {
             "get": {
                 "tags": [
-                    "Projects"
+                    "Aktivitas"
                 ],
                 "summary": "Mendapatkan List Aktivitas",
                 "description": "Mendapatkan List Aktivitas",
@@ -92,10 +160,10 @@
                 ]
             }
         },
-        "/updateproses/{aktivitas_waktu}/{kupa_id}/{aktivitas_id}/{petugas_id}": {
+        "/updateproses/{aktivitas_waktu}/{data_sampels_id}/{aktivitas_id}/{lab_akuns_id}": {
             "post": {
                 "tags": [
-                    "Projects"
+                    "Update Proses"
                 ],
                 "summary": "Get project information",
                 "description": "Returns project data",
@@ -111,9 +179,9 @@
                         }
                     },
                     {
-                        "name": "kupa_id",
+                        "name": "data_sampels_id",
                         "in": "path",
-                        "description": "Kupa ID",
+                        "description": "data_sampels_id ID",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -122,16 +190,16 @@
                     {
                         "name": "aktivitas_id",
                         "in": "path",
-                        "description": "Tracking ID",
+                        "description": "aktivitas_id",
                         "required": true,
                         "schema": {
                             "type": "string"
                         }
                     },
                     {
-                        "name": "petugas_id",
+                        "name": "lab_akuns_id",
                         "in": "path",
-                        "description": "Tracking ID",
+                        "description": "lab_akuns_id",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -159,14 +227,95 @@
                 ]
             }
         },
-        "/getjenissampel": {
+        "/gethasilanalisa/{data_sampels_id}": {
             "get": {
                 "tags": [
-                    "Projects"
+                    "Hasil Analisa"
+                ],
+                "summary": "Mendapatkan List Hasil Analisa dari ID",
+                "description": "Mendapatkan List Hasil Analisa dari ID",
+                "operationId": "getProjectsList",
+                "parameters": [
+                    {
+                        "name": "data_sampels_id",
+                        "in": "path",
+                        "description": "data_sampels_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        },
+        "/updatepakets/{id}/{jenis_sampels_id}/{paket}/{parameters_id_s}/{harga}": {
+            "post": {
+                "tags": [
+                    "Update Pakets"
                 ],
                 "summary": "Mendapatkan List Jenis Sampel",
                 "description": "Mendapatkan List Jenis Sampel",
                 "operationId": "getProjectsList",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID PAKETS",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "jenis_sampels_id",
+                        "in": "path",
+                        "description": "JENIS SAMPELS ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "paket",
+                        "in": "path",
+                        "description": "PAKETS",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "parameters_id_s",
+                        "in": "path",
+                        "description": "HARGA PAKETS",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "harga",
+                        "in": "path",
+                        "description": "HARGA PAKETS",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
@@ -182,42 +331,19 @@
                 ]
             }
         },
-        "/getparameter": {
+        "/deletepakets/{id}": {
             "get": {
                 "tags": [
-                    "Projects"
+                    "DELETE PAKETS"
                 ],
-                "summary": "Mendapatkan List Aktivitas",
-                "description": "Mendapatkan List Parameter",
-                "operationId": "getProjectsList",
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    }
-                },
-                "security": [
-                    {
-                        "api_key_security_example": []
-                    }
-                ]
-            }
-        },
-        "/gethasilanalisa/{kupa_id}": {
-            "get": {
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "Mendapatkan List Aktivitas",
-                "description": "Mendapatkan List Parameter",
+                "summary": "Mendapatkan List Jenis Sampel",
+                "description": "Mendapatkan List Jenis Sampel",
                 "operationId": "getProjectsList",
                 "parameters": [
                     {
-                        "name": "kupa_id",
+                        "name": "id",
                         "in": "path",
-                        "description": "ID Kupa",
+                        "description": "ID PAKETS",
                         "required": true,
                         "schema": {
                             "type": "string"

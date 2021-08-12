@@ -75,7 +75,21 @@ Route::prefix('admin')->group(function () {
 
 
 #PAKETS
+    #SELECT PAKETS
+    Route::post('getpakets', [ApiController::class, 'GetPakets']);
+    #SELECT PAKETS
+    
+    #INSERT PAKETS
+    Route::post('insertpakets', [ApiController::class, 'InsertPakets']);
+    #INSERT PAKETS
+
+    #UPDATE PAKETS
+    Route::post('updatepakets/{id?}/{jenis_sampels_id?}/{paket?}/{parameters_id_s?}/{harga?}', [ApiController::class, 'UpdatePakets']);
+    #UPDATE PAKETS
+
+    #DELETE PAKETS
     Route::get('deletepakets/{id?}', [ApiController::class, 'DeletePakets']);
+    #DELETE PAKETS
 #PAKETS
 });
 
