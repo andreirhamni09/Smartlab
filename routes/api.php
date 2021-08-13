@@ -49,7 +49,7 @@ Route::prefix('admin')->group(function () {
     #9. GET DETAIL TRACKING
 
     #UPDATE PROSES
-        # LINK : https://slab.srs-ssms.com/api/admin/updateproses 
+        # LINK : https://slab.srs-ssms.com/api/admin/insertdetailtrackings/{aktivitas_waktu?}/{data_sampels_id?}/{aktivitas_id?}/{lab_akuns_id?}
         # FUNGSI UNTUK MELAKUKAN UPDATE DATA TRACKING BERDASARKAN AKTIVITAS YANG DILAKUKAN PEKERJA LAB
         #        TERHADAP PARAMETER
         # PARAMETER PARSING DARI APLIKASI SMARTLAB ANDROID
@@ -58,7 +58,7 @@ Route::prefix('admin')->group(function () {
             # PARAMETER YANG DIKIRIM NILAINYA
             #       KOSONG /QUERY INSERT BERMASALAH    : ~ success = 0, ~ message
             # DATA BERHASIL DIINPUTKAN                 : ~ success = 1, ~ message
-    Route::match(['get', 'post'], 'insertdetailtrackings/{aktivitas_waktu?}/{tracking_id?}/{aktivitas_id?}/{petugas_id?}', [ApiController::class, 'InsertDetailTrackings']);
+    Route::match(['get', 'post'], 'insertdetailtrackings/{aktivitas_waktu?}/{data_sampels_id?}/{aktivitas_id?}/{lab_akuns_id?}', [ApiController::class, 'InsertDetailTrackings']);
     #UPDATE PROSES
 #DETAIL TRACKING
 

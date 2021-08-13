@@ -497,7 +497,7 @@ class ApiController extends Controller
     #POST TRACKING
     /**
      * @OA\Post(
-     *      path="/insertdetailtracking/{aktivitas_waktu}/{data_sampels_id}/{aktivitas_id}/{lab_akuns_id}",
+     *      path="/insertdetailtracking/{aktivitas_waktu?}/{data_sampels_id?}/{aktivitas_id?}/{lab_akuns_id?}",
      *      operationId="getProjectById",
      *      tags={"Update Proses"},
      *      summary="Get project information",
