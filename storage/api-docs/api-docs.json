@@ -217,7 +217,7 @@
                 ]
             }
         },
-        "/insertdetailtracking/{aktivitas_waktu}/{data_sampels_id}/{aktivitas_id}/{lab_akuns_id}": {
+        "/insertdetailtracking/{aktivitas_waktu?}/{data_sampels_id?}/{aktivitas_id?}/{lab_akuns_id?}": {
             "post": {
                 "tags": [
                     "Update Proses"

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -472,19 +473,25 @@ class ApiController extends Controller
             }
             else {
                 foreach ($getdetailtrackings as $value) {
-                    $s_aktivitas_waktu  .= $value['aktivitas_waktu'].'-'; 
+                    $s_aktivitas_waktu  .= $value['aktivitas_waktu'].';'; 
                     $s_aktivitas_id     .= $value['aktivitas_id'].'-'; 
                     $s_aktivitas        .= $value['aktivitas'].'-';
                     $s_lab_akuns_id     .= $value['lab_akuns_id'].'-'; 
                     $s_lab_akuns_nama   .= $value['nama'].'-'; 
                 }
+                $waktu      = explode(';', substr($s_aktivitas_waktu, 0, -1));
+                $j_waktu    = count($waktu) - 1;
+                $date       = date_create($waktu[$j_waktu]);
+                $waktu      = date_format($date, 'H:i:s d-m-Y');
+
                 $response->aktivitas_waktu  = substr($s_aktivitas_waktu, 0, -1); 
                 $response->aktivitas_id     = substr($s_aktivitas_id, 0, -1); 
                 $response->aktivitas        = substr($s_aktivitas, 0, -1);
                 $response->lab_akuns_id     = substr($s_lab_akuns_id, 0, -1); 
                 $response->lab_akuns_nama   = substr($s_lab_akuns_nama, 0, -1); 
                 $response->success = 1;
-                $response->message = 'BERHASIL SELECT DATA';
+                $response->message = 'TERAKHIR UPDATE '.$waktu;
+
             }
         } catch (Exception $e) {
             $response->success = 1;

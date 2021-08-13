@@ -48,10 +48,10 @@ Route::prefix('admin')->group(function () {
     Route::get('getdetailtrackings/{data_sampels_id?}', [ApiController::class, 'GetDetailTrackings']);
     #9. GET DETAIL TRACKING
 
-    #UPDATE PROSES
+    #10. INSERT DETAIL TRACKING
     # LINK : https://slab.srs-ssms.com/api/admin/insertdetailtrackings/{aktivitas_waktu?}/{data_sampels_id?}/{aktivitas_id?}/{lab_akuns_id?}
     Route::post('insertdetailtrackings/{aktivitas_waktu?}/{data_sampels_id?}/{aktivitas_id?}/{lab_akuns_id?}', [ApiController::class, 'InsertDetailTrackings']);
-    #UPDATE PROSES
+    #10. INSERT DETAIL TRACKING
 #DETAIL TRACKING
 
 
