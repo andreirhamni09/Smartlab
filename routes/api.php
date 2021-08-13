@@ -42,6 +42,12 @@ Route::prefix('admin')->group(function () {
     #GET DATA AKTIVITAS 
 #AKTIVITAS
 
+
+#DETAIL TRACKING
+    #9. GET DETAIL TRACKING
+    Route::get('getdetailtrackings/{data_sampels_id?}', [ApiController::class, 'GetDetailTrackings']);
+    #9. GET DETAIL TRACKING
+
     #UPDATE PROSES
         # LINK : https://slab.srs-ssms.com/api/admin/updateproses 
         # FUNGSI UNTUK MELAKUKAN UPDATE DATA TRACKING BERDASARKAN AKTIVITAS YANG DILAKUKAN PEKERJA LAB
@@ -52,8 +58,10 @@ Route::prefix('admin')->group(function () {
             # PARAMETER YANG DIKIRIM NILAINYA
             #       KOSONG /QUERY INSERT BERMASALAH    : ~ success = 0, ~ message
             # DATA BERHASIL DIINPUTKAN                 : ~ success = 1, ~ message
-    Route::match(['get', 'post'], 'updateproses/{aktivitas_waktu?}/{tracking_id?}/{aktivitas_id?}/{petugas_id?}', [ApiController::class, 'UpdateProses']);
+    Route::match(['get', 'post'], 'insertdetailtrackings/{aktivitas_waktu?}/{tracking_id?}/{aktivitas_id?}/{petugas_id?}', [ApiController::class, 'InsertDetailTrackings']);
     #UPDATE PROSES
+#DETAIL TRACKING
+
 
     #GET PARAMETER
         # LINK : https://slab.srs-ssms.com/api/admin/getparameter 
@@ -70,8 +78,7 @@ Route::prefix('admin')->group(function () {
     #GET HASIL ANALISISA
     
     #POST HASIL ANALISISA
-        # LINK : https://slab.srs-ssms.com/api/admin/posthasilanalisa
-        Route::match(['get', 'post'], 'posthasilanalisa/{id?}/{v_parameter?}', [ApiController::class, 'PostHasilAnalisa']);
+    Route::match(['get', 'post'], 'posthasilanalisa/{id?}/{v_parameter?}', [ApiController::class, 'PostHasilAnalisa']);
     #POST HASIL ANALISISA
 
 #METODES    

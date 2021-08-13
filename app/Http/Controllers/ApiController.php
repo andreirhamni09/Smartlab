@@ -414,6 +414,86 @@ class ApiController extends Controller
     #GET METODES
 #METODES
 
+#DETAIL TRACKING
+    #9. GET DETAIL TRACKING
+    /**
+     * @OA\Get(
+     *      path="/getdetailtrackings/{data_sampels_id}",
+     *      operationId="getProjectsList",
+     *      tags={"Get Detail Trackings"},
+     *      summary="Mendapatkan List Data Trackings",
+     *      description="Mendapatkan List Data Trackings",
+     *      @OA\Parameter(
+     *          name="data_sampels_id",
+     *          description="data_sampels_id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           {"api_key_security_example": {}}
+     *       }
+     *     )
+     *
+     * Returns list of projects
+     */
+    public static function GetDetailTrackings($data_sampels_id = null){
+        $response = new usr();
+        $getdetailtrackings = '';
+
+        if(!isset($data_sampels_id))
+        {
+            $response->success = 0;
+            $response->message = 'DATA SAMPELS ID TIDAK ADA';
+        }
+        $s_aktivitas_waktu  = ''; $s_aktivitas_id     = ''; $s_aktivitas        = '';
+        $s_lab_akuns_id     = ''; $s_lab_akuns_nama   = ''; 
+
+        $getdetailtrackings = DB::table('detail_trackings')
+        ->join('aktivitas', 'detail_trackings.aktivitas_id', '=', 'aktivitas.id')
+        ->join('lab_akuns', 'detail_trackings.lab_akuns_id', '=', 'lab_akuns.id')
+        ->select('detail_trackings.*', 'aktivitas.aktivitas as aktivitas', 'lab_akuns.nama as nama')
+        ->where('detail_trackings.data_sampels_id', '=', $data_sampels_id)
+        ->get();
+
+        $getdetailtrackings = json_decode(json_encode($getdetailtrackings), true);
+
+        try {
+            if(empty($getdetailtrackings)){
+                $response->success = 0;
+                $response->message = 'DATA TIDAK DITEMUKAN';
+            }
+            else {
+                foreach ($getdetailtrackings as $value) {
+                    $s_aktivitas_waktu  .= $value['aktivitas_waktu'].'-'; 
+                    $s_aktivitas_id     .= $value['aktivitas_id'].'-'; 
+                    $s_aktivitas        .= $value['aktivitas'].'-';
+                    $s_lab_akuns_id     .= $value['lab_akuns_id'].'-'; 
+                    $s_lab_akuns_nama   .= $value['nama'].'-'; 
+                }
+                $response->aktivitas_waktu  = substr($s_aktivitas_waktu, 0, -1); 
+                $response->aktivitas_id     = substr($s_aktivitas_id, 0, -1); 
+                $response->aktivitas        = substr($s_aktivitas, 0, -1);
+                $response->lab_akuns_id     = substr($s_lab_akuns_id, 0, -1); 
+                $response->lab_akuns_nama   = substr($s_lab_akuns_nama, 0, -1); 
+                $response->success = 1;
+                $response->message = 'BERHASIL SELECT DATA';
+            }
+        } catch (Exception $e) {
+            $response->success = 1;
+            $response->message = $e->getMessage();
+        }
+        die(json_encode($response));
+    }
+    #9. GET DETAIL TRACKING
+
     #POST TRACKING
     /**
      * @OA\Post(
@@ -471,7 +551,7 @@ class ApiController extends Controller
      *     },
      * )
      */
-    function InsertDetailTracking(Request $request, $aktivitas_waktu = null, $data_sampels_id = null, $aktivitas_id = null, $lab_akuns_id = null)
+    public static function InsertDetailTrackings(Request $request, $aktivitas_waktu = null, $data_sampels_id = null, $aktivitas_id = null, $lab_akuns_id = null)
     {
         $response                       = new usr();
         $str_aktivitas_waktu              = '';
@@ -515,6 +595,7 @@ class ApiController extends Controller
         die(json_encode($response));
     }
     #POST TRACKING
+#DETAIL TRACKING
 
 #HASIL ANALISA
     #GET HASILANALISA
@@ -546,7 +627,7 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    function GetHasilAnalisas($data_sampels_id = null)
+    public static function GetHasilAnalisas($data_sampels_id = null)
     {
         $response   = new usr();
         if (isset($data_sampels_id)) {
@@ -594,6 +675,8 @@ class ApiController extends Controller
                 $response->no_lab           = $str_no_lab;
                 $response->hasil            = $str_hasil;
                 $response->status           = $str_status;
+                $response->success          = 1;
+                $response->message          = 'DATA DITEMUKAN';
             }
         } else {
             $response->success = 0;
@@ -606,7 +689,7 @@ class ApiController extends Controller
 
 
 #PAKETS
-    #INSERT PAKETS
+    #29. INSERT PAKETS
     /**
      * @OA\Post(
      *      path="/insertpakets/{jenis_sampels_id}/{paket}/{parameters_id_s}/{harga}",
@@ -733,9 +816,9 @@ class ApiController extends Controller
 
         die(json_encode($response));
     }
-    #INSERT PAKETS
+    #29. INSERT PAKETS
 
-    #UPDATE PAKETS
+    #30. UPDATE PAKETS
     /**
      * @OA\Post(
      *      path="/updatepakets/{id}/{jenis_sampels_id}/{paket}/{parameters_id_s}/{harga}",
@@ -867,9 +950,9 @@ class ApiController extends Controller
 
         die(json_encode($response));
     }
-    #UPDATE PAKETS
+    #30. UPDATE PAKETS
 
-    #DELETE PAKETS
+    #31. DELETE PAKETS
     /**
      * @OA\Get(
      *      path="/deletepakets/{id}",
@@ -939,6 +1022,6 @@ class ApiController extends Controller
         }
         die(json_encode($response));
     }
-    #DELETE PAKETS
+    #31. DELETE PAKETS
 #PAKETS
 }

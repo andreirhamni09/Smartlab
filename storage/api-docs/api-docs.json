@@ -183,6 +183,40 @@
                 ]
             }
         },
+        "/getdetailtrackings/{data_sampels_id}": {
+            "get": {
+                "tags": [
+                    "Get Detail Trackings"
+                ],
+                "summary": "Mendapatkan List Data Trackings",
+                "description": "Mendapatkan List Data Trackings",
+                "operationId": "getProjectsList",
+                "parameters": [
+                    {
+                        "name": "data_sampels_id",
+                        "in": "path",
+                        "description": "data_sampels_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        },
         "/insertdetailtracking/{aktivitas_waktu}/{data_sampels_id}/{aktivitas_id}/{lab_akuns_id}": {
             "post": {
                 "tags": [
