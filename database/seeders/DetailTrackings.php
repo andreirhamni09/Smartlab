@@ -20,6 +20,12 @@ class DetailTrackings extends Seeder
                 'data_sampels_id'          => '1',
                 'aktivitas_id'             => '1',
                 'lab_akuns_id'             => '1'
+            ),
+            array(
+                'aktivitas_waktu'          => '2021-09-10 11:00:00',
+                'data_sampels_id'          => '1',
+                'aktivitas_id'             => '4',
+                'lab_akuns_id'             => '2'
             )
         )); 
     }

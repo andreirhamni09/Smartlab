@@ -24,7 +24,7 @@ class HasilAnalisas extends Seeder
                     'no_lab'                => $i,
                     'kode_contoh'           => '',
                     'parameters_id_s'       => '1-2-3',
-                    'hasil'                 => '',
+                    'hasil'                 => '-;-;-',
                     'status'                => '0',
                     'retry'                 => 0
                 )

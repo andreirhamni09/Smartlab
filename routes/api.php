@@ -96,5 +96,9 @@ Route::prefix('admin')->group(function () {
     Route::get('deletepakets/{id?}', [ApiController::class, 'DeletePakets']);
     #DELETE PAKETS
 #PAKETS
+
+#CONTOH MENAMPILKAN RESPONSE
+Route::get('contohmenampilkanrespon/{data_sampels_id?}', [ApiController::class, 'ContohMenampilkanRespon']);
+#CONTOH MENAMPILKAN RESPONSE
 });
 
