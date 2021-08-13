@@ -501,7 +501,7 @@ class ApiController extends Controller
     }
     #9. GET DETAIL TRACKING
 
-    #POST TRACKING
+    #10. INSERT DETAIL TRACKING
     /**
      * @OA\Post(
      *      path="/insertdetailtracking/{aktivitas_waktu?}/{data_sampels_id?}/{aktivitas_id?}/{lab_akuns_id?}",
@@ -601,7 +601,7 @@ class ApiController extends Controller
 
         die(json_encode($response));
     }
-    #POST TRACKING
+    #10. INSERT DETAIL TRACKING
 #DETAIL TRACKING
 
 #HASIL ANALISA
