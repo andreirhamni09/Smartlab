@@ -24,81 +24,93 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'loginuserlab/{email?}/{password?}', [ApiController::class, 'LoginUserLab']);
     # LOGIN USERLAB sdsds
 
-    #PARAMETER
-    Route::get('getparameter', [ApiController::class, 'GetParameters']);
-    #PARAMETER
+    #PARAMETERS
+        #1. GET PARAMETERS
+        Route::get('getparameters', [ApiController::class, 'GetParameters']);
+        #1. GET PARAMETERS
+        
+        #2. INSERT PARAMETERS
+        Route::post('insertparameters/{simbol?}/{nama_unsur?}', [ApiController::class, 'InsertParameters']);
+        #2. INSERT PARAMETERS
+        
+        #2. UPDATE PARAMETERS
+        Route::post('updateparameters/{id?}/{simbol?}/{nama_unsur?}', [ApiController::class, 'UpdateParameters']);
+        #2. UPDATE PARAMETERS
 
-    #GET JENIS SAMPEL
-    Route::get('getjenissampel', [ApiController::class, 'GetJenisSampels']);
-    #GET JENIS SAMPEL
+        #3. DELETE PARAMETERS
+        Route::post('deleteparameters/{id?}', [ApiController::class, 'DeleteParameters']);
+        #3. DELETE PARAMETERS
+    #PARAMETERS
 
-    #GET AKSES LEVEL
-    Route::get('getakseslevels', [ApiController::class, 'GetAksesLevels']);
-    #GET AKSES LEVEL
+    #AKSES LEVELS
+        #5. AKSES LEVELS
+        Route::get('getakseslevels', [ApiController::class, 'GetAksesLevels']);
+    #AKSES LEVELS
 
-#AKTIVITAS
-    #GET DATA AKTIVITAS 
-    Route::get('getaktivitas', [ApiController::class, 'GetAktivitas']);
-    #GET DATA AKTIVITAS 
-#AKTIVITAS
+    #JENIS SAMPELS
+        #6. JENIS SAMPELS
+        Route::get('getjenissampel', [ApiController::class, 'GetJenisSampels']);
+    #JENIS SAMPELS
 
+    #METODES    
+        #7. METODES
+        Route::post('getmetodes', [ApiController::class, 'GetMetodes']);
+        #7. METODES
+    #METODES
 
-#DETAIL TRACKING
-    #9. GET DETAIL TRACKING
-    Route::get('getdetailtrackings/{data_sampels_id?}', [ApiController::class, 'GetDetailTrackings']);
-    #9. GET DETAIL TRACKING
+    #DETAIL TRACKING
+        #9. GET DETAIL TRACKING
+        Route::get('getdetailtrackings/{data_sampels_id?}', [ApiController::class, 'GetDetailTrackings']);
+        #9. GET DETAIL TRACKING
 
-    #10. INSERT DETAIL TRACKING
-    # LINK : https://slab.srs-ssms.com/api/admin/insertdetailtrackings/{aktivitas_waktu?}/{data_sampels_id?}/{aktivitas_id?}/{lab_akuns_id?}
-    Route::post('insertdetailtrackings/{aktivitas_waktu?}/{data_sampels_id?}/{aktivitas_id?}/{lab_akuns_id?}', [ApiController::class, 'InsertDetailTrackings']);
-    #10. INSERT DETAIL TRACKING
-#DETAIL TRACKING
+        #10. INSERT DETAIL TRACKING
+        # LINK : https://slab.srs-ssms.com/api/admin/insertdetailtrackings/{aktivitas_waktu?}/{data_sampels_id?}/{aktivitas_id?}/{lab_akuns_id?}
+        Route::post('insertdetailtrackings/{aktivitas_waktu?}/{data_sampels_id?}/{aktivitas_id?}/{lab_akuns_id?}', [ApiController::class, 'InsertDetailTrackings']);
+        #10. INSERT DETAIL TRACKING
+    #DETAIL TRACKING
 
+    #DATA SAMPELS
+        #11. GET DATA SAMPELS ALL
+        Route::get('getdatasampelsall', [ApiController::class, 'GetDataSampelsAll']);
 
-    #GET PARAMETER
-        # LINK : https://slab.srs-ssms.com/api/admin/getparameter 
-        # FUNGSI UNTUK MENDAPATKAN DAFTAR PARAMETER YANG TERDAPAT DALAM DATABASE
-        # RESPON
-            # DATA = 0      : ~ success = 0, ~ message
-            # DATA != 0     : ~ success = 1, ~ id_parameter, ~ parameter, ~ harga, ~ id_jenis_sampel, ~ jenis_sampel, ~ lambang
-    #GET PARAMETER
+        #12. GET DATA SAMPELS BY ID
+        Route::get('getdatasampelsbyid/{id?}', [ApiController::class, 'GetDataSampelsById']);
 
+        #12. INSERT DATA SAMPELS
+        Route::post('insertdatasampels/{jenis_sampels_id?}/{pelanggans_id?}/{pakets_id_s?}/{tanggal_masuk?}/{tanggal_selesai?}/{nomor_surat?}/{jumlah_sampel?}', [ApiController::class, 'InsertDataSampels']);
+    #DATA SAMPELS
+
+    #AKTIVITAS
+        #GET DATA AKTIVITAS 
+        Route::get('getaktivitas', [ApiController::class, 'GetAktivitas']);
+        #GET DATA AKTIVITAS 
+    #AKTIVITAS
 
     #GET HASIL ANALISISA
-    # LINK : https://slab.srs-ssms.com/api/admin/gethasilanalisa/{data_sampels_id}
-    Route::get('gethasilanalisas/{data_sampels_id?}', [ApiController::class, 'GetHasilAnalisas']);
+        # LINK : https://slab.srs-ssms.com/api/admin/gethasilanalisa/{data_sampels_id}
+        Route::get('gethasilanalisas/{data_sampels_id?}', [ApiController::class, 'GetHasilAnalisas']);
     #GET HASIL ANALISISA
     
     #POST HASIL ANALISISA
-    Route::match(['get', 'post'], 'posthasilanalisa/{id?}/{v_parameter?}', [ApiController::class, 'PostHasilAnalisa']);
+        Route::match(['get', 'post'], 'posthasilanalisa/{id?}/{v_parameter?}', [ApiController::class, 'PostHasilAnalisa']);
     #POST HASIL ANALISISA
 
-#METODES    
-    #GET METODES
-    Route::post('getmetodes', [ApiController::class, 'GetMetodes']);
-    #GET METODES
-#METODES
+    #PAKETS
+        #SELECT PAKETS
+        Route::post('getpakets', [ApiController::class, 'GetPakets']);
+        #SELECT PAKETS
+        
+        #INSERT PAKETS
+        Route::post('insertpakets/{jenis_sampels_id?}/{paket?}/{parameters_id_s?}/{harga?}', [ApiController::class, 'InsertPakets']);
+        #INSERT PAKETS
 
-#PAKETS
-    #SELECT PAKETS
-    Route::post('getpakets', [ApiController::class, 'GetPakets']);
-    #SELECT PAKETS
-    
-    #INSERT PAKETS
-    Route::post('insertpakets/{jenis_sampels_id?}/{paket?}/{parameters_id_s?}/{harga?}', [ApiController::class, 'InsertPakets']);
-    #INSERT PAKETS
+        #UPDATE PAKETS
+        Route::post('updatepakets/{id?}/{jenis_sampels_id?}/{paket?}/{parameters_id_s?}/{harga?}', [ApiController::class, 'UpdatePakets']);
+        #UPDATE PAKETS
 
-    #UPDATE PAKETS
-    Route::post('updatepakets/{id?}/{jenis_sampels_id?}/{paket?}/{parameters_id_s?}/{harga?}', [ApiController::class, 'UpdatePakets']);
-    #UPDATE PAKETS
-
-    #DELETE PAKETS
-    Route::get('deletepakets/{id?}', [ApiController::class, 'DeletePakets']);
-    #DELETE PAKETS
-#PAKETS
-
-#CONTOH MENAMPILKAN RESPONSE
-Route::get('contohmenampilkanrespon/{data_sampels_id?}', [ApiController::class, 'ContohMenampilkanRespon']);
-#CONTOH MENAMPILKAN RESPONSE
+        #DELETE PAKETS
+        Route::get('deletepakets/{id?}', [ApiController::class, 'DeletePakets']);
+        #DELETE PAKETS
+    #PAKETS
 });
 

@@ -108,12 +108,13 @@ class ApiController extends Controller
     }
     #POST LOGIN
 
-    #GET PARAMETER
+#PARAMETERS
+    #1. GET PARAMETERS
     /**
      * @OA\Get(
      *      path="/getparameter",
      *      operationId="getProjectsList",
-     *      tags={"Parameter"},
+     *      tags={"Get Parameter"},
      *      summary="Mendapatkan List Aktivitas",
      *      description="Mendapatkan List Parameter",
      *      @OA\Response(
@@ -166,16 +167,34 @@ class ApiController extends Controller
             die(json_encode($response));
         }
     }
-    #GET PARAMETER
+    #1. GET PARAMETERS
 
-    #GET JENIS SAMPEL
+    #2. INSERT PARAMETERS
     /**
-     * @OA\Get(
-     *      path="/getjenissampel",
+     * @OA\post(
+     *      path="/insertparameters/{simbol}/{nama_unsur}",
      *      operationId="getProjectsList",
-     *      tags={"Jenis Sampels"},
-     *      summary="Mendapatkan List Jenis Sampel",
-     *      description="Mendapatkan List Jenis Sampel",
+     *      tags={"Insert Parameters"},
+     *      summary="Menambahkan Data Baru ke Tabel Parameters",
+     *      description="Menambahkan Data Baru ke Tabel Parameters",
+     *      @OA\Parameter(
+     *          name="simbol",
+     *          description="Simbol",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="nama_unsur",
+     *          description="Nama Unsur",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
      *      @OA\Response(
      *          response=200,
      *          description="successful operation"
@@ -188,47 +207,236 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    function GetJenisSampels()
+    public static function InsertParameters(Request $request, $simbol = null, $nama_unsur = null)
     {
-        $response                   = new usr();
-        try {
-            $jenisSampel                = DB::table('jenis_sampels')
-                ->get();
-            $jenisSampel                = json_decode(json_encode($jenisSampel), true);
-
-            if (count($jenisSampel) < 1) {
-                $response->success          = 0;
-                $response->messages         = 'DATA JENIS SAMPEL TIDAK DITEMUKAN';
-            } else if (count($jenisSampel) > 0) {
-                $str_id                     = '';
-                $str_jenisSampel            = '';
-                $str_lambangSampel          = '';
-
-                foreach ($jenisSampel as $value) {
-                    $str_id                 .= $value['id'] . '-';
-                    $str_jenisSampel        .= $value['jenis_sampel'] . '-';
-                    $str_lambangSampel      .= $value['lambang_sampel'] . '-';
-                }
-
-                $str_id                     = substr($str_id, 0, -1);
-                $str_jenisSampel            = substr($str_jenisSampel, 0, -1);
-                $str_lambangSampel          = substr($str_lambangSampel, 0, -1);
-
-                $response->id               = $str_id;
-                $response->jenis_sampel     = $str_jenisSampel;
-                $response->lambang_sampel   = $str_lambangSampel;
-                $response->success          = 1;
-            }
-            die(json_encode($response));
-        } catch (Exception $e) {
-            $response->success      = 0;
-            $response->message      = $e->getMessage();
-            die(json_encode($response));
+        $response           = new usr();
+        $insertparameters   = ''; 
+        
+        $s_simbol             = ''; $s_nama_unsur = '';
+        if(
+            (!isset($request->simbol) OR !isset($request->nama_unsur)) AND
+            (empty($simbol) OR empty($nama_unsur))
+        )
+        {
+            $response->success = 0;
+            $response->message = 'DATA WAJIB DIISI';
         }
-    }
-    #GET JENIS SAMPEL
+        elseif (
+            (isset($request->simbol) OR isset($request->nama_unsur))
+        ) 
+        {
+            $s_simbol       = $request->simbol; 
+            $s_nama_unsur   = $request->nama_unsur;
+        }
+        elseif (
+            (empty($simbol) OR empty($nama_unsur))
+        ) 
+        {
+            $s_simbol       = $simbol; 
+            $s_nama_unsur   = $nama_unsur;
+        }
 
-    #GET AKSES LEVEL
+        try {
+            DB::table('parameters')
+            ->insert([
+                'simbol'        => $s_simbol,
+                'nama_unsur'    => $s_nama_unsur
+            ]);
+
+            $response->success  = 1;
+            $response->message  = 'BERHASIL MENAMBAHKAN DATA KE TABEL PARAMETERS';
+        } catch (Exception $e) {
+            $response->success  = 0;
+            $response->message  = 'GAGAL MENAMBAHKAN DATA BARU :'. $e->getMessage();
+        }
+
+        die(json_encode($response));
+    }
+    #2. INSERT PARAMETERS
+
+    #3. UPDATE PARAMETERS
+    /**
+     * @OA\post(
+     *      path="/updateparameters/{id}/{simbol}/{nama_unsur}",
+     *      operationId="getProjectsList",
+     *      tags={"Update Parameters"},
+     *      summary="Menambahkan Data Baru ke Tabel Parameters",
+     *      description="Menambahkan Data Baru ke Tabel Parameters",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="ID",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="simbol",
+     *          description="Simbol",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="nama_unsur",
+     *          description="Nama Unsur",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           {"api_key_security_example": {}}
+     *       }
+     *     )
+     *
+     * Returns list of projects
+     */
+    public static function UpdateParameters(Request $request, $id = null, $simbol = null, $nama_unsur = null)
+    {
+        $response           = new usr();
+        $updateparameters   = ''; 
+        
+        $s_id = ''; $s_simbol = ''; $s_nama_unsur = '';
+        if(
+            (!isset($request->id) OR !isset($request->simbol) OR !isset($request->nama_unsur)) OR
+            (!isset($id) OR !isset($simbol) OR !isset($nama_unsur))
+        )
+        {
+            $response->success = 0;
+            $response->message = 'DATA WAJIB DIISI';
+        }
+        elseif (
+            (isset($request->id) OR isset($request->simbol) OR isset($request->nama_unsur))
+        ) 
+        {
+            $s_id           = $request->id; 
+            $s_simbol       = $request->simbol; 
+            $s_nama_unsur   = $request->nama_unsur;
+        }
+        elseif (
+            (isset($id) OR isset($simbol) OR isset($nama_unsur))
+        ) 
+        {
+            $s_id           = $id; 
+            $s_simbol       = $simbol; 
+            $s_nama_unsur   = $nama_unsur;
+        }
+
+        $updateparameters       = DB::table('parameters')
+        ->where('id', '=', $s_id)
+        ->first();
+
+        if(empty($updateparameters))
+        {
+            $response->success  = 0;
+            $response->message  = 'DATA DENGAN ID :'.$s_id.' TIDAK DITEMUKAN';
+        }
+        else{
+            try {
+                $updateparameters   = DB::table('parameters')
+                ->where('id', '=', $s_id)
+                ->update([
+                    'simbol'        => $s_simbol,
+                    'nama_unsur'    => $s_nama_unsur
+                ]);
+    
+                $response->success  = 1;
+                $response->message  = 'BERHASIL MENAMBAHKAN DATA KE TABEL PARAMETERS';
+            } catch (Exception $e) {
+                $response->success  = 0;
+                $response->message  = 'GAGAL MELAKUKAN UPDATE DATA :'. $e->getMessage();
+            }    
+        }
+        die(json_encode($response));
+    }
+    #3. UPDATE PARAMETERS
+
+    #4. DELETE PARAMETERS
+    /**
+     * @OA\post(
+     *      path="/deleteparameters/{id}",
+     *      operationId="getProjectsList",
+     *      tags={"Delete Parameters"},
+     *      summary="Menambahkan Data Baru ke Tabel Parameters",
+     *      description="Menambahkan Data Baru ke Tabel Parameters",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="ID",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           {"api_key_security_example": {}}
+     *       }
+     *     )
+     *
+     * Returns list of projects
+     */
+    public static function DeleteParameters(Request $request, $id = null)
+    {
+        $response           = new usr();
+        $deleteparameter    = '';
+        $s_id               = '';
+        if(!isset($request->id) AND !isset($id))
+        {
+            $response->success = 0;
+            $response->message = 'DATA WAJIB DIISI';
+        }
+        elseif (isset($request->id))
+        {
+            $s_id           = $request->id; 
+        }
+        elseif (isset($id)) 
+        {
+            $s_id           = $id; 
+        }
+
+        $deleteparameter    = DB::table('parameters')
+        ->where('id', '=', $s_id)
+        ->first();
+        if(empty($deleteparameter))
+        {
+            $response->success = 0;
+            $response->success = 'DATA DENGAN ID: '.$s_id.' DITEMUKAN';
+        }
+        else{
+            try {
+                DB::table('parameters')
+                ->where('id', '=', $s_id)
+                ->delete();
+
+                $response->success = 1;
+                $response->success = 'DATA DENGAN ID :'.$s_id.' BERHASIL DIHAPUS';
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->success = 'GAGAL HAPUS DATA :'.$e->getMessage();
+            }
+        }
+        die(json_encode($response));
+    }
+    #4. DELETE PARAMETERS
+
+#PARAMETERS
+
+#AKSES LEVEL
     /**
      * @OA\Get(
      *      path="/getakseslevels",
@@ -286,17 +494,16 @@ class ApiController extends Controller
             die(json_encode($response));
         }
     }
-    #GET AKSES LEVEL
+#AKSES LEVEL
 
-#AKTIVITAS
-    #GET AKTIVITAS
+#JENIS SAMPEL
     /**
      * @OA\Get(
-     *      path="/getaktivitas",
+     *      path="/getjenissampel",
      *      operationId="getProjectsList",
-     *      tags={"Aktivitas"},
-     *      summary="Mendapatkan List Aktivitas",
-     *      description="Mendapatkan List Aktivitas",
+     *      tags={"Jenis Sampels"},
+     *      summary="Mendapatkan List Jenis Sampel",
+     *      description="Mendapatkan List Jenis Sampel",
      *      @OA\Response(
      *          response=200,
      *          description="successful operation"
@@ -309,35 +516,36 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    function GetAktivitas()
+    function GetJenisSampels()
     {
-        $response               = new usr();
+        $response                   = new usr();
         try {
-            $aktivitas          = DB::table('aktivitas')
+            $jenisSampel                = DB::table('jenis_sampels')
                 ->get();
-            $aktivitas          = json_decode(json_encode($aktivitas), true);
+            $jenisSampel                = json_decode(json_encode($jenisSampel), true);
 
-            $str_aktivitas_id   = '';
-            $str_aktivitas      = '';
-
-            if (count($aktivitas) < 1) {
+            if (count($jenisSampel) < 1) {
                 $response->success          = 0;
                 $response->messages         = 'DATA JENIS SAMPEL TIDAK DITEMUKAN';
-            } else if (count($aktivitas) > 0) {
-                $str_aktivitas_id           = '';
-                $str_aktivitas              = '';
+            } else if (count($jenisSampel) > 0) {
+                $str_id                     = '';
+                $str_jenisSampel            = '';
+                $str_lambangSampel          = '';
 
-                foreach ($aktivitas as $value) {
-                    $str_aktivitas_id         .= $value['id'] . '-';
-                    $str_aktivitas            .= $value['aktivitas'] . '-';
+                foreach ($jenisSampel as $value) {
+                    $str_id                 .= $value['id'] . '-';
+                    $str_jenisSampel        .= $value['jenis_sampel'] . '-';
+                    $str_lambangSampel      .= $value['lambang_sampel'] . '-';
                 }
 
-                $str_aktivitas_id             = substr($str_aktivitas_id, 0, -1);
-                $str_aktivitas                = substr($str_aktivitas, 0, -1);
+                $str_id                     = substr($str_id, 0, -1);
+                $str_jenisSampel            = substr($str_jenisSampel, 0, -1);
+                $str_lambangSampel          = substr($str_lambangSampel, 0, -1);
 
-                $response->id                 = $str_aktivitas_id;
-                $response->aktivitas          = $str_aktivitas;
-                $response->success            = 1;
+                $response->id               = $str_id;
+                $response->jenis_sampel     = $str_jenisSampel;
+                $response->lambang_sampel   = $str_lambangSampel;
+                $response->success          = 1;
             }
             die(json_encode($response));
         } catch (Exception $e) {
@@ -346,8 +554,7 @@ class ApiController extends Controller
             die(json_encode($response));
         }
     }
-    #GET AKTIVITAS
-#AKTIVITAS
+#JENIS SAMPEL
 
 #METODES
     #GET METODES
@@ -414,6 +621,70 @@ class ApiController extends Controller
     }
     #GET METODES
 #METODES
+
+#AKTIVITAS
+    #GET AKTIVITAS
+    /**
+     * @OA\Get(
+     *      path="/getaktivitas",
+     *      operationId="getProjectsList",
+     *      tags={"Aktivitas"},
+     *      summary="Mendapatkan List Aktivitas",
+     *      description="Mendapatkan List Aktivitas",
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           {"api_key_security_example": {}}
+     *       }
+     *     )
+     *
+     * Returns list of projects
+     */
+    function GetAktivitas()
+    {
+        $response               = new usr();
+        try {
+            $aktivitas          = DB::table('aktivitas')
+                ->get();
+            $aktivitas          = json_decode(json_encode($aktivitas), true);
+
+            $str_aktivitas_id   = '';
+            $str_aktivitas      = '';
+
+            if (count($aktivitas) < 1) {
+                $response->success          = 0;
+                $response->messages         = 'DATA JENIS SAMPEL TIDAK DITEMUKAN';
+            } else if (count($aktivitas) > 0) {
+                $str_aktivitas_id           = '';
+                $str_aktivitas              = '';
+
+                foreach ($aktivitas as $value) {
+                    $str_aktivitas_id         .= $value['id'] . '-';
+                    $str_aktivitas            .= $value['aktivitas'] . '-';
+                }
+
+                $str_aktivitas_id             = substr($str_aktivitas_id, 0, -1);
+                $str_aktivitas                = substr($str_aktivitas, 0, -1);
+
+                $response->id                 = $str_aktivitas_id;
+                $response->aktivitas          = $str_aktivitas;
+                $response->success            = 1;
+            }
+            die(json_encode($response));
+        } catch (Exception $e) {
+            $response->success      = 0;
+            $response->message      = $e->getMessage();
+            die(json_encode($response));
+        }
+    }
+    #GET AKTIVITAS
+#AKTIVITAS
+
+#HALAMANS
+#HALAMANS
 
 #DETAIL TRACKING
     #9. GET DETAIL TRACKING
@@ -600,11 +871,335 @@ class ApiController extends Controller
             $response->success     = 0;
             $response->message     = $e->getMessage();
         }
-
         die(json_encode($response));
     }
     #10. INSERT DETAIL TRACKING
 #DETAIL TRACKING
+
+#DATA SAMPELS
+    #11. GET DATA SAMPELS ALL
+    /**
+     * @OA\Get(
+     *      path="/getdatasampelsall",
+     *      operationId="getProjectsList",
+     *      tags={"Get Data Sampels All"},
+     *      summary="Mendapatkan List Data Trackings",
+     *      description="Mendapatkan List Data Trackings",
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           {"api_key_security_example": {}}
+     *       }
+     *     )
+     *
+     * Returns list of projects
+     */
+    public static function GetDataSampelsAll()
+    {
+        $response           = new usr();
+        $getdatasampelsall  = DB::table('data_sampels')
+        ->join('pelanggans', 'data_sampels.pelanggans_id', '=', 'pelanggans.id')
+        ->join('jenis_sampels', 'data_sampels.jenis_sampels_id', '=', 'jenis_sampels.id')
+        ->select('data_sampels.*', 'pelanggans.nama as pelanggan', 'jenis_sampels.jenis_sampel as jenis_sampel')
+        ->get();
+
+        
+        $getdatasampelsall      = json_decode(json_encode($getdatasampelsall), true);
+
+        #DATA SAMPELS
+        $s_id                   = ''; $s_pakets_id_s        = ''; $s_tanggal_masuk  = ''; $s_tanggal_selesai  = ''; 
+        $s_nomor_surat          = ''; $s_jumlah_sampel      = ''; $s_status         = '';
+
+        #PELANGGANS
+        $s_pelanggans_id        = ''; $s_pelanggans_nama    = '';
+
+        #JENIS SAMPELS
+        $s_jenis_sampels_id     = ''; $s_jenis_sampel       = '';
+        if(empty($getdatasampelsall))
+        {
+            $response->success = 0;
+            $response->message = 'DATA SAMPEL MASIH KOSONG';
+        }
+        else{
+            try {
+                foreach ($getdatasampelsall as $value) {
+                    #DATA SAMPELS
+                    $s_id               = $value['id'].'-';
+                    $s_pakets_id_s      = $value['jenis_sampels_id'].'-'; 
+
+                    $date       = date_create($value['tanggal_masuk']);
+                    $waktu      = date_format($date, 'H:i:s d-m-Y');
+
+                    $s_tanggal_masuk    = str_replace('-', '/', $waktu).'-'; 
+                    $s_tanggal_selesai  = $value['tanggal_selesai'].'-'; 
+                    $s_nomor_surat      = $value['nomor_surat'].'-'; 
+                    $s_jumlah_sampel    = $value['jumlah_sampel'].'-'; 
+                    $s_status           = $value['status'].'-';
+
+                    #PELANGGANS
+                    $s_pelanggans_id    = $value['pelanggans_id'].'-'; 
+                    $s_pelanggans_nama  = $value['pelanggan'].'-';
+
+                    #JENIS SAMPELS
+                    $s_jenis_sampels_id = $value['jenis_sampels_id'].'-'; 
+                    $s_jenis_sampel     = $value['jenis_sampel'].'-';
+                }
+
+                #DATA SAMPELS
+                $response->id               = substr($s_id, 0, -1);
+                $response->pakets_id_s      = substr($s_pakets_id_s, 0, -1); 
+                $response->tanggal_masuk    = substr($s_tanggal_masuk, 0, -1); 
+                $response->tanggal_selesai  = substr($s_tanggal_selesai, 0, -1); 
+                $response->nomor_surat      = substr($s_nomor_surat, 0, -1); 
+                $response->jumlah_sampel    = substr($s_jumlah_sampel, 0, -1); 
+                $response->status           = substr($s_status, 0, -1);
+
+                #PELANGGANS
+                $response->pelanggans_id    = substr($s_pelanggans_id, 0, -1); 
+                $response->pelanggans_nama  = substr($s_pelanggans_nama, 0, -1);
+
+                #JENIS SAMPELS
+                $response->jenis_sampels_id = substr($s_jenis_sampels_id, 0, -1); 
+                $response->jenis_sampel     = substr($s_jenis_sampel, 0, -1);
+
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = $e->getMessage();
+            }
+        }
+        die(json_encode($response));
+    }
+
+    #12. GET DATA SAMPELS BY ID
+    /**
+     * @OA\get(
+     *      path="/getdatasampelsbyid/{id}",
+     *      operationId="getProjectsList",
+     *      tags={"Get Data Sampels By Id"},
+     *      summary="Mendapatkan List Data Trackings",
+     *      description="Mendapatkan List Data Trackings",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="ID DATA SAMPELS",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           {"api_key_security_example": {}}
+     *       }
+     *     )
+     *
+     * Returns list of projects
+     */
+    public static function GetDataSampelsById(Request $request, $id = null)
+    {
+        $response           = new usr();
+        $id_s               = '';
+
+        if(!isset($request->id) AND !isset($id))
+        {
+            $response->success = 0;
+            $response->message = 'ID KOSONG';
+        }
+        elseif(isset($request->id)){
+            $id_s       = $request->id;
+        }
+        elseif(isset($id)){
+            $id_s       = $id;
+        }
+
+        $getdatasampelsbyid  = DB::table('data_sampels')
+        ->join('pelanggans', 'data_sampels.pelanggans_id', '=', 'pelanggans.id')
+        ->join('jenis_sampels', 'data_sampels.jenis_sampels_id', '=', 'jenis_sampels.id')
+        ->select('data_sampels.*', 'pelanggans.nama as pelanggan', 'jenis_sampels.jenis_sampel as jenis_sampel')
+        ->where('data_sampels.id', '=', $id_s)
+        ->get();
+
+        
+        $getdatasampelsbyid      = json_decode(json_encode($getdatasampelsbyid), true);
+
+        #DATA SAMPELS
+        $s_id                   = ''; $s_pakets_id_s        = ''; $s_tanggal_masuk  = ''; $s_tanggal_selesai  = ''; 
+        $s_nomor_surat          = ''; $s_jumlah_sampel      = ''; $s_status         = '';
+
+        #PELANGGANS
+        $s_pelanggans_id        = ''; $s_pelanggans_nama    = '';
+
+        #JENIS SAMPELS
+        $s_jenis_sampels_id     = ''; $s_jenis_sampel       = '';
+
+        if(empty($getdatasampelsbyid))
+        {
+            $response->success = 0;
+            $response->message = 'DATA SAMPEL DENGAN :'.$id_s.' TIDAK DITEMUKAN';
+        }
+        else{
+            try {
+                foreach ($getdatasampelsbyid as $value) {
+                    #DATA SAMPELS
+                    $s_id               = $value['id'].'-';
+                    $s_pakets_id_s      = $value['jenis_sampels_id'].'-'; 
+
+                    $date       = date_create($value['tanggal_masuk']);
+                    $waktu      = date_format($date, 'H:i:s d-m-Y');
+
+                    $s_tanggal_masuk    = str_replace('-', '/', $waktu).'-'; 
+                    $s_tanggal_selesai  = $value['tanggal_selesai'].'-'; 
+                    $s_nomor_surat      = $value['nomor_surat'].'-'; 
+                    $s_jumlah_sampel    = $value['jumlah_sampel'].'-'; 
+                    $s_status           = $value['status'].'-';
+
+                    #PELANGGANS
+                    $s_pelanggans_id    = $value['pelanggans_id'].'-'; 
+                    $s_pelanggans_nama  = $value['pelanggan'].'-';
+
+                    #JENIS SAMPELS
+                    $s_jenis_sampels_id = $value['jenis_sampels_id'].'-'; 
+                    $s_jenis_sampel     = $value['jenis_sampel'].'-';
+                }
+
+                #DATA SAMPELS
+                $response->id               = substr($s_id, 0, -1);
+                $response->pakets_id_s      = substr($s_pakets_id_s, 0, -1); 
+                $response->tanggal_masuk    = substr($s_tanggal_masuk, 0, -1); 
+                $response->tanggal_selesai  = substr($s_tanggal_selesai, 0, -1); 
+                $response->nomor_surat      = substr($s_nomor_surat, 0, -1); 
+                $response->jumlah_sampel    = substr($s_jumlah_sampel, 0, -1); 
+                $response->status           = substr($s_status, 0, -1);
+
+                #PELANGGANS
+                $response->pelanggans_id    = substr($s_pelanggans_id, 0, -1); 
+                $response->pelanggans_nama  = substr($s_pelanggans_nama, 0, -1);
+
+                #JENIS SAMPELS
+                $response->jenis_sampels_id = substr($s_jenis_sampels_id, 0, -1); 
+                $response->jenis_sampel     = substr($s_jenis_sampel, 0, -1);
+
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = $e->getMessage();
+            }
+        }
+        die(json_encode($response));
+    }
+    #12. GET DATA SAMPELS BY ID
+
+    #13. INSERT DATA SAMPELS
+    /**
+     * @OA\get(
+     *      path="/insertdatasampels/{jenis_sampels_id}/{pelanggans_id}/{pakets_id_s}/{tanggal_masuk}/{tanggal_selesai}/{nomor_surat}/{jumlah_sampel}",
+     *      operationId="getProjectsList",
+     *      tags={"Get Data Sampels By Id"},
+     *      summary="Mendapatkan List Data Trackings",
+     *      description="Mendapatkan List Data Trackings",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="ID DATA SAMPELS",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           {"api_key_security_example": {}}
+     *       }
+     *     )
+     *
+     * Returns list of projects
+     */
+    public static function InsertDataSampels(Request $request, $jenis_sampels_id = null, $pelanggans_id = null, 
+    $pakets_id_s = null, $tanggal_masuk = null, $tanggal_selesai = null, $nomor_surat = null, $jumlah_sampel = null,
+    $status = null)
+    {
+        $response = new usr();
+
+        $s_jenis_sampels_id     = ''; $s_pelanggans_id      = ''; $s_pakets_id_s    = ''; $s_tanggal_masuk = '';
+        $s_tanggal_selesai      = ''; $s_nomor_surat        = ''; $s_jumlah_sampel  = ''; $s_status        = '';
+
+        if(
+            (!isset($request->jenis_sampels_id) OR !isset($request->pelanggans_id) OR !isset($request->pakets_id_s) OR 
+            !isset($request->tanggal_masuk) OR !isset($request->tanggal_selesai) OR !isset($request->nomor_surat) OR 
+            !isset($request->jumlah_sampel) OR !isset($request->status)) AND
+            (!isset($jenis_sampels_id) OR !isset($pelanggans_id) OR !isset($pakets_id_s) OR 
+            !isset($tanggal_masuk) OR !isset($tanggal_selesai) OR !isset($nomor_surat) OR 
+            !isset($jumlah_sampel) OR !isset($status))
+        )
+        {
+            $response->success = 0;
+            $response->message = 'DATA WAJIB DIISI';
+        }
+        elseif(
+            isset($request->jenis_sampels_id) OR isset($request->pelanggans_id) OR isset($request->pakets_id_s) OR 
+            isset($request->tanggal_masuk) OR isset($request->tanggal_selesai) OR isset($request->nomor_surat) OR 
+            isset($request->jumlah_sampel) OR isset($request->status)
+        ){
+            $s_jenis_sampels_id     = $request->jenis_sampels_id; 
+            $s_pelanggans_id        = $request->pelanggans_id; 
+            $s_pakets_id_s          = $request->pakets_id_s; 
+            $s_tanggal_masuk        = $request->tanggal_masuk;
+            $s_tanggal_selesai      = $request->tanggal_selesai; 
+            $s_nomor_surat          = $request->nomor_surat; 
+            $s_jumlah_sampel        = $request->jumlah_sampel;
+            $s_status               = $request->status;
+        }
+        elseif(
+            isset($jenis_sampels_id) OR isset($pelanggans_id) OR isset($pakets_id_s) OR 
+            isset($tanggal_masuk) OR isset($tanggal_selesai) OR isset($nomor_surat) OR 
+            isset($jumlah_sampel) OR isset($status)
+        ){
+            $s_jenis_sampels_id     = $jenis_sampels_id; 
+            $s_pelanggans_id        = $pelanggans_id; 
+            $s_pakets_id_s          = $pakets_id_s; 
+            $s_tanggal_masuk        = $tanggal_masuk; 
+            $s_tanggal_selesai      = $tanggal_selesai; 
+            $s_nomor_surat          = $nomor_surat; 
+            $s_jumlah_sampel        = $jumlah_sampel;
+            $s_status               = $status;
+        }
+
+        $rules = [
+            'jenis_sampels_id'  => 'required|exists:jenis_sampels,id',
+            'pelanggans_id'     => 'required|exists:pelanggans,id',
+            'pakets_id_s'       => 'required|string|min:1',
+            'tanggal_masuk'     => 'required|date|after:today',
+            'tanggal_selesai'   => 'required|number|min:1',
+            'nomor_surat'       => 'required|string|min:1',
+            'jumlah_sampel'     => 'required|number|min:1',
+            'status'            => 'required'
+        ];
+
+        $messages = [
+            'jenis_sampels_id.required'     => 'ID JENIS SAMPEL WAJIB DIISI',
+            'jenis_sampels_id.exists'       => 'ID JENIS SAMPEL TIDAK DITEMUKAN',
+            'pelanggans_id.required'        => 'ID PELANGGAN SAMPEL WAJIB',
+            'pelanggans_id.exists'          => 'ID PELANGGAN TIDAK DITEMUKAN',
+            'pakets_id_s'                   => 'required|string|min:1',
+            'tanggal_masuk'                 => 'required|date|after:today',
+            'tanggal_selesai'               => 'required|number|min:1',
+            'nomor_surat'                   => 'required|string|min:1',
+            'jumlah_sampel'                 => 'required|number|min:1',
+            'status'                        => 'required'
+        ];
+    }
+    #13. INSERT DATA SAMPELS
+#DATA SAMPELS
 
 #HASIL ANALISA
     #GET HASILANALISA
@@ -695,7 +1290,6 @@ class ApiController extends Controller
     }
     #GET HASILANALISA
 #HASIL ANALISA
-
 
 #PAKETS
     #29. INSERT PAKETS

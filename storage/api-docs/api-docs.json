@@ -71,10 +71,162 @@
         "/getparameter": {
             "get": {
                 "tags": [
-                    "Parameter"
+                    "Get Parameter"
                 ],
                 "summary": "Mendapatkan List Aktivitas",
                 "description": "Mendapatkan List Parameter",
+                "operationId": "getProjectsList",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        },
+        "/insertparameters/{simbol}/{nama_unsur}": {
+            "post": {
+                "tags": [
+                    "Insert Parameters"
+                ],
+                "summary": "Menambahkan Data Baru ke Tabel Parameters",
+                "description": "Menambahkan Data Baru ke Tabel Parameters",
+                "operationId": "getProjectsList",
+                "parameters": [
+                    {
+                        "name": "simbol",
+                        "in": "path",
+                        "description": "Simbol",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "nama_unsur",
+                        "in": "path",
+                        "description": "Nama Unsur",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        },
+        "/updateparameters/{id}/{simbol}/{nama_unsur}": {
+            "post": {
+                "tags": [
+                    "Update Parameters"
+                ],
+                "summary": "Menambahkan Data Baru ke Tabel Parameters",
+                "description": "Menambahkan Data Baru ke Tabel Parameters",
+                "operationId": "getProjectsList",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "simbol",
+                        "in": "path",
+                        "description": "Simbol",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "nama_unsur",
+                        "in": "path",
+                        "description": "Nama Unsur",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        },
+        "/deleteparameters/{id}": {
+            "post": {
+                "tags": [
+                    "Delete Parameters"
+                ],
+                "summary": "Menambahkan Data Baru ke Tabel Parameters",
+                "description": "Menambahkan Data Baru ke Tabel Parameters",
+                "operationId": "getProjectsList",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        },
+        "/getakseslevels": {
+            "get": {
+                "tags": [
+                    "Akses Level"
+                ],
+                "summary": "Mendapatkan List Jenis Sampel",
+                "description": "Mendapatkan List Jenis Sampel",
                 "operationId": "getProjectsList",
                 "responses": {
                     "200": {
@@ -114,13 +266,13 @@
                 ]
             }
         },
-        "/getakseslevels": {
+        "/getmetodes": {
             "get": {
                 "tags": [
-                    "Akses Level"
+                    "Metode"
                 ],
-                "summary": "Mendapatkan List Jenis Sampel",
-                "description": "Mendapatkan List Jenis Sampel",
+                "summary": "Mendapatkan List Metode",
+                "description": "Mendapatkan List Metode",
                 "operationId": "getProjectsList",
                 "responses": {
                     "200": {
@@ -144,29 +296,6 @@
                 ],
                 "summary": "Mendapatkan List Aktivitas",
                 "description": "Mendapatkan List Aktivitas",
-                "operationId": "getProjectsList",
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    }
-                },
-                "security": [
-                    {
-                        "api_key_security_example": []
-                    }
-                ]
-            }
-        },
-        "/getmetodes": {
-            "get": {
-                "tags": [
-                    "Metode"
-                ],
-                "summary": "Mendapatkan List Metode",
-                "description": "Mendapatkan List Metode",
                 "operationId": "getProjectsList",
                 "responses": {
                     "200": {
@@ -280,6 +409,63 @@
                             "write:projects",
                             "read:projects"
                         ]
+                    }
+                ]
+            }
+        },
+        "/getdatasampelsall": {
+            "get": {
+                "tags": [
+                    "Get Data Sampels All"
+                ],
+                "summary": "Mendapatkan List Data Trackings",
+                "description": "Mendapatkan List Data Trackings",
+                "operationId": "getProjectsList",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        },
+        "/getdatasampelsbyid/{id}": {
+            "get": {
+                "tags": [
+                    "Get Data Sampels By Id"
+                ],
+                "summary": "Mendapatkan List Data Trackings",
+                "description": "Mendapatkan List Data Trackings",
+                "operationId": "getProjectsList",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID DATA SAMPELS",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
                     }
                 ]
             }
