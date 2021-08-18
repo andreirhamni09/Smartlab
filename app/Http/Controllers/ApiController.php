@@ -23,7 +23,7 @@ class usr
 class ApiController extends Controller
 {
 
-#PARAMETERS
+#1 - 4 PARAMETERS
     #1. GET PARAMETERS
     /**
      * @OA\Get(
@@ -349,9 +349,9 @@ class ApiController extends Controller
     }
     #4. DELETE PARAMETERS
 
-#PARAMETERS
+#1 - 4 PARAMETERS
 
-#AKSES LEVEL
+#5 AKSES LEVEL
     #5. GET AKSES LEVEL
     /**
      * @OA\Get(
@@ -411,9 +411,9 @@ class ApiController extends Controller
         }
     }
     #5. GET AKSES LEVEL
-#AKSES LEVEL
+#5 AKSES LEVEL
 
-#JENIS SAMPEL
+#6 JENIS SAMPEL
     #6. GET JENIS SAMPELS
     /**
      * @OA\Get(
@@ -473,9 +473,9 @@ class ApiController extends Controller
         }
     }
     #6. GET JENIS SAMPELS
-#JENIS SAMPEL
+#6 JENIS SAMPEL
 
-#METODES
+#7 METODES
     #7. GET METODES
     /**
      * @OA\Get(
@@ -539,14 +539,64 @@ class ApiController extends Controller
         }
     }
     #7. GET METODES
-#METODES
+#7 METODES
 
-#HALAMANS
+#8 HALAMANS
     #8. GET HALAMANS
-    #8. GET HALAMANS
-#HALAMANS
+    /**
+     * @OA\Get(
+     *      path="/gethalamans",
+     *      operationId="getProjectsList",
+     *      tags={"8. Get Halamans"},
+     *      summary="Mendapatkan List Data Halaman Yang Terdaftar",
+     *      description="Mendapatkan List Data Halaman Yang Terdaftar",
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           {"api_key_security_example": {}}
+     *       }
+     *     )
+     *
+     * Returns list of projects
+     */
+    public static function GetHalamans()
+    {
+        $response       = new usr();
+        $get_halamans   = DB::table('halamans')
+        ->get();        
+        $get_halamans                = json_decode(json_encode($get_halamans), true);
 
-#DETAIL TRACKING
+        $s_id = ''; $s_halaman = ''; $s_url = ''; 
+        if(empty($get_halamans)){
+            $response->success = 0;
+            $response->message = 'DATA PADA TABEL HALAMAN MASIH BELUM TERISI';
+        } 
+        else{
+            try {
+                foreach ($get_halamans as $value) {
+                    $s_id       .= $value['id'].'-'; 
+                    $s_halaman  .= $value['halaman'].'-'; 
+                    $s_url      .= $value['url'].'-'; 
+                }
+                $response->id       = substr($s_id, 0, -1);
+                $response->halaman  = substr($s_halaman, 0, -1);    
+                $response->url      = substr($s_url, 0, -1);
+                $response->success  = 1;
+                $response->message  = 'BERIKUT LIST HALAMAN YANG TERSEDIA'; 
+            } catch (Exception $e) {
+                $response->success  = 0;
+                $response->message  = 'GAGAL GET DATA HALAMAN, PESAN KESALAHAN : '.$e->getMessage(); 
+            }
+        }
+        die(json_encode($response));
+    }
+    #8. GET HALAMANS
+#8 HALAMANS
+
+#9 - 10 DETAIL TRACKING
     #9. GET DETAIL TRACKING
     /**
      * @OA\Get(
@@ -737,9 +787,9 @@ class ApiController extends Controller
         die(json_encode($response));
     }
     #10. INSERT DETAIL TRACKING
-#DETAIL TRACKING
+#9 - 10 DETAIL TRACKING
 
-#DATA SAMPELS
+#11 - 14 DATA SAMPELS
     #11. GET DATA SAMPELS ALL
     /**
      * @OA\Get(
@@ -1337,10 +1387,9 @@ class ApiController extends Controller
         
     }
     #14. DELETE DATA SAMPELS
+#11 - 14 DATA SAMPELS
 
-#DATA SAMPELS
-
-#HASIL ANALISA
+#16 - 17 HASIL ANALISA
     #15. GET HASIL ANALISA
     /**
      * @OA\Get(
@@ -1472,9 +1521,9 @@ class ApiController extends Controller
         return 'mantap';
     }
     #16. UPDATE HASIL ANALISA
-#HASIL ANALISA
+#16 - 17 HASIL ANALISA
 
-#PELANGGANS
+#17 - 21 PELANGGANS
     #17. GET PELANGGANS
     /**
      * @OA\Get(
@@ -1600,9 +1649,9 @@ class ApiController extends Controller
 
     }
     #21. LOGIN PELANGGANS
-#PELANGGANS
+#17 - 21 PELANGGANS
 
-#AKTIVITAS
+#22 AKTIVITAS
     #22. GET AKTIVITAS
     /**
      * @OA\Get(
@@ -1661,9 +1710,9 @@ class ApiController extends Controller
         }
     }
     #22. GET AKTIVITAS
-#AKTIVITAS
+#22 AKTIVITAS
 
-#LAB AKUN
+#23 - 27 LAB AKUN
     #23. GET LAB AKUNS
     /**
      * @OA\get(
@@ -2303,9 +2352,9 @@ class ApiController extends Controller
         die(json_encode($response));
     }
     #27. DELETE LAB AKUNS
-#LAB AKUN
+#23 - 27 LAB AKUN
 
-#PAKETS
+#28 - 31 PAKETS
     #28. GET PAKET
     /**
      * @OA\Get(
@@ -2706,5 +2755,5 @@ class ApiController extends Controller
         die(json_encode($response));
     }
     #31. DELETE PAKETS
-#PAKETS
+#28 - 31 PAKETS
 }

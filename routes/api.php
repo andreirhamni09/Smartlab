@@ -21,7 +21,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::prefix('admin')->group(function () {
 
-    #PARAMETERS
+    #1 - 4 PARAMETERS
         #1. GET PARAMETERS
         Route::get('getparameters', [ApiController::class, 'GetParameters']);
         #1. GET PARAMETERS
@@ -37,30 +37,31 @@ Route::prefix('admin')->group(function () {
         #4. DELETE PARAMETERS
         Route::post('deleteparameters/{id?}', [ApiController::class, 'DeleteParameters']);
         #4. DELETE PARAMETERS
-    #PARAMETERS
+    #1 - 4 PARAMETERS
 
-    #AKSES LEVELS
+    #5 AKSES LEVEL
         #5. GET AKSES LEVELS
         Route::get('getakseslevels', [ApiController::class, 'GetAksesLevels']);
-    #AKSES LEVELS
+    #5 AKSES LEVEL
 
-    #JENIS SAMPELS
+    #6 JENIS SAMPEL
         #6. GET JENIS SAMPELS
         Route::get('getjenissampel', [ApiController::class, 'GetJenisSampels']);
-    #JENIS SAMPELS
+    #6 JENIS SAMPEL
 
-    #METODES    
+    #7 METODES    
         #7. GET METODES
         Route::post('getmetodes', [ApiController::class, 'GetMetodes']);
         #7. GET METODES
-    #METODES
+    #7 METODES
 
-    #HALAMANS
+    #8 HALAMANS
         #8. GET HALAMANS
+        Route::get('gethalamans', [ApiController::class, 'GetHalamans']);
         #8. GET HALAMANS
-    #HALAMANS
+    #8 HALAMANS
 
-    #DETAIL TRACKING
+    #9 - 10 DETAIL TRACKING
         #9. GET DETAIL TRACKING
         Route::get('getdetailtrackings/{data_sampels_id?}', [ApiController::class, 'GetDetailTrackings']);
         #9. GET DETAIL TRACKING
@@ -69,9 +70,9 @@ Route::prefix('admin')->group(function () {
         # LINK : https://slab.srs-ssms.com/api/admin/insertdetailtrackings/{aktivitas_waktu?}/{data_sampels_id?}/{aktivitas_id?}/{lab_akuns_id?}
         Route::post('insertdetailtrackings/{aktivitas_waktu?}/{data_sampels_id?}/{aktivitas_id?}/{lab_akuns_id?}', [ApiController::class, 'InsertDetailTrackings']);
         #10. INSERT DETAIL TRACKING
-    #DETAIL TRACKING
+    #9 - 10 DETAIL TRACKING
 
-    #DATA SAMPELS
+    #11 - 14 DATA SAMPELS
         #11. GET DATA SAMPELS ALL
         Route::get('getdatasampelsall', [ApiController::class, 'GetDataSampelsAll']);
 
@@ -82,11 +83,10 @@ Route::prefix('admin')->group(function () {
         Route::post('insertdatasampels/{jenis_sampels_id?}/{pelanggans_id?}/{pakets_id_s?}/{tanggal_masuk?}/{tanggal_selesai?}/{nomor_surat?}/{jumlah_sampel?}/{status?}', [ApiController::class, 'InsertDataSampels']);
 
         #14. DELETE DATA SAMPELS 
-        Route::get('deletedatasampels/{id?}', [ApiController::class, 'DeleteDataSampels']);
-    
-    #DATA SAMPELS
+        Route::get('deletedatasampels/{id?}', [ApiController::class, 'DeleteDataSampels']);    
+    #11 - 14 DATA SAMPELS
 
-    #HASIL ANALISISA
+    #16 - 17 HASIL ANALISA
         #15. GET HASIL ANALISA
         Route::get('gethasilanalisas/{data_sampels_id?}', [ApiController::class, 'GetHasilAnalisas']);
         #15. GET HASIL ANALISA
@@ -94,9 +94,9 @@ Route::prefix('admin')->group(function () {
         #16. UPDATE HASIL ANALISA
         Route::post('updatehasilanalisas/{id?}/{hasil?}', [ApiController::class, 'UpdateHasilAnalisas']);
         #16. UPDATE HASIL ANALISA        
-    #HASIL ANALISISA
+    #16 - 17 HASIL ANALISA
 
-    #PELANGGANS
+    #17 - 21 PELANGGANS
         #17. GET PELANGGANS
         Route::get('getpelanggans', [ApiController::class, 'GetPelanggans']);
 
@@ -111,15 +111,15 @@ Route::prefix('admin')->group(function () {
 
         #21. LOGIN PELANGGANS
         Route::post('loginpelanggans', [ApiController::class, 'LoginPelanggans']);
-    #PELANGGANS
+    #17 - 21 PELANGGANS
 
-    #AKTIVITAS
+    #22 AKTIVITAS
         #22. GET DATA AKTIVITAS 
         Route::get('getaktivitas', [ApiController::class, 'GetAktivitas']);
         #22. GET DATA AKTIVITAS 
-    #AKTIVITAS
+    #22 AKTIVITAS
 
-    #LAB AKUN
+    #23 - 27 LAB AKUN
         #23. UPDATE LAB AKUNS
         Route::get('/getakunlabs', [ApiController::class, 'GetAkunLabs']);
 
@@ -135,9 +135,9 @@ Route::prefix('admin')->group(function () {
         #27. DELETE LAB AKUNS
         Route::post('/deletelabakuns/{id?}', [ApiController::class, 'DeleteLabAkuns']);
         
-    #LAB AKUN
+    #23 - 27 LAB AKUN
 
-    #PAKETS
+    #28 - 31 PAKETS
         #28. GET PAKETS
         Route::get('getpakets', [ApiController::class, 'GetPakets']);
         #28. GET PAKETS
@@ -153,6 +153,6 @@ Route::prefix('admin')->group(function () {
         #31. DELETE PAKETS
         Route::get('deletepakets/{id?}', [ApiController::class, 'DeletePakets']);
         #31. DELETE PAKETS
-    #PAKETS
+    #28 - 31 PAKETS
 });
 
