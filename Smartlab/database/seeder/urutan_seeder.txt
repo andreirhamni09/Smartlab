@@ -31,6 +31,6 @@ php artisan db:seed --class=LabAkuns
 11. DetailTrackings
 php artisan make:seeder DetailTrackings
 php artisan db:seed --class=DetailTrackings
-12. Halamans
+12. Halamans (BELUM)
 php artisan make:seeder Halamans
 php artisan db:seed --class=Halamans

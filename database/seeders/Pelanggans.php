@@ -16,12 +16,12 @@ class Pelanggans extends Seeder
     {
         DB::table('pelanggans')->insert(array(
             array(
-                'email'                 => '1-2-3',
-                'password'              => '3',
+                'email'                 => 'indah09@gmail.com',
+                'password'              => 'asdasdasd',
                 'nama'                  => 'Indah',
-                'perusahaan'            => 'indah09@gmail.com',
-                'nomor_telepon'         => 'asdasdasd',
-                'alamat'                => 'penyelia',
+                'perusahaan'            => 'RND',
+                'nomor_telepon'         => '088288102811',
+                'alamat'                => 'RND',
                 'tanggal_registrasi'    => '2021-07-21'
             )
         )); 

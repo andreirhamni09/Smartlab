@@ -20,9 +20,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::prefix('admin')->group(function () {
-    # LOGIN USERLAB 
-    Route::match(['get', 'post'], 'loginuserlab/{email?}/{password?}', [ApiController::class, 'LoginUserLab']);
-    # LOGIN USERLAB sdsds
 
     #PARAMETERS
         #1. GET PARAMETERS
@@ -33,30 +30,35 @@ Route::prefix('admin')->group(function () {
         Route::post('insertparameters/{simbol?}/{nama_unsur?}', [ApiController::class, 'InsertParameters']);
         #2. INSERT PARAMETERS
         
-        #2. UPDATE PARAMETERS
+        #3. UPDATE PARAMETERS
         Route::post('updateparameters/{id?}/{simbol?}/{nama_unsur?}', [ApiController::class, 'UpdateParameters']);
-        #2. UPDATE PARAMETERS
+        #3. UPDATE PARAMETERS
 
-        #3. DELETE PARAMETERS
+        #4. DELETE PARAMETERS
         Route::post('deleteparameters/{id?}', [ApiController::class, 'DeleteParameters']);
-        #3. DELETE PARAMETERS
+        #4. DELETE PARAMETERS
     #PARAMETERS
 
     #AKSES LEVELS
-        #5. AKSES LEVELS
+        #5. GET AKSES LEVELS
         Route::get('getakseslevels', [ApiController::class, 'GetAksesLevels']);
     #AKSES LEVELS
 
     #JENIS SAMPELS
-        #6. JENIS SAMPELS
+        #6. GET JENIS SAMPELS
         Route::get('getjenissampel', [ApiController::class, 'GetJenisSampels']);
     #JENIS SAMPELS
 
     #METODES    
-        #7. METODES
+        #7. GET METODES
         Route::post('getmetodes', [ApiController::class, 'GetMetodes']);
-        #7. METODES
+        #7. GET METODES
     #METODES
+
+    #HALAMANS
+        #8. GET HALAMANS
+        #8. GET HALAMANS
+    #HALAMANS
 
     #DETAIL TRACKING
         #9. GET DETAIL TRACKING
@@ -76,41 +78,81 @@ Route::prefix('admin')->group(function () {
         #12. GET DATA SAMPELS BY ID
         Route::get('getdatasampelsbyid/{id?}', [ApiController::class, 'GetDataSampelsById']);
 
-        #12. INSERT DATA SAMPELS
-        Route::post('insertdatasampels/{jenis_sampels_id?}/{pelanggans_id?}/{pakets_id_s?}/{tanggal_masuk?}/{tanggal_selesai?}/{nomor_surat?}/{jumlah_sampel?}', [ApiController::class, 'InsertDataSampels']);
+        #13. INSERT DATA SAMPELS
+        Route::post('insertdatasampels/{jenis_sampels_id?}/{pelanggans_id?}/{pakets_id_s?}/{tanggal_masuk?}/{tanggal_selesai?}/{nomor_surat?}/{jumlah_sampel?}/{status?}', [ApiController::class, 'InsertDataSampels']);
+
+        #14. DELETE DATA SAMPELS 
+        Route::get('deletedatasampels/{id?}', [ApiController::class, 'DeleteDataSampels']);
+    
     #DATA SAMPELS
 
+    #HASIL ANALISISA
+        #15. GET HASIL ANALISA
+        Route::get('gethasilanalisas/{data_sampels_id?}', [ApiController::class, 'GetHasilAnalisas']);
+        #15. GET HASIL ANALISA
+
+        #16. UPDATE HASIL ANALISA
+        Route::post('updatehasilanalisas/{id?}/{hasil?}', [ApiController::class, 'UpdateHasilAnalisas']);
+        #16. UPDATE HASIL ANALISA        
+    #HASIL ANALISISA
+
+    #PELANGGANS
+        #17. GET PELANGGANS
+        Route::get('getpelanggans', [ApiController::class, 'GetPelanggans']);
+
+        #18. INSERT PELANGGANS
+        Route::post('insertpelanggans', [ApiController::class, 'InsertPelanggans']);
+
+        #19. UPDATE PELANGGANS
+        Route::post('updatepelanggans', [ApiController::class, 'UpdatePelanggans']);
+        
+        #20. DELETE PELANGGANS
+        Route::get('deletepelanggans', [ApiController::class, 'DeletePelanggans']);
+
+        #21. LOGIN PELANGGANS
+        Route::post('loginpelanggans', [ApiController::class, 'LoginPelanggans']);
+    #PELANGGANS
+
     #AKTIVITAS
-        #GET DATA AKTIVITAS 
+        #22. GET DATA AKTIVITAS 
         Route::get('getaktivitas', [ApiController::class, 'GetAktivitas']);
-        #GET DATA AKTIVITAS 
+        #22. GET DATA AKTIVITAS 
     #AKTIVITAS
 
-    #GET HASIL ANALISISA
-        # LINK : https://slab.srs-ssms.com/api/admin/gethasilanalisa/{data_sampels_id}
-        Route::get('gethasilanalisas/{data_sampels_id?}', [ApiController::class, 'GetHasilAnalisas']);
-    #GET HASIL ANALISISA
-    
-    #POST HASIL ANALISISA
-        Route::match(['get', 'post'], 'posthasilanalisa/{id?}/{v_parameter?}', [ApiController::class, 'PostHasilAnalisa']);
-    #POST HASIL ANALISISA
+    #LAB AKUN
+        #23. UPDATE LAB AKUNS
+        Route::get('/getakunlabs', [ApiController::class, 'GetAkunLabs']);
+
+        #24. LOGIN USERLAB 
+        Route::post('loginuserlab/{email?}/{password?}', [ApiController::class, 'LoginUserLab']);
+        
+        #25. UPDATE LAB AKUNS
+        Route::post('/updatelabakuns/{id?}/{metodes_id_s?}/{akses_levels_id?}/{nama?}/{email?}/{password?}/{jabatan?}/{status_akun?}', [ApiController::class, 'UpdateLabAkuns']);
+
+        #26. INSERT LAB AKUNS
+        Route::post('/insertlabakuns/{metodes_id_s?}/{akses_levels_id?}/{nama?}/{email?}/{password?}/{jabatan?}/{status_akun?}', [ApiController::class, 'InsertLabAkuns']);
+
+        #27. DELETE LAB AKUNS
+        Route::post('/deletelabakuns/{id?}', [ApiController::class, 'DeleteLabAkuns']);
+        
+    #LAB AKUN
 
     #PAKETS
-        #SELECT PAKETS
-        Route::post('getpakets', [ApiController::class, 'GetPakets']);
-        #SELECT PAKETS
+        #28. GET PAKETS
+        Route::get('getpakets', [ApiController::class, 'GetPakets']);
+        #28. GET PAKETS
         
-        #INSERT PAKETS
+        #29 . INSERT PAKETS
         Route::post('insertpakets/{jenis_sampels_id?}/{paket?}/{parameters_id_s?}/{harga?}', [ApiController::class, 'InsertPakets']);
-        #INSERT PAKETS
+        #29 . INSERT PAKETS
 
-        #UPDATE PAKETS
+        #30. UPDATE PAKETS
         Route::post('updatepakets/{id?}/{jenis_sampels_id?}/{paket?}/{parameters_id_s?}/{harga?}', [ApiController::class, 'UpdatePakets']);
-        #UPDATE PAKETS
+        #30. UPDATE PAKETS
 
-        #DELETE PAKETS
+        #31. DELETE PAKETS
         Route::get('deletepakets/{id?}', [ApiController::class, 'DeletePakets']);
-        #DELETE PAKETS
+        #31. DELETE PAKETS
     #PAKETS
 });
 
