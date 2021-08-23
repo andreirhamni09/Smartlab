@@ -16,7 +16,7 @@ class CreateAksesLevelsTable extends Migration
         Schema::create('akses_levels', function (Blueprint $table) {
             $table->tinyInteger('id')->primary();
             $table->string('jabatan');
-            $table->string('halamans_id_s', 45);
+            $table->string('halamans_id_s', 45)->nullable();
         });
     }
 

@@ -13,10 +13,19 @@ Route::prefix('admin')->group(function () {
         return redirect('admin/login');
     });
 
-    #PARAMETER
+#1 - 4 PARAMETER
     Route::get('/parameters', [MasterController::class, 'Parameters']);
-    Route::match(['get', 'post'], '/crud_parameters', [MasterController::class, 'CrudParameters']);
-    #PARAMETER
+    Route::post('/insertparameters', [MasterController::class, 'InsertParameter']);
+    Route::post('/updateparameters', [MasterController::class, 'UpdateParameters']);
+    Route::get('/deleteparameters/{id?}', [MasterController::class, 'DeleteParameters']);
+#1 - 4 PARAMETER
+
+#5 AKSES_LEVELS
+    Route::get('/getakseslevels', [MasterController::class, 'GetAksesLevels']);
+    Route::post('/insertakseslevels', [MasterController::class, 'InsertAksesLevels']);
+    Route::post('/updateakseslevels', [MasterController::class, 'UpdateAksesLevels']);
+    Route::get('/deleteakseslevels/{id?}', [MasterController::class, 'DeleteAksesLevels']);
+#5 AKSES_LEVELS
 
     #PELANGGAN
     Route::get('/pelanggans', [MasterController::class, 'Pelanggans']);
@@ -55,17 +64,4 @@ Route::prefix('admin')->group(function () {
     #DEKRIP TES
     Route::get('/dekrip', [MasterController::class, 'Dekrip']);
     #DEKRIP
-});
-
-
-Route::get('/surprise', function(){
-    return view('luar_biasa');
-});
-
-Route::get('/mantap', function(){
-    $str    = "L-L-L-L-L-L-L-L-L-L-L-L-L-L-L-L-L-L-L";
-    $str    = explode("-", $str);
-    foreach ($str as $key => $value) {
-        echo $key.' => '.$value.'<br>';
-    }
 });

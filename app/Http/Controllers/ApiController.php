@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\usr as ControllersUsr;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +28,7 @@ class ApiController extends Controller
     #1. GET PARAMETERS
     /**
      * @OA\Get(
-     *      path="/getparameter",
+     *      path="/getparameters",
      *      operationId="getProjectsList",
      *      tags={"1. Get Parameter"},
      *      summary="Mendapatkan List data Parameter",
@@ -44,49 +45,54 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    function GetParameters()
+    public static function GetParameters()
     {
         $response                   = new usr();
-        try {
+        $str_id                     = '';
+        $str_simbol                 = '';
+        $str_nama_unsur             = '';
+        $parameter                  = DB::table('parameters')
+        ->get();
+        $parameter                  = json_decode(json_encode($parameter), true);
 
-            $parameter                  = DB::table('parameters')
-                ->get();
-            $parameter                  = json_decode(json_encode($parameter), true);
-            if (count($parameter) < 1) {
+        try {
+            if(empty($parameter))
+            {
                 $response->success          = 0;
                 $response->messages         = 'DATA PARAMETER TIDAK DITEMUKAN';
-            } elseif (count($parameter) > 0) {
-                $str_id                     = '';
-                $str_simbol                 = '';
-                $str_nama_unsur             = '';
-
-                foreach ($parameter as $value) {
-                    $str_id                 .= $value['id'] . '-';
-                    $str_simbol             .= $value['simbol'] . '-';
-                    $str_nama_unsur         .= $value['nama_unsur'] . '-';
-                }
-
-                $str_id                     = substr($str_id, 0, -1);
-                $str_simbol                 = substr($str_simbol, 0, -1);
-                $str_nama_unsur             = substr($str_nama_unsur, 0, -1);
-
-                $response->id               = $str_id;
-                $response->simbol           = $str_simbol;
-                $response->nama_unsur       = $str_nama_unsur;
-                $response->success          = 1;
             }
-            die(json_encode($response));
+            else{
+                try {
+                    foreach ($parameter as $value) {
+                    $str_id                 .= $value['id'].'-';
+                    $str_simbol             .= $value['simbol'].'-';
+                    $str_nama_unsur         .= $value['nama_unsur'].'-';
+                    }
+    
+                    $str_id                     = substr($str_id, 0, -1);
+                    $str_simbol                 = substr($str_simbol, 0, -1);
+                    $str_nama_unsur             = substr($str_nama_unsur, 0, -1);
+    
+                    $response->id               = $str_id;
+                    $response->simbol           = $str_simbol;
+                    $response->nama_unsur       = $str_nama_unsur;
+                    $response->success          = 1;
+                } catch (Exception $e) {
+                    $response->success      = 0;
+                    $response->message      = 'GAGAL GET DATA, PESAN KESALAHAN ('.$e->getMessage().')';
+                }
+            }
         } catch (Exception $e) {
             $response->success      = 0;
-            $response->message      = $e->getMessage();
-            die(json_encode($response));
+            $response->message      = 'QUERY GET PARAMETER ERROR, PESAN KESALAHAN ('.$e->getMessage().')';
         }
+        return json_encode($response);
     }
     #1. GET PARAMETERS
 
     #2. INSERT PARAMETERS
     /**
-     * @OA\post(
+     * @OA\Post(
      *      path="/insertparameters/{simbol}/{nama_unsur}",
      *      operationId="getProjectsList",
      *      tags={"2. Insert Parameters"},
@@ -165,13 +171,13 @@ class ApiController extends Controller
             $response->message  = 'GAGAL MENAMBAHKAN DATA BARU :'. $e->getMessage();
         }
 
-        die(json_encode($response));
+        return json_encode($response);
     }
     #2. INSERT PARAMETERS
 
     #3. UPDATE PARAMETERS
     /**
-     * @OA\post(
+     * @OA\Post(
      *      path="/updateparameters/{id}/{simbol}/{nama_unsur}",
      *      operationId="getProjectsList",
      *      tags={"3. Update Parameters"},
@@ -223,7 +229,7 @@ class ApiController extends Controller
         
         $s_id = ''; $s_simbol = ''; $s_nama_unsur = '';
         if(
-            (!isset($request->id) OR !isset($request->simbol) OR !isset($request->nama_unsur)) OR
+            (!isset($request->id) OR !isset($request->simbol) OR !isset($request->nama_unsur)) AND
             (!isset($id) OR !isset($simbol) OR !isset($nama_unsur))
         )
         {
@@ -231,7 +237,7 @@ class ApiController extends Controller
             $response->message = 'DATA WAJIB DIISI';
         }
         elseif (
-            (isset($request->id) OR isset($request->simbol) OR isset($request->nama_unsur))
+            isset($request->id) OR isset($request->simbol) OR isset($request->nama_unsur)
         ) 
         {
             $s_id           = $request->id; 
@@ -239,7 +245,7 @@ class ApiController extends Controller
             $s_nama_unsur   = $request->nama_unsur;
         }
         elseif (
-            (isset($id) OR isset($simbol) OR isset($nama_unsur))
+            isset($id) OR isset($simbol) OR isset($nama_unsur)
         ) 
         {
             $s_id           = $id; 
@@ -251,6 +257,8 @@ class ApiController extends Controller
         ->where('id', '=', $s_id)
         ->first();
 
+        $updateparameters       = json_decode(json_encode($updateparameters), true);
+
         if(empty($updateparameters))
         {
             $response->success  = 0;
@@ -258,7 +266,7 @@ class ApiController extends Controller
         }
         else{
             try {
-                $updateparameters   = DB::table('parameters')
+                DB::table('parameters')
                 ->where('id', '=', $s_id)
                 ->update([
                     'simbol'        => $s_simbol,
@@ -266,19 +274,19 @@ class ApiController extends Controller
                 ]);
     
                 $response->success  = 1;
-                $response->message  = 'BERHASIL MENAMBAHKAN DATA KE TABEL PARAMETERS';
+                $response->message  = 'BERHASIL MELAKUKAN UPDATE DATA DENGAN ID :'.$s_id;
             } catch (Exception $e) {
                 $response->success  = 0;
                 $response->message  = 'GAGAL MELAKUKAN UPDATE DATA :'. $e->getMessage();
             }    
         }
-        die(json_encode($response));
+        return json_encode($response);
     }
     #3. UPDATE PARAMETERS
 
     #4. DELETE PARAMETERS
     /**
-     * @OA\post(
+     * @OA\Get(
      *      path="/deleteparameters/{id}",
      *      operationId="getProjectsList",
      *      tags={"4. Delete Parameters"},
@@ -305,19 +313,15 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    public static function DeleteParameters(Request $request, $id = null)
+    public static function DeleteParameters($id = null)
     {
         $response           = new usr();
         $deleteparameter    = '';
         $s_id               = '';
-        if(!isset($request->id) AND !isset($id))
+        if(!isset($id))
         {
             $response->success = 0;
             $response->message = 'DATA WAJIB DIISI';
-        }
-        elseif (isset($request->id))
-        {
-            $s_id           = $request->id; 
         }
         elseif (isset($id)) 
         {
@@ -330,7 +334,7 @@ class ApiController extends Controller
         if(empty($deleteparameter))
         {
             $response->success = 0;
-            $response->success = 'DATA DENGAN ID: '.$s_id.' DITEMUKAN';
+            $response->message = 'DATA DENGAN ID: '.$s_id.' DITEMUKAN';
         }
         else{
             try {
@@ -339,13 +343,13 @@ class ApiController extends Controller
                 ->delete();
 
                 $response->success = 1;
-                $response->success = 'DATA DENGAN ID :'.$s_id.' BERHASIL DIHAPUS';
+                $response->message = 'DATA DENGAN ID :'.$s_id.' BERHASIL DIHAPUS';
             } catch (Exception $e) {
                 $response->success = 0;
-                $response->success = 'GAGAL HAPUS DATA :'.$e->getMessage();
+                $response->message = 'GAGAL HAPUS DATA :'.$e->getMessage();
             }
         }
-        die(json_encode($response));
+        return json_encode($response);
     }
     #4. DELETE PARAMETERS
 
@@ -372,7 +376,7 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    function GetAksesLevels()
+    public static function GetAksesLevels()
     {
         $response                   = new usr();
         try {
@@ -403,12 +407,125 @@ class ApiController extends Controller
                 $response->halamans_id_s    = $str_halamans_id_s;
                 $response->success          = 1;
             }
-            die(json_encode($response));
         } catch (Exception $e) {
             $response->success      = 0;
             $response->message      = $e->getMessage();
-            die(json_encode($response));
+        }        
+        return json_encode($response);
+    }
+
+    # INSERT AKSES LEVELS
+    public static function InsertAksesLevels(Request $request)
+    {
+        $response   = new usr();
+        $rules      = [
+            'id'            => 'required|numeric|min:1',
+            'jabatan'       => 'required|string|min:2'
+        ];
+        $messages   = [
+            'id.required'               => 'ID AKSES LEVEL WAJIB DIISI',
+            'id.min'                    => 'ID AKSES LEVEL MINIMAL DIISI DENGAN ANGKA MINIMAL 1',
+            'jabatan.required'          => 'JABATAN WAJIB DIISI',
+            'jabatan.min'               => 'JABATAN WAJIB DIISI DENGAN HURUF MINIMAL 2 KARAKTER'
+        ];
+        
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = 'TERJADI KESALAHAN PENGISIAN DATA, PESAN KESALAHAN :'.$validator->errors()->first();
         }
+        else{
+            try {
+                DB::table('akses_levels')
+                ->insert([
+                    'id'            => $request->id,
+                    'jabatan'       => $request->jabatan,
+                    'halamans_id_s' => $request->halamans_id_s
+                ]);
+                $response->success = 1;
+                $response->message = 'AKSES LEVEL BARU BERHASIL DIINPUTKAN';
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = 'GAGAL MEMASUKAN DATA AKSES LEVEL BARU, PESAN KESALAHAN :'.$e->getMessage();
+            }
+        }   
+        return json_encode($response);
+    }
+
+    # UPDATE AKSES LEVELS
+    public static function UpdateAksesLevels(Request $request)
+    {
+        $response = new usr();  
+        $rules      = [
+            'u_id'            => 'required|numeric|min:1',
+            'u_jabatan'       => 'required|string|min:2'
+        ];
+        $messages   = [
+            'u_id.required'               => 'ID AKSES LEVEL WAJIB DIISI',
+            'u_id.min'                    => 'ID AKSES LEVEL MINIMAL DIISI DENGAN ANGKA MINIMAL 1',
+            'u_jabatan.required'          => 'JABATAN WAJIB DIISI',
+            'u_jabatan.min'               => 'JABATAN WAJIB DIISI DENGAN HURUF MINIMAL 2 KARAKTER'
+        ];
+        
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = 'TERJADI KESALAHAN PENGISIAN DATA, PESAN KESALAHAN :'.$validator->errors()->first();
+        }
+        else{
+            try {
+                DB::table('akses_levels')
+                ->where('id', '=', $request->id)
+                ->update([
+                    'id'            => $request->u_id,
+                    'jabatan'       => $request->u_jabatan,
+                    'halamans_id_s' => $request->u_halamans_id_s
+                ]);
+                $response->success = 1;
+                $response->message = 'AKSES LEVEL BARU BERHASIL DI UPDATE';
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = 'GAGAL UPDATE DATA AKSES LEVE, PESAN KESALAHAN :'.$e->getMessage();
+            }
+        }   
+        return json_encode($response);
+    }
+
+    # DELETE AKSES LEVELS
+    public static function DeleteAksesLevels($id = null)
+    {   
+        $response   = new usr();
+        $s_id       = '';
+        if(!isset($id)){
+            $response->success = 0;
+            $response->message = 'DATA ID AKSES LEVEL TIDAK BOLEH KOSONG';
+        }   
+        else{
+            $s_id   = $id;
+        }
+
+        $f_akseslevels = DB::table('akses_levels')
+        ->where('id', '=', $s_id)
+        ->first();
+
+        if(empty($f_akseslevels)){
+            $response->success = 0;
+            $response->message = 'DATA AKSES LEVEL TIDAK DITEMUKAN';
+        }
+        else{
+            try {
+                DB::table('akses_levels')
+                ->where('id', '=', $s_id)
+                ->delete();
+                
+                $response->success = 1;
+                $response->message = 'DATA AKSES LEVEL BERHASIL DIHAPUS';
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = 'GAGAL HAPUS DATA AKSES LEVELS, PESAN KESALAHAN :'.$e->getMessage();
+            }
+        }
+        return json_encode($response);
     }
     #5. GET AKSES LEVEL
 #5 AKSES LEVEL
@@ -434,7 +551,7 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    function GetJenisSampels()
+    public static function GetJenisSampels()
     {
         $response                   = new usr();
         try {
@@ -465,12 +582,11 @@ class ApiController extends Controller
                 $response->lambang_sampel   = $str_lambangSampel;
                 $response->success          = 1;
             }
-            die(json_encode($response));
         } catch (Exception $e) {
             $response->success      = 0;
             $response->message      = $e->getMessage();
-            die(json_encode($response));
-        }
+        }        
+        return json_encode($response);
     }
     #6. GET JENIS SAMPELS
 #6 JENIS SAMPEL
@@ -496,47 +612,38 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    function GetMetodes()
+    public static function GetMetodes()
     {
-        $response               = new usr();
-        try {
-            $metodes          = DB::table('metodes')
-                ->get();
-            $metodes          = json_decode(json_encode($metodes), true);
+        $response   = new usr();
+        $metodes    = DB::table('metodes')->get();
+        $metodes    = json_decode(json_encode($metodes), true);
 
-            $str_id                     = '';
-            $str_metode                 = '';
-            $str_parameters_id_s        = '';
+        $str_id                 = ''; $str_metode             = ''; $str_parameters_id_s    = '';
 
-            if (count($metodes) < 1) {
-                $response->success          = 0;
-                $response->messages         = 'DATA METODE TIDAK DITEMUKAN';
-            } else if (count($metodes) > 0) {
-                $str_id                     = '';
-                $str_metode                 = '';
-                $str_parameters_id_s        = '';
-
+        if(empty($metodes))
+        {
+            $response->success          = 0;
+            $response->messages         = 'DATA METODE TIDAK DITEMUKAN';
+        }
+        else{
+            try {
                 foreach ($metodes as $value) {
-                    $str_id                 .= $value['id'] . '-';
-                    $str_metode             .= $value['metode'] . '-';
-                    $str_parameters_id_s    .= $value['parameters_id_s'] . '-';
+                    $str_id                 .= $value['id'].'-';
+                    $str_metode             .= $value['metode'].'-';
+                    $str_parameters_id_s    .= $value['parameters_id_s'].'-';
                 }
-
-                $str_id                     = substr($str_id, 0, -1);
-                $str_metode                 = substr($str_metode, 0, -1);
-                $str_parameters_id_s        = substr($str_parameters_id_s, 0, -1);
-
                 $response->id                 = $str_id;
                 $response->metode             = $str_metode;
                 $response->parameters_id_s    = $str_parameters_id_s;
                 $response->success            = 1;
+                $response->message            = 'BERIKUT LIST METODE';
+
+            } catch (Exception $e) {
+                $response->success            = 0;
+                $response->message            = 'GAGAL MENDAPATKAN LIST METODE, PESAN KESALAHAN: '.$e->getMessage();
             }
-            die(json_encode($response));
-        } catch (Exception $e) {
-            $response->success      = 0;
-            $response->message      = $e->getMessage();
-            die(json_encode($response));
         }
+        die(json_encode($response));
     }
     #7. GET METODES
 #7 METODES
@@ -888,7 +995,7 @@ class ApiController extends Controller
 
     #12. GET DATA SAMPELS BY ID
     /**
-     * @OA\get(
+     * @OA\Get(
      *      path="/getdatasampelsbyid/{id}",
      *      operationId="getProjectsList",
      *      tags={"12. Get Data Sampels By Id"},
@@ -1010,7 +1117,7 @@ class ApiController extends Controller
 
     #13. INSERT DATA SAMPELS
     /**
-     * @OA\post(
+     * @OA\Post(
      *      path="/insertdatasampels/{jenis_sampels_id}/{pelanggans_id}/{pakets_id_s}/{tanggal_masuk}/{tanggal_selesai}/{nomor_surat}/{jumlah_sampel}/{status}",
      *      operationId="getProjectsList",
      *      tags={"13. Insert Data Sampel"},
@@ -1302,7 +1409,7 @@ class ApiController extends Controller
 
     #14. DELETE DATA SAMPELS
     /**
-     * @OA\get(
+     * @OA\Get(
      *      path="/deletedatasampels/{id}",
      *      operationId="getProjectsList",
      *      tags={"14. Delete Data Sampels"},
@@ -1389,7 +1496,7 @@ class ApiController extends Controller
     #14. DELETE DATA SAMPELS
 #11 - 14 DATA SAMPELS
 
-#16 - 17 HASIL ANALISA
+#15 - 16 HASIL ANALISA
     #15. GET HASIL ANALISA
     /**
      * @OA\Get(
@@ -1545,18 +1652,122 @@ class ApiController extends Controller
      * Returns list of projects
      */
     public static function GetPelanggans(){
-
+        $response       = new usr();
+        $pelanggans     = DB::table('pelanggans')
+        ->get();
+        $pelanggans     = json_decode(json_encode($pelanggans), true);
+        $s_id           = ''; $s_email              = ''; $s_password       = ''; 
+        $s_nama         = ''; $s_perusahaan         = ''; $s_nomor_telepon  = ''; 
+        $s_alamat       = ''; $s_tanggal_registrasi = ''; 
+        
+        if(empty($pelanggans)){
+            $response->success = 0;
+            $response->message = 'LIST DATA PELANGGAN BELUM TERISI PADA DATABASE';
+        }
+        else{
+            try {
+                foreach ($pelanggans as $value) {
+                    $s_id                   .= $value['id'].'-'; 
+                    $s_email                .= $value['email'].'-'; 
+                    $s_password             .= $value['password'].'-'; 
+                    $s_nama                 .= $value['nama'].'-'; 
+                    $s_perusahaan           .= $value['perusahaan'].'-'; 
+                    $s_nomor_telepon        .= $value['nomor_telepon'].'-'; 
+                    $s_alamat               .= $value['alamat'].'-'; 
+                    $tgl                     = strtotime($value['tanggal_registrasi']);
+                    $f_tgl                   = date('d/m/Y', $tgl);
+                    $s_tanggal_registrasi   .= $f_tgl.'-'; 
+                }
+                $response->id                   = substr($s_id, 0, -1);
+                $response->email                = substr($s_email, 0, -1);
+                $response->password             = substr($s_password, 0, -1);
+                $response->nama                 = substr($s_nama, 0, -1);
+                $response->perusahaan           = substr($s_perusahaan, 0, -1);    
+                $response->nomor_telepon        = substr($s_nomor_telepon, 0, -1);     
+                $response->alamat               = substr($s_alamat, 0, -1);
+                $response->tanggal_registrasi   = substr($s_tanggal_registrasi, 0, -1);
+                $response->success              = 1;           
+                $response->message              = 'BERIKUT DATA LIST DARI PELANGGAN';
+            } catch (Exception $e) {
+                $response->success              = 0;           
+                $response->message              = 'GAGAL MENDAPATKAN LIST DATA PELANGGAN, PESAN KESALAHAN :'.$e->getMessage();
+            }
+        }
+        die(json_encode($response));
     }
     #17. GET PELANGGANS
     
     #18. INSERT PELANGGANS
     /**
      * @OA\Post(
-     *      path="/insertpelanggans",
+     *      path="/insertpelanggans/{email}/{password}/{nama}/{perusahaan}/{nomor_telepon}/{alamat}/{tanggal_registrasi}",
      *      operationId="getProjectsList",
      *      tags={"18. Insert Pelanggan"},
      *      summary="Mendaftarkan Data Pelanggan Baru Ke Database Pelanggan",
      *      description="Mendaftarkan Data Pelanggan Baru Ke Database Pelanggan",
+     *      @OA\Parameter(
+     *          name="email",
+     *          description="EMAIL",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="password",
+     *          description="PASSWORD",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="nama",
+     *          description="NAMA",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="perusahaan",
+     *          description="PERUSAHAAN",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="nomor_telepon",
+     *          description="NOMOR TELEPON",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="alamat",
+     *          description="ALAMAT",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="tanggal_registrasi",
+     *          description="TANGGAL REGISTRASI",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
      *      @OA\Response(
      *          response=200,
      *          description="successful operation"
@@ -1569,19 +1780,201 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    public static function InsertPelanggans(){
+    public static function InsertPelanggans(Request $request, $email = null,
+    $password = null, $nama = null, $perusahaan = null,
+    $nomor_telepon = null, $alamat = null, $tanggal_registrasi = null)
+    {
+        $response = new usr();
+        $s_email                    = ''; $s_password       = ''; $s_nama     = '';
+        $s_perusahaan               = ''; $s_nomor_telepon  = ''; $s_alamat   = '';
+        $s_tanggal_registrasi       = '';
+        
+        if(
+            (!isset($request->email) OR !isset($request->password) OR !isset($request->nama) OR !isset($request->perusahaan) OR !isset($request->nomor_telepon) OR !isset($request->alamat) OR !isset($request->tanggal_registrasi)) 
+            AND
+            (empty($email) OR empty($password) OR empty($nama) OR empty($perusahaan) OR empty($nomor_telepon) OR empty($alamat) OR empty($tanggal_registrasi))
+        ){
+            $response->success = 0;
+            $response->message = 'DATA PELANGGAN KOSONG';
+        }
+        elseif(
+            isset($request->email) OR isset($request->password) OR isset($request->nama) OR isset($request->perusahaan) OR isset($request->nomor_telepon) OR isset($request->alamat) OR isset($request->tanggal_registrasi) 
+        ){
+            $s_email                = $request->email; 
+            $s_password             = $request->password; 
+            $s_nama                 = $request->nama;
+            $s_perusahaan           = $request->perusahaan; 
+            $s_nomor_telepon        = $request->nomor_telepon; 
+            $s_alamat               = $request->alamat;
 
+            $tgl                    = strtotime($request->tanggal_registrasi);
+            $f_tgl                  = date('Y-m-d');
+            $s_tanggal_registrasi   = $f_tgl;
+        }
+        elseif(
+            !empty($email) OR !empty($password) OR !empty($nama) OR !empty($perusahaan) OR !empty($nomor_telepon) OR !empty($alamat) OR !empty($tanggal_registrasi)
+        ){
+            $s_email                = $email; 
+            $s_password             = $password; 
+            $s_nama                 = $nama;
+            $s_perusahaan           = $perusahaan; 
+            $s_nomor_telepon        = $nomor_telepon; 
+            $s_alamat               = $alamat;
+
+            $tgl                    = strtotime($tanggal_registrasi);
+            $f_tgl                  = date('Y-m-d');
+            $s_tanggal_registrasi   = $f_tgl;
+        }
+
+        $arr_pelanggan = array(
+            'email'                 => $s_email,
+            'password'              => $s_password,
+            'nama'                  => $s_nama,
+            'perusahaan'            => $s_perusahaan,
+            'nomor_telepon'         => $s_nomor_telepon,
+            'alamat'                => $s_alamat,
+            'tanggal_registrasi'    => $s_tanggal_registrasi 
+        );
+
+        $rules   = [
+            'email'                 => 'required|email', 
+            'password'              => 'required|string|min:8', 
+            'nama'                  => 'required|string|min:3|max:50', 
+            'perusahaan'            => 'required|string|min:3|max:30',   
+            'nomor_telepon'         => 'required|string|min:8|max:12',
+            'alamat'                => 'required|string|min:3|max:250',
+            'tanggal_registrasi'    => 'required|date|after:yesterday'
+        ];
+        $messages = [
+            'email.required'                => 'EMAIL WAJIB DIISI', 
+            'email.email'                   => 'PENGISIAN EMAIL HARUS DIISI DENGAN FORMAT YANG BENAR', 
+            'password.required'             => 'PASSWORD WAJIB DIISI', 
+            'password.min'                  => 'MINIMAL PENGISIAN PASSWORD ADALAH 8 KARAKTER',
+            'nama.required'                 => 'NAMA WAJIB DIISI',
+            'nama.min'                      => 'MINIMAL PENGISIAN NAMA ADALAH 3 KARAKTER',
+            'nama.max'                      => 'MAXIMAL PENGISISAN NAMA ADALAH 50 KARAKTER', 
+            'perusahaan.required'           => 'PERUSAHAAN WAJIB DIISI', 
+            'perusahaan.min'                => 'MINIMAL PENGISIAN PERUSAHAAN ADALAH 3 KARAKTER', 
+            'perusahaan.max'                => 'MAXIMAL PENGISISAN PERUSAHAAN ADALAH 30 KARAKTER',   
+            'nomor_telepon.required'        => 'NOMOR TELEPON WAJIB DIISI',   
+            'nomor_telepon.min'             => 'MINIMAL PENGISIAN NOMOR TELEPON ADALAH 8 KARAKTER',   
+            'nomor_telepon.max'             => 'MAXSIMAL PENGISIAN NOMOR TELEPON ADALAH 12 KARAKTER',
+            'alamat.required'               => 'ALAMAT WAJIB DIISI',
+            'alamat.min'                    => 'MINIMAL PENGISIAN ALAMAT ADALAH 3 KARAKTER',
+            'alamat.max'                    => 'MINIMAL PENGISIAN ALAMAT ADALAH 250 KARAKTER',
+            'tanggal_registrasi.required'   => 'TANGGAL WAJIB DIISI',
+            'tanggal_registrasi.after'      => 'MINIMAL PENGISISAN TANGGAL ADALAH HARI INI'
+        ];
+
+        $validator = Validator::make($arr_pelanggan, $rules, $messages);
+
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = $validator->errors()->first();
+        }
+        else{
+            try {
+                DB::table('pelanggans')
+                ->insert([
+                    'email'                 => $arr_pelanggan['email'],
+                    'password'              => $arr_pelanggan['password'],
+                    'nama'                  => $arr_pelanggan['nama'],
+                    'perusahaan'            => $arr_pelanggan['perusahaan'],
+                    'nomor_telepon'         => $arr_pelanggan['nomor_telepon'],
+                    'alamat'                => $arr_pelanggan['alamat'],
+                    'tanggal_registrasi'    => $arr_pelanggan['tanggal_registrasi']
+                ]);
+                $response->success = 1;
+                $response->message = 'BERHASIL MELAKUKAN INSERT DATA PELANGGAN';
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = 'GAGAL MELAKUKAN INSERT DATA, PESAN KESALAHAN : '.$e->getMessage();
+            }
+        }
+        die(json_encode($response));
     }
     #18. INSERT PELANGGANS
     
     #19. UPDATE PELANGGANS  
     /**
      * @OA\Post(
-     *      path="/updatepelanggans",
+     *      path="/updatepelanggans/{id}/{email}/{password}/{nama}/{perusahaan}/{nomor_telepon}/{alamat}/{tanggal_registrasi}",
      *      operationId="getProjectsList",
      *      tags={"19. Update Pelanggan"},
      *      summary="Melakukan Update Data Pelanggan Berdasarkan Parameter Yang Dikirimkan",
      *      description="Melakukan Update Data Pelanggan Berdasarkan Parameter Yang Dikirimkan",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="ID",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="email",
+     *          description="EMAIL",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="password",
+     *          description="PASSWORD",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="nama",
+     *          description="NAMA",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="perusahaan",
+     *          description="PERUSAHAAN",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="nomor_telepon",
+     *          description="NOMOR TELEPON",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="alamat",
+     *          description="ALAMAT",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="tanggal_registrasi",
+     *          description="TANGGAL REGISTRASI",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
      *      @OA\Response(
      *          response=200,
      *          description="successful operation"
@@ -1594,19 +1987,155 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */  
-    public static function UpdatePelanggans(){
+    public static function UpdatePelanggans(Request $request, $id = null, $email = null,
+    $password = null, $nama = null, $perusahaan = null,
+    $nomor_telepon = null, $alamat = null, $tanggal_registrasi = null){
+        $response       = new usr();
 
+        $s_id           = ''; $s_email                    = ''; $s_password       = ''; 
+        $s_nama         = ''; $s_perusahaan               = ''; $s_nomor_telepon  = ''; 
+        $s_alamat       = ''; $s_tanggal_registrasi       = '';
+
+        if(
+            (!isset($request->id) OR !isset($request->email) OR !isset($request->password) OR !isset($request->nama) OR !isset($request->perusahaan) OR !isset($request->nomor_telepon) OR !isset($request->alamat) OR !isset($request->tanggal_registrasi)) 
+            AND
+            (empty($id) OR empty($email) OR empty($password) OR empty($nama) OR empty($perusahaan) OR empty($nomor_telepon) OR empty($alamat) OR empty($tanggal_registrasi))
+        ){
+            $response->success = 0;
+            $response->message = 'DATA UNTUK MELAKUKAN UPDATE DATA PELANGGAN TIDAK BOLEH KOSONG';
+        }
+        elseif(
+            isset($request->id) OR isset($request->email) OR isset($request->password) OR isset($request->nama) OR isset($request->perusahaan) OR isset($request->nomor_telepon) OR isset($request->alamat) OR isset($request->tanggal_registrasi) 
+        ){
+            $s_id                   = $request->id; 
+            $s_email                = $request->email; 
+            $s_password             = $request->password; 
+            $s_nama                 = $request->nama; 
+            $s_perusahaan           = $request->perusahaan; 
+            $s_nomor_telepon        = $request->nomor_telepon; 
+            $s_alamat               = $request->alamat;
+
+            $tgl                    = strtotime($request->tanggal_registrasi);
+            $f_tgl                  = date('d-m-y', $tgl); 
+            $s_tanggal_registrasi   = $f_tgl;
+        }
+        elseif(
+            !empty($id) OR !empty($email) OR !empty($password) OR !empty($nama) OR !empty($perusahaan) OR !empty($nomor_telepon) OR !empty($alamat) OR !empty($tanggal_registrasi)
+        ){
+            $s_id                   = $id; 
+            $s_email                = $email; 
+            $s_password             = $password; 
+            $s_nama                 = $nama; 
+            $s_perusahaan           = $perusahaan; 
+            $s_nomor_telepon        = $nomor_telepon; 
+            $s_alamat               = $alamat;
+
+            $tgl                    = strtotime($tanggal_registrasi);
+            $f_tgl                  = date('d-m-y', $tgl); 
+            $s_tanggal_registrasi   = $f_tgl;
+        }
+
+        $f_pelanggans   = DB::table('pelanggans')
+        ->where('id', '=', $s_id)
+        ->first(); 
+        $f_pelanggans   = json_decode(json_encode($f_pelanggans), true);
+
+        if(empty($f_pelanggans)){
+            $response->success = 0;
+            $response->message = 'PELANGGAN DENGAN ID : '.$s_id.' TIDAK DITEMUKAN';
+        }
+
+        $arr_pelanggan  = array(
+            'id'                    => $s_id,
+            'email'                 => $s_email,
+            'password'              => $s_password,
+            'nama'                  => $s_nama,
+            'perusahaan'            => $s_perusahaan,
+            'nomor_telepon'         => $s_nomor_telepon,
+            'alamat'                => $s_alamat,
+            'tanggal_registrasi'    => $s_tanggal_registrasi
+        );
+
+        $rules   = [
+            'id'                    => 'required|exists:pelanggans,id',
+            'email'                 => 'required|email', 
+            'password'              => 'required|string|min:8', 
+            'nama'                  => 'required|string|min:3|max:50', 
+            'perusahaan'            => 'required|string|min:3|max:30',   
+            'nomor_telepon'         => 'required|string|min:8|max:12',
+            'alamat'                => 'required|string|min:3|max:250',
+            'tanggal_registrasi'    => 'required|date|after:today'
+        ];
+        $messages = [
+            'id.required'                   => 'ID PELANGGAN WAJIB DIISI',
+            'id.exists'                     => 'ID PELANGGAN TIDAK DITEMUKAN',
+            'email.required'                => 'EMAIL WAJIB DIISI', 
+            'email.email'                   => 'PENGISIAN EMAIL HARUS DIISI DENGAN FORMAT YANG BENAR', 
+            'password.required'             => 'PASSWORD WAJIB DIISI', 
+            'password.min'                  => 'MINIMAL PENGISIAN PASSWORD ADALAH 8 KARAKTER',
+            'nama.required'                 => 'NAMA WAJIB DIISI',
+            'nama.min'                      => 'MINIMAL PENGISIAN NAMA ADALAH 3 KARAKTER',
+            'nama.max'                      => 'MAXIMAL PENGISISAN NAMA ADALAH 50 KARAKTER', 
+            'perusahaan.required'           => 'PERUSAHAAN WAJIB DIISI', 
+            'perusahaan.min'                => 'MINIMAL PENGISIAN PERUSAHAAN ADALAH 3 KARAKTER', 
+            'perusahaan.max'                => 'MAXIMAL PENGISISAN PERUSAHAAN ADALAH 30 KARAKTER',   
+            'nomor_telepon.required'        => 'NOMOR TELEPON WAJIB DIISI',   
+            'nomor_telepon.min'             => 'MINIMAL PENGISIAN NOMOR TELEPON ADALAH 8 KARAKTER',   
+            'nomor_telepon.max'             => 'MAXSIMAL PENGISIAN NOMOR TELEPON ADALAH 12 KARAKTER',
+            'alamat.required'               => 'ALAMAT WAJIB DIISI',
+            'alamat.min'                    => 'MINIMAL PENGISIAN ALAMAT ADALAH 3 KARAKTER',
+            'alamat.max'                    => 'MINIMAL PENGISIAN ALAMAT ADALAH 250 KARAKTER',
+            'tanggal_registrasi.required'   => 'TANGGAL WAJIB DIISI',
+            'tanggal_registrasi.after'      => 'MINIMAL PENGISISAN TANGGAL ADALAH HARI INI'
+        ];
+
+        $validator = Validator::make($arr_pelanggan, $rules, $messages);
+
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = $validator->errors()->first();
+        }
+        else{
+            try {
+                DB::table('pelanggans')
+                ->where('id', '=', $arr_pelanggan['id'])
+                ->update([
+                    'email'                 => $arr_pelanggan['email'],
+                    'password'              => $arr_pelanggan['password'],
+                    'nama'                  => $arr_pelanggan['nama'],
+                    'perusahaan'            => $arr_pelanggan['perusahaan'],
+                    'nomor_telepon'         => $arr_pelanggan['nomor_telepon'],
+                    'alamat'                => $arr_pelanggan['alamat'],
+                    'tanggal_registrasi'    => $arr_pelanggan['tanggal_registrasi']
+                ]);
+                $response->success = 1;
+                $response->message = 'PERUBAHAN DATA PELANGGAN DENGAN ID: '.$arr_pelanggan['id'].', BERHASIL DILAKUKAN.';
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = 'PERUBAHAN DATA PELANGGAN DENGAN ID: '.$arr_pelanggan['id'].', GAGAL DILAKUKAN. PESAN KESALAHAN :'.$e->getMessage();
+            }
+        }
+        die(json_encode($response));
     }
     #19. UPDATE PELANGGANS
     
     #20. DELETE PELANGGANS  
     /**
-     * @OA\Get(
-     *      path="/deletepelanggans",
+     * @OA\Post(
+     *      path="/deletepelanggans/{id}",
      *      operationId="getProjectsList",
      *      tags={"20. Delete Pelanggan"},
      *      summary="Hapus Data Pelanggan Berdasarkan ID Pelanggan Yang Dikirimkan",
      *      description="Hapus Data Pelanggan Berdasarkan ID Pelanggan Yang Dikirimkan",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="ID",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
      *      @OA\Response(
      *          response=200,
      *          description="successful operation"
@@ -1619,19 +2148,70 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    public static function DeletePelanggans(){
+    public static function DeletePelanggans(Request $request, $id = null){
+        $response   = new usr();
+        $s_id       = '';
+        if(!isset($request->id) AND empty($id)){
+            $response->success = 0;
+            $response->message = 'TIDAK ADA ID PELANGGAN YANG AKAN DIHAPUS';
+        }
+        elseif (isset($response->id)) {
+            $s_id   = $response->id;
+        }
+        elseif (!empty($id)) {
+            $s_id   = $id;
+        }
+        $f_pelanggans = DB::table('pelanggans')
+        ->where('id', '=', $s_id)
+        ->get();
+        $f_pelanggans = json_decode(json_encode($f_pelanggans), true);
+        if(empty($f_pelanggans)){
+            $response->success = 0;
+            $response->message = 'DATA DENGAN ID: '.$s_id.' TIDAK DITEMUKAN.';
+        }
+        else{
+            try {
+                DB::table('pelanggans')
+                ->where('id', '=', $s_id)
+                ->delete();
 
+                $response->success = 1;
+                $response->message = 'DATA DENGAN ID: '.$s_id.' TELAH DIHAPUS.';
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = 'GAGAL MENGHAPUS PELANGGAN, PESAN KESALAHAN: '.$e->getMessage();
+            }
+        }
+        die(json_encode($response));
     }
     #20. DELETE PELANGGANS
 
     #21. LOGIN PELANGGANS
     /**
      * @OA\Post(
-     *      path="/loginpelanggans",
+     *      path="/loginpelanggans/{email}/{password}",
      *      operationId="getProjectsList",
      *      tags={"21. Login Pelanggan"},
      *      summary="Login User Dengan Status Pelangan",
      *      description="Login User Dengan Status Pelangan",
+     *      @OA\Parameter(
+     *          name="email",
+     *          description="EMAIL",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="password",
+     *          description="PASSWORD",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
      *      @OA\Response(
      *          response=200,
      *          description="successful operation"
@@ -1644,9 +2224,66 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    public static function LoginPelanggans()
+    public static function LoginPelanggans(Request $request, $email = null, $password = null)
     {
+        $response = new usr();
+        $s_id           = ''; $s_email                    = ''; $s_password       = ''; 
+        $s_nama         = ''; $s_perusahaan               = ''; $s_nomor_telepon  = ''; 
+        $s_alamat       = ''; $s_tanggal_registrasi       = '';
+        if(
+            (!isset($request->email) OR !isset($request->password)) AND
+            (empty($email) OR empty($password))
+        ){
+            $response->success = 0;
+            $response->message = 'EMAIL DAN PASSWORD WAJIB DIISI';
+        }
+        elseif (
+            isset($request->email) OR isset($request->password)
+        ) {
+            $s_email        = $request->email; 
+            $s_password     = $request->password;
+        }
+        elseif (
+            !empty($email) OR !empty($password)
+        ) {
+            $s_email        = $email; 
+            $s_password     = $password;
+        }
 
+        try {
+            $l_pelanggans   = DB::table('pelanggans')
+            ->where('email', '=', $s_email)
+            ->where('password', '=', $s_password)
+            ->first();
+            $l_pelanggans   = json_decode(json_encode($l_pelanggans),true);
+            if(empty($l_pelanggans)){
+                $response->success = 0;
+                $response->message = 'GAGAL LOGIN DATA TIDAK DITEMUKAN';
+            }
+            else{
+                try {
+                    $response->id                   = $l_pelanggans['id']; 
+                    $response->email                = $l_pelanggans['email']; 
+                    $response->password             = $l_pelanggans['password']; 
+                    $response->nama                 = $l_pelanggans['nama']; 
+                    $response->perusahaan           = $l_pelanggans['perusahaan']; 
+                    $response->nomor_telepon        = $l_pelanggans['nomor_telepon']; 
+                    $response->alamat               = $l_pelanggans['alamat']; 
+                    $response->tanggal_registrasi   = $l_pelanggans['tanggal_registrasi']; 
+
+                    $response->success              = 1;
+                    $response->message              = 'BERHASIL MELAKUKAN LOGIN';
+                } catch (Exception $e) {
+                    $response->success              = 0;
+                    $response->message              = 'GAGAL MELAKUKAN LOGIN, PESAN KESALAHAN ('.$e->getMessage().')';
+                }
+            }
+        } catch (Exception $e) {
+            $response->success = 0;
+            $response->message = 'QUERY LOGIN SALAH, PESAN KESALAHAN ('.$e->getMessage().')';
+        }
+
+        die(json_encode($response));
     }
     #21. LOGIN PELANGGANS
 #17 - 21 PELANGGANS
@@ -1672,7 +2309,7 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    function GetAktivitas()
+    public static function GetAktivitas()
     {
         $response               = new usr();
         try {
@@ -1715,7 +2352,7 @@ class ApiController extends Controller
 #23 - 27 LAB AKUN
     #23. GET LAB AKUNS
     /**
-     * @OA\get(
+     * @OA\Get(
      *      path="/getakunlabs",
      *      operationId="getProjectsList",
      *      tags={"23. Get Data Akun Lab"},
@@ -1825,7 +2462,7 @@ class ApiController extends Controller
      *     },
      * )
      */
-    function LoginUserLab(Request $request, $email = null, $password = null)
+    public static function LoginUserLab(Request $request, $email = null, $password = null)
     {
         $response       = new usr();
         $str_email      = '';
@@ -1878,7 +2515,7 @@ class ApiController extends Controller
 
     #25. UPDATE LAB AKUNS
     /**
-     * @OA\post(
+     * @OA\Post(
      *      path="/updatelabakuns/{id}/{metodes_id_s}/{akses_levels_id}/{nama}/{email}/{password}/{jabatan}/{status_akun}",
      *      operationId="getProjectsList",
      *      tags={"25. Update Akun Lab"},
@@ -2089,7 +2726,7 @@ class ApiController extends Controller
 
     #26. INSERT LAB AKUNS
     /**
-     * @OA\post(
+     * @OA\Post(
      *      path="/insertlabakuns/{metodes_id_s}/{akses_levels_id}/{nama}/{email}/{password}/{jabatan}/{status_akun}",
      *      operationId="getProjectsList",
      *      tags={"26. Insert Akun Lab"},
@@ -2283,7 +2920,7 @@ class ApiController extends Controller
     
     #27. DELETE LAB AKUNS
     /**
-     * @OA\post(
+     * @OA\Post(
      *      path="/deletelabakuns/{id}",
      *      operationId="getProjectsList",
      *      tags={"27. Delete Akun Lab"},

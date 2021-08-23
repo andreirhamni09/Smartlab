@@ -35,35 +35,19 @@
 
                         <div class="card-body table-responsive">
                             <div style="width:70%; margin-left: auto; margin-right:auto;">
-                                <form action="{{ url('admin/crud_parameter') }}" method="POST">
+                                <form action="{{ url('admin/insertparameters') }}" method="POST">
                                     {{ csrf_field() }}
                                     <div class="row">
                                         <div class="col-sm">
                                             <div class="form-group">
-                                                <label>Parameter</label>
-                                                <input type="text" name="parameter" class="form-control" placeholder="Parameter ..." autofocus>
+                                                <label>Simbol</label>
+                                                <input type="text" name="simbol" class="form-control" placeholder="Simbol ..." autofocus>
                                             </div>
                                         </div>
-                                        <div class="col-sm-3">                                            
+                                        <div class="col-sm-6">                                            
                                             <div class="form-group">
-                                                <label>Harga (Rp.)</label>
-                                                <div class="row">
-                                                    <div class="col-sm-2">
-                                                        <label for="">Rp.</label>
-                                                    </div>                                                    
-                                                    <div class="col-sm-10">
-                                                        <input type="text" id="rupiah" name="harga" class="form-control" placeholder="Harga ...">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="col-sm-3">                                            
-                                            <div class="form-group">
-                                                <label>Jenis Sampel</label>
-                                                <select class="form-control" name="jenis_sampel">
-                                                    <option disabled selected>--PILIH JANIS SAMPEL--</option>
-                                                </select>
+                                                <label>Nama Unsur</label>
+                                                <input type="text" name="nama_unsur" class="form-control" placeholder="Nama Unsur ...">
                                             </div>
                                         </div>
                                         <div class="col-sm-2">
@@ -95,23 +79,46 @@
                                 <table class="table table-bordered table-hover text-center">
                                     <thead>
                                         <tr>
-                                            <th class="hijau">NO</th>
-                                            <th class="biru" style="width:40%;">SIMBOL</th>
-                                            <th class="biru" style="width: 27%;">NAMA UNSUR</th>
-                                            <th class="biru "style="width: 18%;">ACTION</th>
+                                            <th class="hijau" style="width:15%;">NO</th>
+                                            <th class="biru" style="width:20%;">SIMBOL</th>
+                                            <th class="biru" style="width: 40%;">NAMA UNSUR</th>
+                                            <th class="biru" style="width: 20%;">ACTION</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if(count($parameters) == 0)
+                                        @if(empty($parameters))
                                             <tr>
                                                 <td colspan="5"><h4>BELUM ADA DATA YANG DIINPUTKAN</h4></td>
                                             </tr>
                                         @else
-                                            @foreach($parameters as $p)
-                                            <form action="{{ url('admin/crud_parameters') }}" method="post">
-                                                {{ csrf_field() }}
-                                            </form>
-                                            @endforeach
+                                            <?php
+                                                $arr_parameters_id          = explode('-', $parameters['id']);
+                                                $arr_parameters_simbol      = explode('-', $parameters['simbol']);
+                                                $arr_parameters_nama_unsur  = explode('-', $parameters['nama_unsur']);
+                                                $no_parameters              = 1;
+                                            ?>
+                                            @for($i = 0; $i < count($arr_parameters_id); $i++)                                                
+                                                <form action="{{ url('admin/updateparameters')}}" method="post" >
+                                                    {{ csrf_field() }}
+                                                    <input type="hidden" name="id" class="form-control" value="{{ $arr_parameters_id[$i] }}" placeholder="{{ $arr_parameters_id[$i] }}">
+                                                    <tr>
+                                                        <td>{{ $no_parameters }}</td>
+                                                        <td><input name="simbol" class="form-control" value="{{ $arr_parameters_simbol[$i] }}" placeholder="{{ $arr_parameters_simbol[$i] }}"></td>
+                                                        <td><input name="nama_unsur" class="form-control" value="{{ $arr_parameters_nama_unsur[$i] }}" placeholder="{{ $arr_parameters_nama_unsur[$i] }}"></td>
+                                                        <td style="width: 40%;">
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <button class="btn btn-primary" type="submit" name="update">UPDATE</button>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <a href="deleteparameters/{{$arr_parameters_id[$i]}}" value="add" class="btn btn-danger">DELETE</a>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </form>
+                                            <?php $no_parameters++; ?>
+                                            @endfor
                                         @endif
                                     </tbody>
                                 </table>

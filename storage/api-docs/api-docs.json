@@ -19,7 +19,7 @@
         }
     ],
     "paths": {
-        "/getparameter": {
+        "/getparameters": {
             "get": {
                 "tags": [
                     "1. Get Parameter"
@@ -138,7 +138,7 @@
             }
         },
         "/deleteparameters/{id}": {
-            "post": {
+            "get": {
                 "tags": [
                     "4. Delete Parameters"
                 ],
@@ -224,6 +224,29 @@
                 ],
                 "summary": "Mendapatkan List Metode",
                 "description": "Mendapatkan List Metode",
+                "operationId": "getProjectsList",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        },
+        "/gethalamans": {
+            "get": {
+                "tags": [
+                    "8. Get Halamans"
+                ],
+                "summary": "Mendapatkan List Data Halaman Yang Terdaftar",
+                "description": "Mendapatkan List Data Halaman Yang Terdaftar",
                 "operationId": "getProjectsList",
                 "responses": {
                     "200": {
@@ -638,7 +661,7 @@
                 ]
             }
         },
-        "/insertpelanggans": {
+        "/insertpelanggans/{email}/{password}/{nama}/{perusahaan}/{nomor_telepon}/{alamat}/{tanggal_registrasi}": {
             "post": {
                 "tags": [
                     "18. Insert Pelanggan"
@@ -646,6 +669,71 @@
                 "summary": "Mendaftarkan Data Pelanggan Baru Ke Database Pelanggan",
                 "description": "Mendaftarkan Data Pelanggan Baru Ke Database Pelanggan",
                 "operationId": "getProjectsList",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "EMAIL",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "path",
+                        "description": "PASSWORD",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "nama",
+                        "in": "path",
+                        "description": "NAMA",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "perusahaan",
+                        "in": "path",
+                        "description": "PERUSAHAAN",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "nomor_telepon",
+                        "in": "path",
+                        "description": "NOMOR TELEPON",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "alamat",
+                        "in": "path",
+                        "description": "ALAMAT",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tanggal_registrasi",
+                        "in": "path",
+                        "description": "TANGGAL REGISTRASI",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
@@ -661,7 +749,7 @@
                 ]
             }
         },
-        "/updatepelanggans": {
+        "/updatepelanggans/{id}/{email}/{password}/{nama}/{perusahaan}/{nomor_telepon}/{alamat}/{tanggal_registrasi}": {
             "post": {
                 "tags": [
                     "19. Update Pelanggan"
@@ -669,6 +757,80 @@
                 "summary": "Melakukan Update Data Pelanggan Berdasarkan Parameter Yang Dikirimkan",
                 "description": "Melakukan Update Data Pelanggan Berdasarkan Parameter Yang Dikirimkan",
                 "operationId": "getProjectsList",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "EMAIL",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "path",
+                        "description": "PASSWORD",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "nama",
+                        "in": "path",
+                        "description": "NAMA",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "perusahaan",
+                        "in": "path",
+                        "description": "PERUSAHAAN",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "nomor_telepon",
+                        "in": "path",
+                        "description": "NOMOR TELEPON",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "alamat",
+                        "in": "path",
+                        "description": "ALAMAT",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tanggal_registrasi",
+                        "in": "path",
+                        "description": "TANGGAL REGISTRASI",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
@@ -684,14 +846,25 @@
                 ]
             }
         },
-        "/deletepelanggans": {
-            "get": {
+        "/deletepelanggans/{id}": {
+            "post": {
                 "tags": [
                     "20. Delete Pelanggan"
                 ],
                 "summary": "Hapus Data Pelanggan Berdasarkan ID Pelanggan Yang Dikirimkan",
                 "description": "Hapus Data Pelanggan Berdasarkan ID Pelanggan Yang Dikirimkan",
                 "operationId": "getProjectsList",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
@@ -707,7 +880,7 @@
                 ]
             }
         },
-        "/loginpelanggans": {
+        "/loginpelanggans/{email}/{password}": {
             "post": {
                 "tags": [
                     "21. Login Pelanggan"
@@ -715,6 +888,26 @@
                 "summary": "Login User Dengan Status Pelangan",
                 "description": "Login User Dengan Status Pelangan",
                 "operationId": "getProjectsList",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "EMAIL",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "path",
+                        "description": "PASSWORD",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"

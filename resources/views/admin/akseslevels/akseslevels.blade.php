@@ -42,8 +42,8 @@
                         </div>
 
                         <div class="card-body table-responsive">
-                            <div class="col-md-6" style="margin-left: auto; margin-right: auto;">
-                                <form action="{{ url('admin/crud_akseslevel') }}" method="POST">
+                            <div class="col-md-10" style="margin-left: auto; margin-right: auto;">
+                                <form action="{{ url('admin/insertakseslevels') }}" method="POST">
                                     {{ csrf_field() }}
                                     <div class="row">
                                         <div class="col-sm-3">
@@ -57,10 +57,21 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-3">
                                             <div class="form-group">
                                                 <label>Nama Jabatan</label>
                                                 <input type="text" name="jabatan" class="form-control" placeholder="Masukan Nama Jabatan ...">
+                                                @if(session('error_insert'))
+                                                    @if ($errors->has('jabatan'))
+                                                        <span class="text-danger">{{ $errors->first('jabatan') }}</span>
+                                                    @endif
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <div class="form-group">
+                                                <label>Halaman Id</label>
+                                                <input type="text" name="halamans_id_s" class="form-control" placeholder="Masukan Daftar Halaman Id ...">
                                                 @if(session('error_insert'))
                                                     @if ($errors->has('jabatan'))
                                                         <span class="text-danger">{{ $errors->first('jabatan') }}</span>
@@ -93,7 +104,7 @@
                         </div>
 
                         <div class="card-body table-responsive">
-                            <div class="col-md-6" style="margin-left: auto; margin-right: auto;">
+                            <div class="col-md-10" style="margin-left: auto; margin-right: auto;">
 
                                 <table class="table table-bordered table-hover text-center">
                                     <thead>
@@ -101,45 +112,42 @@
                                             <th class="hijau">NO</th>
                                             <th class="biru">AKSES LEVEL</th>
                                             <th class="biru">NAMA JABATAN</th>
+                                            <th class="biru">DAFTAR AKSES HALAMAN</th>
                                             <th class="biru">ACTION</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($akseslevel as $aklevel)
-                                        <form action="{{ url('admin/crud_akseslevel') }}" method="POST">
-                                            {{ csrf_field() }}
-                                            <input type="hidden" name="u_id" value="{{ $aklevel->id }}">
+                                        @if(empty($akseslevels))
                                             <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>
-                                                    <input value="{{ $aklevel->id }}" name="u_idakseslevel_{{ $aklevel->id }}" type="number" class="form-control text-center" placeholder="Akses Level ...">
-                                                    @if(session('error_update'))
-                                                        @if ($errors->has('u_idakseslevel_'.$aklevel->id.''))
-                                                            <span class="text-danger">{{ $errors->first('u_idakseslevel_'.$aklevel->id.'') }}</span>
-                                                        @endif
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <input value="{{ $aklevel->jabatan }}" name="u_jabatan_{{ $aklevel->id }}" type="text" class="form-control text-center" placeholder="Masukan Nama Jabatan ...">
-                                                    @if(session('error_update'))
-                                                        @if ($errors->has('u_jabatan_'.$aklevel->id.''))
-                                                            <span class="text-danger">{{ $errors->first('u_jabatan_'.$aklevel->id.'') }}</span>
-                                                        @endif
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <div class="row" style="margin-left: auto; margin-right:auto;">
-                                                        <div class="col-md-5">
-                                                            <button class="btn btn-success" name="action" value="update"><abbr title="UPDATE"><i class="fas fa-redo"></i></abbr></button>
-                                                        </div>
-                                                        <div class="col-md-5">
-                                                            <button class="btn btn-danger" name="action" value="delete"><abbr title="DELETE"><i class="fas fa-trash"></i></abbr></button>
-                                                        </div>
-                                                    </div>
-                                                </td>
+                                                <td class="hijau" colspan="5">DATA MASIH KOSONG</td>
                                             </tr>
-                                        </form>
-                                        @endforeach
+                                        @else
+                                            <?php
+                                                $arr_level_akses_id             = explode('-', $akseslevels['id']);
+                                                $arr_level_akses_jabatan        = explode('-', $akseslevels['jabatan']);
+                                                $arr_level_akses_halamans_id_s  = explode('-', $akseslevels['halamans_id_s']);
+                                                $no = 1;
+                                            ?>
+                                            @for($i = 0; $i < count($arr_level_akses_id); $i++)
+                                            <form action="{{ url('admin/updateakseslevels')}}" method="POST">
+                                                {{ csrf_field() }}
+                                                <input type="hidden" name="id" value="{{ $arr_level_akses_id[$i] }}">
+                                                <tr>
+                                                    <td>{{ $no }}</td>
+                                                    <td><input type="number" name="u_id" value="{{ $arr_level_akses_id[$i] }}" class="form-control" placeholder="Akses Level Id ..."></td>
+                                                    <td><input type="text" name="u_jabatan" value="{{ $arr_level_akses_jabatan[$i] }}" class="form-control" placeholder="Update Jabatan ..."></td>
+                                                    <td>    
+                                                        <input type="text" name="u_halamans_id_s" value="{{ $arr_level_akses_halamans_id_s[$i] }}" class="form-control" placeholder="Halaman Id ...">
+                                                    </td>
+                                                    <td>
+                                                        <button type="submit" class="btn btn-success">UPDATE</button>
+                                                        <a href="deleteakseslevels/{{$arr_level_akses_id[$i]}}" type="submit" class="btn btn-danger">DELETE</a>
+                                                    </td>
+                                                </tr>
+                                            </form>
+                                            <?php $no++; ?>
+                                            @endfor
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>
