@@ -49,7 +49,7 @@ class MasterController extends Controller
 
 #AKSES_LEVELS -> PAGES
     #GET AKSES LEVELS
-    public static function GetAksesLevels()
+    public static function AksesLevels()
     {
         $akseslevels = app('App\Http\Controllers\ApiController')->GetAksesLevels();        
         $akseslevels = json_decode($akseslevels, true);
@@ -83,4 +83,33 @@ class MasterController extends Controller
         }
     }
 #AKSES_LEVELS -> PAGES
+
+#JENIS_SAMPELS -> PAGES
+    #GET JENI SAMPELS
+    public static function JenisSampels()
+    {
+        $getjenissampels    = app('App\Http\Controllers\ApiController')->GetJenisSampels(); 
+        $getjenissampels    = json_decode($getjenissampels, true);
+        
+        return view('admin.jenissampels.jenissampels', ['jenissampels' => $getjenissampels]);
+    }
+    public static function InsertJenisSampels(Request $request)
+    {
+        $insertjenissampels     = app('App\Http\Controllers\ApiController')->InsertJenisSampels($request);
+        $insertjenissampels     = json_decode($insertjenissampels, true);
+        return redirect()->back()->with('insert', $insertjenissampels['message']); 
+    }
+    public static function UpdateJenisSampels(Request $request)
+    {
+        $updatejenissampels     = app('App\Http\Controllers\ApiController')->UpdateJenisSampels($request);
+        $updatejenissampels     = json_decode($updatejenissampels, true);
+        return redirect()->back()->with('update', $updatejenissampels['message']); 
+    }
+    public static function DeleteJenisSampels($id = null)
+    {
+        $deletejenissampels     = app('App\Http\Controllers\ApiController')->DeleteJenisSampels($id);
+        $deletejenissampels     = json_decode($deletejenissampels, true);
+        return redirect()->back()->with('delete', $deletejenissampels['message']); 
+    }
+#JENIS_SAMPELS -> PAGES
 }

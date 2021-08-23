@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\DataSampel;
 use App\Models\HasilAnalisa;
 use App\Models\LabAkun;
+use SebastianBergmann\Exporter\Exporter;
 
 class usr
 {
@@ -588,6 +589,121 @@ class ApiController extends Controller
         }        
         return json_encode($response);
     }
+    #INSERT JENIS SAMPELS
+    public static function InsertJenisSampels(Request $request)
+    {
+        $response   = new usr();
+        $rules      = [
+            'jenissampels'      => 'required|string|min:2|max:20',
+            'lambangsampel'     => 'required|string|min:1|max:3'
+        ];
+        $messages   = [
+            'jenissampels.required'     => 'JENIS SAMPEL WAJIB DIISI',
+            'jenissampels.min'          => 'JENIS SAMPEL WAJIB DIISI DENGAN HURUF MINIMAL 2 KARAKTER',
+            'jenissampels.max'          => 'JENIS SAMPEL WAJIB DIISI DENGAN HURUF MAKSIMAL 20 KARAKTER',
+            'lambangsampel.required'  => 'LAMBANG SAMPEL WAJIB DIISI',
+            'lambangsampel.min'       => 'LAMBANG SAMPEL WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'lambangsampel.max'       => 'LAMBANG SAMPEL WAJIB DIISI DENGAN HURUF MAKSIMAL 3 KARAKTER'
+        ];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = 'TERJADI KESALAHAN PENGISIAN DATA, PESAN KESALAHAN :'.$validator->errors()->first();
+        }
+        else{
+            try {
+                DB::table('jenis_sampels')
+                ->insert([
+                    'jenis_sampel'      => $request->jenissampels,
+                    'lambang_sampel'    => $request->lambangsampel
+                ]);
+                $response->success = 1;
+                $response->message = 'DATA JENIS SAMPEL BARU BERHASIL DIINPUTKAN';            
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = 'GAGAL MENGINSERTKAN DATA, PESAN KESALAHAN :'.$e->getMessage();
+            }
+        }
+        return json_encode($response);
+    }
+    #INSERT JENIS SAMPELS
+
+    #UPDATE JENIS SAMPELS
+    public static function UpdateJenisSampels(Request $request)
+    {
+        $response   = new usr();
+        $rules      = [
+            'uid'              => 'required|exists:jenis_sampels,id',
+            'ujenissampels'    => 'required|string|min:2|max:20',
+            'ulambangsampels'   => 'required|string|min:1|max:3'
+        ];
+        $messages   = [
+            'uid.required'                 => 'ID UNTUK MENGUPDATE JENIS SAMPEL WAJIB DIISI',
+            'uid.exists'                   => 'ID JENIS SAMPEL TIDAK DITEMUKAN',
+            'ujenissampels.required'       => 'JENIS SAMPEL WAJIB DIISI',
+            'ujenissampels.min'            => 'JENIS SAMPEL WAJIB DIISI DENGAN HURUF MINIMAL 2 KARAKTER',
+            'ujenissampels.max'            => 'JENIS SAMPEL WAJIB DIISI DENGAN HURUF MAKSIMAL 20 KARAKTER',
+            'ulambangsampels.required'      => 'LAMBANG SAMPEL WAJIB DIISI',
+            'ulambangsampels.min'           => 'LAMBANG SAMPEL WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'ulambangsampels.max'           => 'LAMBANG SAMPEL WAJIB DIISI DENGAN HURUF MAKSIMAL 3 KARAKTER'
+        ];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = 'TERJADI KESALAHAN PENGISIAN DATA, PESAN KESALAHAN :'.$validator->errors()->first();
+        }
+        else{
+            $updatejenissampels     = DB::table('jenis_sampels')
+            ->where('id', '=', $request->uid)
+            ->first();            
+            $updatejenissampels     = json_decode(json_encode($updatejenissampels), true);
+            if(!empty($updatejenissampels)){
+                try {
+                    DB::table('jenis_sampels')
+                    ->where('id', '=', $request->uid)
+                    ->update([
+                        'jenis_sampel'     => $request->ujenissampels,
+                        'lambang_sampel'   => $request->ulambangsampels
+                    ]);                    
+                    $response->success = 1;
+                    $response->message = 'BERHASIL UPDATE DATA JENIS SAMPEL';
+                } catch (Exception $e) {
+                    $response->success = 0;
+                    $response->message = 'TERJADI KESALAHAN KETIKA UPDATE DATA JENIS SAMPEL, PESAN KESALAHAN :'.$e->getMessage();
+                }
+            }
+            else{
+                $response->success = 0;
+                $response->message = 'DATA YANG INGIN DIUPDATE TIDAK DITEMUKAN';
+            }
+        }
+        return json_encode($response);
+    }
+    #UPDATE JENIS SAMPELS
+
+    #DELETE JENIS SAMPELS
+    public static function DeleteJenisSampels($id = null)
+    {  
+        $response = new usr();
+        if(!isset($id)){
+            $response->success = 0;
+            $response->message = 'ID JENIS SAMPEL YANG INGIN DIHAPUS KOSONG';
+        }
+        else{
+            try {
+                DB::table('jenis_sampels')
+                ->where('id', '=', $id)
+                ->delete();
+                $response->success = 1;
+                $response->message = 'DATA DENGAN ID :'.$id.' BERHASIL DIHAPUS';
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = 'DATA JENIS SAMPEL DENGAN ID :'.$id.' GAGAL DIHAPUS, PESAN KESALAHAN :'.$e->getMessage();
+            }
+        }
+        return json_encode($response);
+    }
+    #DELETE JENIS SAMPELS
     #6. GET JENIS SAMPELS
 #6 JENIS SAMPEL
 

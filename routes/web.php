@@ -21,11 +21,18 @@ Route::prefix('admin')->group(function () {
 #1 - 4 PARAMETER
 
 #5 AKSES_LEVELS
-    Route::get('/getakseslevels', [MasterController::class, 'GetAksesLevels']);
+    Route::get('/akseslevels', [MasterController::class, 'AksesLevels']);
     Route::post('/insertakseslevels', [MasterController::class, 'InsertAksesLevels']);
     Route::post('/updateakseslevels', [MasterController::class, 'UpdateAksesLevels']);
     Route::get('/deleteakseslevels/{id?}', [MasterController::class, 'DeleteAksesLevels']);
 #5 AKSES_LEVELS
+
+#6 JENIS SAMPELS
+    Route::get('/jenissampels', [MasterController::class, 'JenisSampels']);
+    Route::post('/insertjenissampels', [MasterController::class, 'InsertJenisSampels']);
+    Route::post('/updatejenissampels', [MasterController::class, 'UpdateJenisSampels']);
+    Route::get('/deletejenissampels/{id?}', [MasterController::class, 'DeleteJenisSampels']);
+#6 JENIS SAMPELS
 
     #PELANGGAN
     Route::get('/pelanggans', [MasterController::class, 'Pelanggans']);
