@@ -34,10 +34,19 @@ Route::prefix('admin')->group(function () {
     Route::get('/deletejenissampels/{id?}', [MasterController::class, 'DeleteJenisSampels']);
 #6 JENIS SAMPELS
 
-    #PELANGGAN
-    Route::get('/pelanggans', [MasterController::class, 'Pelanggans']);
-    Route::match(['get', 'post'], '/crud_pelanggans', [MasterController::class, 'CrudPelanggans']);
-    #PELANGGAN
+#7 METODE
+    Route::get('/metodes', [MasterController::class, 'Metodes']);
+    Route::post('/insertmetodes', [MasterController::class, 'InsertMetodes']);
+    Route::post('/updatemetodes', [MasterController::class, 'UpdateMetodes']);
+    Route::get('/deletemetodes/{id?}', [MasterController::class, 'DeleteMetodes']);
+#7 METODE
+
+#17 - 20 PELANGGAN
+    Route::get('/pelanggans', [MasterController::class, 'GetPelanggans']);
+    Route::post('/insertpelanggans', [MasterController::class, 'InsertPelanggans']);
+    Route::post('/updatepelanggans', [MasterController::class, 'UpdatePelanggans']);
+    Route::get('/deletepelanggans/{id?}', [MasterController::class, 'DeletePelanggans']);
+#17 - 20 PELANGGAN
 
     Route::get('/login', [MasterController::class, 'Login']);
     Route::get('/register', [MasterController::class, 'Register']);

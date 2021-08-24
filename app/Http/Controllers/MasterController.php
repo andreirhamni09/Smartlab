@@ -112,4 +112,72 @@ class MasterController extends Controller
         return redirect()->back()->with('delete', $deletejenissampels['message']); 
     }
 #JENIS_SAMPELS -> PAGES
+
+#METODES -> PAGES
+    public static function Metodes()
+    {
+        $metodes = app('App\Http\Controllers\ApiController')->GetMetodes();    
+        $metodes = json_decode($metodes, true);
+        return view('admin.metodes.metodes', ['metodes' => $metodes]);
+    }
+    public static function InsertMetodes(Request $request)
+    {
+        $insertmetodes = app('App\Http\Controllers\ApiController')->InsertMetodes($request);    
+        $insertmetodes = json_decode($insertmetodes, true);
+        return redirect()->back()->with('insert', $insertmetodes['message']); 
+    }
+    public static function UpdateMetodes(Request $request)
+    {
+        $updatemetodes = app('App\Http\Controllers\ApiController')->UpdateMetodes($request);    
+        $updatemetodes = json_decode($updatemetodes, true);
+        return redirect()->back()->with('update', $updatemetodes['message']); 
+    }
+    public static function DeleteMetodes($id = null)
+    {
+        if(isset($id)){
+            $deletemetodes = app('App\Http\Controllers\ApiController')->DeleteMetodes($id);    
+            $deletemetodes = json_decode($deletemetodes, true);
+
+            return redirect()->back()->with('delete', $deletemetodes['message']); 
+        }
+        else{
+            return redirect()->back()->with('delete', 'ID KOSONG'); 
+        }
+    }
+#METODES -> PAGES
+
+#PELANGGANS -> PAGES
+    #GET PELANGGANS
+    public static function GetPelanggans(){
+        $getpelanggans = app('App\Http\Controllers\ApiController')->GetPelanggans();
+        $getpelanggans = json_decode($getpelanggans, true);       
+        return view('admin.pelanggans.pelanggans', ['pelanggans' => $getpelanggans]);
+    }
+
+    #INSERT PELANGGANS
+    public static function InsertPelanggans(Request $request){
+        $insertpelanggans = app('App\Http\Controllers\ApiController')->InsertPelanggans($request, $request->email, $request->password, $request->nama, $request->perusahaan ,$request->nomor_telepon , $request->alamat , $request->tanggal_registrasi);
+        $insertpelanggans = json_decode($insertpelanggans, true);        
+        return redirect()->back()->with('insert', $insertpelanggans['message']); 
+    }
+
+    #UPDATE PELANGGANS
+    public static function UpdatePelanggans(Request $request){
+        $updatepelanggans = app('App\Http\Controllers\ApiController')->UpdatePelanggans($request, $request->id, $request->email, $request->password, $request->nama, $request->perusahaan ,$request->nomor_telepon , $request->alamat , $request->tanggal_registrasi);
+        $updatepelanggans = json_decode($updatepelanggans, true);        
+        return redirect()->back()->with('update', $updatepelanggans['message']); 
+    }
+
+    #UPDATE PELANGGANS
+    public static function DeletePelanggans($id = null){
+        if(isset($id)){
+            $deletepelanggans = app('App\Http\Controllers\ApiController')->DeletePelanggans($id);
+            $deletepelanggans = json_decode($deletepelanggans, true);        
+            return redirect()->back()->with('delete', $deletepelanggans['message']); 
+        }
+        else{
+            return redirect()->back()->with('delete', 'ID PELANGGAN YANG INGIN DIHAPUS TIDAK DITEMUKAN'); 
+        }
+    }
+#PELANGGANS -> PAGES
 }

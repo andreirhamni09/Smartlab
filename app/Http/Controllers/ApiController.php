@@ -458,11 +458,12 @@ class ApiController extends Controller
     {
         $response = new usr();  
         $rules      = [
-            'u_id'            => 'required|numeric|min:1',
+            'u_id'            => 'required|numeric|min:1|exists:akses_levels,id',
             'u_jabatan'       => 'required|string|min:2'
         ];
         $messages   = [
             'u_id.required'               => 'ID AKSES LEVEL WAJIB DIISI',
+            'u_id.exists'                 => 'ID AKSES LEVEL TIDAK DITEMUKAN',
             'u_id.min'                    => 'ID AKSES LEVEL MINIMAL DIISI DENGAN ANGKA MINIMAL 1',
             'u_jabatan.required'          => 'JABATAN WAJIB DIISI',
             'u_jabatan.min'               => 'JABATAN WAJIB DIISI DENGAN HURUF MINIMAL 2 KARAKTER'
@@ -746,11 +747,11 @@ class ApiController extends Controller
                 foreach ($metodes as $value) {
                     $str_id                 .= $value['id'].'-';
                     $str_metode             .= $value['metode'].'-';
-                    $str_parameters_id_s    .= $value['parameters_id_s'].'-';
+                    $str_parameters_id_s    .= $value['parameters_id_s'].';';
                 }
-                $response->id                 = $str_id;
-                $response->metode             = $str_metode;
-                $response->parameters_id_s    = $str_parameters_id_s;
+                $response->id                 = substr($str_id, 0, -1);
+                $response->metode             = substr($str_metode, 0, -1);
+                $response->parameters_id_s    = substr($str_parameters_id_s, 0, -1);
                 $response->success            = 1;
                 $response->message            = 'BERIKUT LIST METODE';
 
@@ -759,9 +760,113 @@ class ApiController extends Controller
                 $response->message            = 'GAGAL MENDAPATKAN LIST METODE, PESAN KESALAHAN: '.$e->getMessage();
             }
         }
-        die(json_encode($response));
+        return json_encode($response);
     }
     #7. GET METODES
+
+    #INSERT METODES
+    public static function InsertMetodes(Request $request)
+    {
+        $response   = new usr();
+        $rules      = [
+            'metodes'            => 'required|string|min:1|max:75',
+            'parameters_id_s'   => 'required|string|min:1|max:45'
+        ];
+        $messages   = [
+            'metodes.required'          => 'METODE WAJIB DIISI',
+            'metodes.min'               => 'METODE WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'metodes.max'               => 'METODE WAJIB DIISI DENGAN HURUF MAKSIMAL 75 KARAKTER',
+            'parameters_id_s.required'  => 'PARAMETER ID WAJIB DIISI',
+            'parameters_id_s.min'       => 'PARAMETER ID WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'parameters_id_s.max'       => 'PARAMETER ID WAJIB DIISI DENGAN HURUF MAKSIMAL 45 KARAKTER',
+        ];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = 'TERJADI KESALAHAN PENGISIAN DATA, PESAN KESALAHAN :'.$validator->errors()->first();
+        }
+        else{
+            try {
+                DB::table('metodes')
+                ->insert([
+                    'metode'            => $request->metodes,
+                    'parameters_id_s'   => $request->parameters_id_s
+                ]);
+                $response->success = 1;
+                $response->message = 'METODE BARU BERHASIL DIINPUTKAN';
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = 'TERJADI SAAT MENAMBAHKAN DATA KE TABEL METODE, PESAN KESALAHAN :'.$e->getMessage();
+            }
+        }
+        return json_encode($response);
+    }
+    #INSERT METODES
+
+    #UPDATE METODES
+    public static function UpdateMetodes(Request $request)
+    {
+        $response = new usr();
+        $rules      = [
+            'uid'                => 'required|exists:metodes,id',
+            'umetode'            => 'required|string|min:1|max:75',
+            'uparameters_id_s'   => 'required|string|min:1|max:45'
+        ];
+        $messages   = [
+            'uid.required'               => 'ID WAJIB DIISI',
+            'uid.exists'                 => 'ID METODE TIDAK DITEMUKAN',
+            'umetode.required'           => 'METODE WAJIB DIISI',
+            'umetode.exists'             => 'METODE ID TIDAK DITEMUKAN',
+            'umetode.min'                => 'METODE WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'umetode.max'                => 'METODE WAJIB DIISI DENGAN HURUF MAKSIMAL 75 KARAKTER',
+            'uparameters_id_s.required'  => 'PARAMETER ID WAJIB DIISI',
+            'uparameters_id_s.min'       => 'PARAMETER ID WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'uparameters_id_s.max'       => 'PARAMETER ID WAJIB DIISI DENGAN HURUF MAKSIMAL 45 KARAKTER',
+        ];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if($validator->fails()){
+            $response->success  = 0;
+            $response->message = 'TERJADI KESALAHAN SAAT INGIN MENGUPDATE DATA, PESAN KESALAHAN :'.$validator->errors()->first();
+        }
+        else{
+            try {
+                DB::table('metodes')
+                ->where('id', '=', $request->uid)
+                ->update([
+                    'metode'            => $request->umetode,
+                    'parameters_id_s'   => $request->uparameters_id_s
+                ]);
+
+                $response->success  = 1;
+                $response->message = 'DATA DENGAN ID: '.$request->uid.' BERHASIL DIUPDATE';
+                
+            } catch (Exception $e) {
+                $response->success  = 0;
+                $response->message = 'TERJADI KESALAHAN SAAT INGIN MENGUPDATE DATA, PESAN KESALAHAN :'.$e->getMessage();
+            }
+        }
+        return json_encode($response);
+    }
+    #UPDATE METODES
+    
+    #DELETE METODES
+    public static function DeleteMetodes($id)
+    {   
+        $response = new usr();
+        try {
+            DB::table('metodes')
+            ->where('id', '=', $id)
+            ->delete();
+
+            $response->success = 1;
+            $response->message = 'DATA METODE DENGAN ID:'.$id.' BERHASIL DIHAPUS';
+        } catch (Exception $e) {
+            $response->success = 0;
+            $response->message = 'GAGAL HAPUS DATA METODE, PESAN KESALAHAN :'.$e->getMessage();
+        }
+        return json_encode($response);
+    }
+    #DELETE METODES
 #7 METODES
 
 #8 HALAMANS
@@ -1809,7 +1914,7 @@ class ApiController extends Controller
                 $response->message              = 'GAGAL MENDAPATKAN LIST DATA PELANGGAN, PESAN KESALAHAN :'.$e->getMessage();
             }
         }
-        die(json_encode($response));
+        return json_encode($response);
     }
     #17. GET PELANGGANS
     
@@ -2007,7 +2112,7 @@ class ApiController extends Controller
                 $response->message = 'GAGAL MELAKUKAN INSERT DATA, PESAN KESALAHAN : '.$e->getMessage();
             }
         }
-        die(json_encode($response));
+        return json_encode($response);
     }
     #18. INSERT PELANGGANS
     
@@ -2180,7 +2285,7 @@ class ApiController extends Controller
             'perusahaan'            => 'required|string|min:3|max:30',   
             'nomor_telepon'         => 'required|string|min:8|max:12',
             'alamat'                => 'required|string|min:3|max:250',
-            'tanggal_registrasi'    => 'required|date|after:today'
+            'tanggal_registrasi'    => 'required|date|after:yesterday'
         ];
         $messages = [
             'id.required'                   => 'ID PELANGGAN WAJIB DIISI',
@@ -2231,7 +2336,7 @@ class ApiController extends Controller
                 $response->message = 'PERUBAHAN DATA PELANGGAN DENGAN ID: '.$arr_pelanggan['id'].', GAGAL DILAKUKAN. PESAN KESALAHAN :'.$e->getMessage();
             }
         }
-        die(json_encode($response));
+        return json_encode($response);
     }
     #19. UPDATE PELANGGANS
     
@@ -2264,15 +2369,12 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    public static function DeletePelanggans(Request $request, $id = null){
+    public static function DeletePelanggans($id){
         $response   = new usr();
         $s_id       = '';
-        if(!isset($request->id) AND empty($id)){
+        if(empty($id)){
             $response->success = 0;
             $response->message = 'TIDAK ADA ID PELANGGAN YANG AKAN DIHAPUS';
-        }
-        elseif (isset($response->id)) {
-            $s_id   = $response->id;
         }
         elseif (!empty($id)) {
             $s_id   = $id;
@@ -2298,7 +2400,7 @@ class ApiController extends Controller
                 $response->message = 'GAGAL MENGHAPUS PELANGGAN, PESAN KESALAHAN: '.$e->getMessage();
             }
         }
-        die(json_encode($response));
+        return json_encode($response);
     }
     #20. DELETE PELANGGANS
 

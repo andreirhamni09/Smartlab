@@ -35,7 +35,7 @@
 
                         <div class="card-body table-responsive">
                             <div style="width:150%;margin-left: auto;">
-                                <form action="{{ url('admin/crud_pelanggan') }}" method="POST">
+                                <form action="{{ url('admin/insertpelanggans') }}" method="POST">
                                     {{ csrf_field() }}
                                     <div class="row">
                                         <div class="col-sm">
@@ -102,7 +102,7 @@
                                         <div class="col-sm">
                                             <div class="form-group">
                                                 <label>Tanggal</label>
-                                                <input type="date" name="tanggal" class="form-control" value="">
+                                                <input type="date" name="tanggal_registrasi" class="form-control" value="">
                                                 @if(session('error_insert'))
                                                     @if ($errors->has('tanggal'))
                                                     <span class="text-danger">{{ $errors->first('tanggal') }}</span>
@@ -113,7 +113,7 @@
                                         <div class="col-sm-1">
                                             <div class="form-group">
                                                 <label>Submit</label>
-                                                <button name="action" value="add" class="form-control btn btn-primary">TAMBAHKAN</button>
+                                                <input type="submit" class="form-control btn btn-primary" value="TAMBAHKAN">
                                             </div>
                                         </div>
                                     </div>
@@ -141,103 +141,81 @@
                                     <thead>
                                         <tr>
                                             <th class="hijau">NO</th>
-                                            <th class="biru" style="width: 18%;">EMAIL</th>
-                                            <th class="biru">PASSWORD</th>
-                                            <th class="biru">NAMA</th>
+                                            <th class="biru" style="width: 15%;">EMAIL</th>
+                                            <th class="biru" style="width: 15%;">PASSWORD</th>
+                                            <th class="biru" style="width: 15%;">NAMA</th>
                                             <th class="biru">PERUSAHAAN</th>
-                                            <th class="biru">NO. TELEPON</th>
-                                            <th class="biru">ALAMAT</th>
+                                            <th class="biru" style="width: 12%;">NO. TELEPON</th>
+                                            <th class="biru" style="width: 15%;">ALAMAT</th>
                                             <th class="biru">TANGGAL REGISTRASI</th>
-                                            <th class="biru">ACTION</th>
+                                            <th class="biru" style="width: 15%;">ACTION</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <!-- UPDATE DATA USER LAB -->
-                                        <?php $no         = 1; ?>
-                                        @if(count($pelanggan) <= 0)
+                                        @if(empty($pelanggans))
                                             <tr>
                                                 <td colspan="9">BELUM ADA PELANGGAN YANG DIINSERTKAN</td>
                                             </tr>
                                         @else
-                                            @foreach($pelanggan as $dpelanggan)
-                                            <form action="{{ url('admin/crud_pelanggan') }}" method="POST">
+                                            <?php
+                                                $arr_pelanggan_id                   = explode('-', $pelanggans['id']);
+                                                $arr_pelanggan_email                = explode('-', $pelanggans['email']);
+                                                $arr_pelanggan_password             = explode('-', $pelanggans['password']);
+                                                $arr_pelanggan_nama                 = explode('-', $pelanggans['nama']);
+                                                $arr_pelanggan_perusahaan           = explode('-', $pelanggans['perusahaan']);
+                                                $arr_pelanggan_nomor_telepon        = explode('-', $pelanggans['nomor_telepon']);
+                                                $arr_pelanggan_alamat               = explode('-', $pelanggans['alamat']);
+                                                $arr_pelanggan_tanggal_registrasi   = explode('-', $pelanggans['tanggal_registrasi']);
+                                                $no_pelanggan                       = 1;
+                                            ?>
+                                            @for($i = 0; $i < count($arr_pelanggan_id); $i++)
+                                                <form action="{{ url('admin/updatepelanggans') }}" method="POST">
                                                 {{ csrf_field() }}
-                                                <input type="hidden" id="u_idpel_{{$no}}" name="u_idpel" value="{{ $dpelanggan->id }}">
-                                                <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>
-                                                        <input class="form-control" type="email" name="u_email_{{ $dpelanggan->id }}" value="{{ $dpelanggan->email }}">
-                                                    </td>
-                                                    <td>
-                                                        <div class="row">
-                                                            <div class="col-sm-9" id="hide-unhide-{{$no}}">
-                                                                <input class="form-control" id="u_hidden_password_{{$no}}" type="password" name="u_password_{{ $dpelanggan->id }}" value="{{ $dpelanggan->password }}" placeholder="{{ $dpelanggan->password }}">
+                                                    <tr>
+                                                        <input type="hidden" name="id" value="{{ $arr_pelanggan_id[$i] }}">
+                                                        <td>{{ $no_pelanggan }}</td>
+                                                        <td><input type="text" class="form-control" name="email" value="{{ $arr_pelanggan_email[$i] }}"></td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div class="col-md-9">
+                                                                    <input type="password" name="password" id="u_hidden_password_{{$no_pelanggan}}" class="form-control" value="{{ $arr_pelanggan_password[$i] }}">
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <button class="btn btn-secondary" id="lihat_{{ $no_pelanggan }}" type="button"><abbr title="Lihat Password"><i class="far fa-eye"></i></abbr></button>
+                                                                </div>
                                                             </div>
-                                                            <div class="col-sm-2" id="hide-unhide-btn-{{$no}}">
-                                                                <button class="btn btn-secondary" id="lihat_{{ $no }}" value="{{$no}}" type="button"><abbr title="Lihat Password"><i class="far fa-eye"></i></abbr></button>
-                                                            </div>
-                                                        </div> 
-                                                        @if(session('error_update'))
-                                                            @if ($errors->has('u_password_'.$dpelanggan->id.''))
-                                                            <span class="text-danger">{{ $errors->first('u_password_'.$dpelanggan->id.'') }}</span>                                                            
-                                                            @endif
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        <input class="form-control" type="text" name="u_nama_{{ $dpelanggan->id }}" value="{{ $dpelanggan->nama }}">
-                                                        @if(session('error_update'))
-                                                            @if ($errors->has('u_nama_'.$dpelanggan->id.''))
-                                                            <span class="text-danger">{{ $errors->first('u_nama_'.$dpelanggan->id.'') }}</span>
-                                                            @endif
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        <input class="form-control" type="text" name="u_perusahaan_{{ $dpelanggan->id }}" value="{{ $dpelanggan->perusahaan }}">
-                                                        @if(session('error_update'))
-                                                            @if ($errors->has('u_perusahaan_'.$dpelanggan->id.''))
-                                                            <span class="text-danger">{{ $errors->first('u_perusahaan_'.$dpelanggan->id.'') }}</span>
-                                                            @endif
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        <input class="form-control" type="text" name="u_nomor_telepon_{{ $dpelanggan->id }}" value="{{ $dpelanggan->nomor_telepon }}">
-                                                        @if(session('error_update'))
-                                                            @if ($errors->has('u_nomor_telepon_'.$dpelanggan->id.''))
-                                                            <span class="text-danger">{{ $errors->first('u_nomor_telepon_'.$dpelanggan->id.'') }}</span>
-                                                            @endif
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                    
-                                                        <input class="form-control" type="text" name="u_alamat_{{ $dpelanggan->id }}" value="{{ $dpelanggan->alamat }}">
-                                                        @if(session('error_update'))
-                                                            @if ($errors->has('u_alamat_'.$dpelanggan->id.''))
-                                                            <span class="text-danger">{{ $errors->first('u_alamat_'.$dpelanggan->id.'') }}</span>
-                                                            @endif
-                                                        @endif
-                                                    </td>            
-                                                    <td>
-                                                        <input class="form-control" type="date" name="u_tanggal_registrasi_{{ $dpelanggan->id }}" value="{{ $dpelanggan->tanggal_registrasi }}">
-                                                        @if(session('error_update'))
-                                                            @if ($errors->has('u_tanggal_registrasi_'.$dpelanggan->id.''))
-                                                            <span class="text-danger">{{ $errors->first('u_tanggal_'.$dpelanggan->id.'') }}</span>
-                                                            @endif
-                                                        @endif
-                                                    </td>                                                
-                                                    <td>                                                    
-                                                        <div class="row" style="margin-left: auto; margin-right:auto;">
-                                                            <div class="col-sm-6">
-                                                                <button class="btn btn-success" name="action" value="update"><abbr title="UPDATE"><i class="fas fa-redo"></i></abbr></button>
-                                                            </div>
-                                                            <div class="col-sm-6">
-                                                                <button class="btn btn-danger" name="action" value="delete"><abbr title="DELETE"><i class="fas fa-trash"></i></abbr></button>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </form>
-                                            <?php $no     += 1; ?>
-                                            @endforeach
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="nama" class="form-control" value="{{ $arr_pelanggan_nama[$i] }}">
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="perusahaan" class="form-control" value="{{ $arr_pelanggan_perusahaan[$i] }}">
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="nomor_telepon" class="form-control" value="{{ $arr_pelanggan_nomor_telepon[$i] }}">    
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="alamat" class="form-control" value="{{ $arr_pelanggan_alamat[$i] }}">
+                                                        </td>
+                                                        <td>
+                                                            <?php
+                                                                $tanggal        = strtotime(str_replace('/', '-', $arr_pelanggan_tanggal_registrasi[$i]));
+                                                                $f_tanggal      = date('Y-m-d', $tanggal);
+                                                            ?>
+                                                            <input type="date" name="tanggal_registrasi" class="form-control" value="{{ $f_tanggal }}">
+                                                        </td>
+                                                        <td>
+                                                            <button type="submit" class="btn btn-success">UPDATE</button>
+                                                            <a href="deletepelanggans/{{$arr_pelanggan_id[$i]}}" class="btn btn-danger">DELETE</a>
+                                                        </td>
+                                                    </tr>
+                                                </form>
+
+                                                <?php
+                                                  $no_pelanggan++;  
+                                                ?>
+                                            @endfor
                                         @endif
                                         <!-- UPDATE DATA USER LAB -->
                                     </tbody>
@@ -257,7 +235,7 @@
 <script src="{{ asset('public/js/js_tabel/jquery-3.5.1.js') }}"></script>
 <script> 
     $(document).ready(function(){        
-        var no      = <?= $no ?>; 
+        var no      = <?= $no_pelanggan ?>; 
         for (let i = 1; i < no; i++) 
         {                                                      
             $('#lihat_'+i+'').click(function(){      
