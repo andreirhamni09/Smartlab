@@ -2557,14 +2557,119 @@ class ApiController extends Controller
                 $response->aktivitas          = $str_aktivitas;
                 $response->success            = 1;
             }
-            die(json_encode($response));
         } catch (Exception $e) {
             $response->success      = 0;
             $response->message      = $e->getMessage();
-            die(json_encode($response));
         }
+        
+        return json_encode($response);
     }
     #22. GET AKTIVITAS
+
+    #INSERT AKTIVITAS
+    public static function InsertAktivitas(Request $request){  
+        $response   = new usr();      
+        $rules      = [
+            'aktivitas'            => 'required|string|min:2|max:75',
+        ];
+        $messages   = [
+            'aktivitas.required'               => 'AKTIVITAS WAJIB DIISI',
+            'aktivitas.min'                    => 'AKTIVITAS WAJIB DIISI DENGAN HURUF MINIMAL 2 KARAKTER',
+            'aktivitas.max'                    => 'AKTIVITAS WAJIB DIISI DENGAN HURUF MAKSIMAL 75 KARAKTER',
+        ];
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = $validator->errors()->first();
+        }
+        else{
+            try {
+                DB::table('aktivitas')
+                ->insert([
+                    'aktivitas' => $request->aktivitas
+                ]);
+                $response->success = 1;
+                $response->message = 'AKTIVITAS BARU BERHASIL DITAMBAHKAN';
+            } catch (Exception $e) {                
+                $response->success = 0;
+                $response->message = 'GAGAL MENAMBAHKAN DATA KE TABEL AKTIVITAS, PESAN KESALAHAN :'.$e->getMessage();
+            }
+        }
+        return json_encode($response);
+    }
+    
+    #UPDATE AKTIVITAS
+    public static function UpdateAktivitas(Request $request){ 
+        $response   = new usr();      
+        $rules      = [
+            'id'         => 'required|exists:aktivitas,id',
+            'aktivitas'  => 'required|string|min:2|max:75',
+        ];
+        $messages   = [
+            'id.required'          => 'AKTIVITAS ID WAJIB ADA',
+            'id.exists'            => 'AKTIVITAS ID TIDAK DITEMUKAN',
+            'aktivitas.required'   => 'AKTIVITAS WAJIB DIISI',
+            'aktivitas.min'        => 'AKTIVITAS WAJIB DIISI DENGAN HURUF MINIMAL 2 KARAKTER',
+            'aktivitas.max'        => 'AKTIVITAS WAJIB DIISI DENGAN HURUF MAKSIMAL 75 KARAKTER',
+        ];
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = $validator->errors()->first();
+        }
+        else{
+            try {
+                DB::table('aktivitas')
+                ->where('id', '=', $request->id)
+                ->update([
+                    'aktivitas' => $request->aktivitas
+                ]);
+                $response->success = 1;
+                $response->message = 'AKTIVITAS BERHASIL DIUPDATE';
+            } catch (Exception $e) {                
+                $response->success = 0;
+                $response->message = 'GAGAL MELAKUKAN UPDATE DATA DENGAN ID :'.$request->id.', PESAN KESALAHAN :'.$e->getMessage();
+            }
+        }
+        return json_encode($response);       
+    }
+
+    #DELETE AKTIVITAS
+    public static function DeleteAktivitas($id){     
+        $response   = new usr();      
+        $rules      = [
+            'id'            => 'required|exists:aktivitas,id',
+        ];
+        $messages   = [
+            'id.required'   => 'AKTIVITAS ID WAJIB ADA',
+            'id.exists'     => 'AKTIVITAS ID TIDAK DITEMUKAN',
+        ];
+        $arr_aktivitas = array(
+            'id'            => $id 
+        );
+
+        $validator = Validator::make($arr_aktivitas, $rules, $messages);
+
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = $validator->errors()->first();
+        }
+        else{
+            try {
+                DB::table('aktivitas')
+                ->where('id', '=', $arr_aktivitas['id'])
+                ->delete();
+                $response->success = 1;
+                $response->message = 'AKTIVITAS BERHASIL DIHAPUS';
+            } catch (Exception $e) {                
+                $response->success = 0;
+                $response->message = 'GAGAL MELAKUKAN UPDATE DATA DENGAN ID :'.$arr_aktivitas['id'].', PESAN KESALAHAN :'.$e->getMessage();
+            }
+        }
+        return json_encode($response);               
+    }
 #22 AKTIVITAS
 
 #23 - 27 LAB AKUN
@@ -2612,7 +2717,7 @@ class ApiController extends Controller
             try {
                 foreach ($akun_labs as $value) {
                     $s_id               .= $value['id'].'-'; 
-                    $s_metodes_id_s     .= $value['metodes_id_s'].'-';
+                    $s_metodes_id_s     .= $value['metodes_id_s'].';';
                     $s_akses_levels_id  .= $value['akses_levels_id'].'-'; 
                     $s_akses_level      .= $value['akses_level'].'-';
                     $s_nama             .= $value['nama'].'-'; 
@@ -2637,7 +2742,7 @@ class ApiController extends Controller
                 $response->message          = 'GAGAL GET DATA AKUN LAB, PESAN KESALAHAN: '.$e->getMessage();
             }
         }
-        die(json_encode($response));
+        return json_encode($response);
     }
     #23. GET LAB AKUNS
     
@@ -2730,6 +2835,200 @@ class ApiController extends Controller
         }
     }
     #24. POST LOGIN
+
+    #26. INSERT LAB AKUNS
+    /**
+     * @OA\Post(
+     *      path="/insertlabakuns/{metodes_id_s}/{akses_levels_id}/{nama}/{email}/{password}/{jabatan}/{status_akun}",
+     *      operationId="getProjectsList",
+     *      tags={"26. Insert Akun Lab"},
+     *      summary="Menambahkan Data Lab Akun Baru",
+     *      description="Menambahkan Data Lab Akun Baru",
+     *      @OA\Parameter(
+     *          name="metodes_id_s",
+     *          description="metodes_id_s",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="akses_levels_id",
+     *          description="akses_levels_id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="nama",
+     *          description="nama",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="email",
+     *          description="email",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="password",
+     *          description="password",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="jabatan",
+     *          description="jabatan",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="status_akun",
+     *          description="status_akun",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *       @OA\Response(response=400, description="Bad request"),
+     *       security={
+     *           {"api_key_security_example": {}}
+     *       }
+     *     )
+     *
+     * Returns list of projects
+     */
+    public static function InsertLabAkuns(Request $request, $metodes_id_s = null, $akses_levels_id = null, 
+    $nama = null, $email = null, $password = null, $jabatan = null, $status_akun = null)
+    {
+        $response = new usr();
+        $s_metodes_id_s = ''; $s_akses_levels_id    = ''; 
+        $s_nama         = ''; $s_email              = ''; 
+        $s_password     = ''; $s_jabatan            = ''; 
+        $s_status_akun  = '';
+        if(
+            (!isset($request->metodes_id_s) OR !isset($request->akses_levels_id) OR 
+            !isset($request->nama) OR !isset($request->email) OR 
+            !isset($request->password) OR !isset($request->jabatan) OR 
+            !isset($request->status_akun)) AND
+            (!isset($metodes_id_s) OR !isset($akses_levels_id) OR 
+            !isset($nama) OR !isset($email) OR 
+            !isset($password) OR  !isset($jabatan) OR 
+            !isset($status_akun))
+        )
+        {
+            $response->success = 0;
+            $response->message = 'DATA KOSONG';
+        }
+        elseif( isset($request->metodes_id_s) OR isset($request->akses_levels_id) OR 
+                isset($request->nama) OR isset($request->email) OR 
+                isset($request->password) OR isset($request->jabatan) OR 
+                isset($request->status_akun))
+        {
+            $s_metodes_id_s     = $request->metodes_id_s;  
+            $s_akses_levels_id  = $request->akses_levels_id; 
+            $s_nama             = $request->nama; 
+            $s_email            = $request->email; 
+            $s_password         = $request->password; 
+            $s_jabatan          = $request->jabatan; 
+            $s_status_akun      = $request->status_akun;
+        }
+        elseif( isset($metodes_id_s) OR isset($akses_levels_id) OR 
+                isset($nama) OR isset($email) OR 
+                isset($password) OR  isset($jabatan) OR 
+                isset($status_akun))
+        {
+            $s_metodes_id_s     = $metodes_id_s;  
+            $s_akses_levels_id  = $akses_levels_id; 
+            $s_nama             = $nama; 
+            $s_email            = $email; 
+            $s_password         = $password; 
+            $s_jabatan          = $jabatan; 
+            $s_status_akun      = $status_akun;
+        }
+        $d_lab_akuns    = array('metodes_id_s'      => $s_metodes_id_s,
+                                'akses_levels_id'   => $s_akses_levels_id,
+                                'nama'              => $s_nama,
+                                'email'             => $s_email, 
+                                'password'          => $s_password,
+                                'jabatan'           => $s_jabatan,
+                                'status_akun'       => $s_status_akun);    
+        $rules          = [
+            'metodes_id_s'      => 'required|string|min:1',
+            'akses_levels_id'   => 'required|exists:akses_levels,id',
+            'nama'              => 'required|string|min:3|max:50',
+            'email'             => 'required|email',
+            'password'          => 'required|string|min:8',
+            'jabatan'           => 'required|string|min:2',
+            'status_akun'       => 'required|numeric|min:0|max:1'
+        ];
+        $messages       = [
+            'metodes_id_s.required'     => 'METODE ID HARUS DIISI',
+            'metodes_id_s.min'          => 'METODE ID HARUS DIISI DENGAN HURUF MINIMAL 1 KARAKTER ',
+            'akses_levels_id.required'  => 'AKSES LEVEL WAJIB DIISI',
+            'akses_levels_id.exists'    => 'ID AKSES LEVEL TIDAK DITEMUKAN',
+            'nama.required'             => 'NAMA WAJIB DIISI',
+            'nama.min'                  => 'NAMA HARUS DIISI DENGAN HURUF MINIMAL 3 KARAKTER ',
+            'nama.max'                  => 'BATAS KARAKTER UNTUK PENGISIAN NAMA ADALAH 50 KARAKTER',
+            'email.required'            => 'EMAIL WAJIB DIISI',
+            'email.email'               => 'FORMAT PENGISIAN HARUS DIISI DENGAN EMAIL',
+            'password.required'         => 'PASSWORD WAJIB DIISI',
+            'password.min'              => 'PASSWORD HARUS DIISI DENGAN HURUF MINIMAL 8 KARAKTER ',
+            'jabatan.required'          => 'JABATAN WAJIB DIISI',
+            'jabatan.min'               => 'JABATAN HARUS DIISI DENGAN HURUF MINIMAL 2 KARAKTER',
+            'status_akun.required'      => 'STATUS AKUN WAJIB DIISI',
+            'status_akun.min'           => 'STATUS AKUN NONAKTIF ADALAH 0',
+            'status_akun.max'           => 'STATUS AKUN YANG AKTIF ADALAH 1'
+        ];
+
+        $validator = Validator::make($d_lab_akuns, $rules, $messages);
+        $m_lab_akuns    = new LabAkun();   
+
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = $validator->errors()->first();
+        }
+        else{
+            $m_lab_akuns->metodes_id_s      = $d_lab_akuns['metodes_id_s'];
+            $m_lab_akuns->akses_levels_id   = $d_lab_akuns['akses_levels_id'];
+            $m_lab_akuns->nama              = $d_lab_akuns['nama'];
+            $m_lab_akuns->email             = $d_lab_akuns['email'];
+            $m_lab_akuns->password          = $d_lab_akuns['password'];
+            $m_lab_akuns->jabatan           = $d_lab_akuns['jabatan'];
+            $m_lab_akuns->status_akun       = $d_lab_akuns['status_akun'];
+            try {
+                $m_lab_akuns->save();
+                $response->success = 0;
+                $response->message = 'AKUN LAB BARU DITAMBAHKAN';
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = $e->getMessage();
+            }
+        }
+        return json_encode($response);
+    }
+    #26. INSERT LAB AKUNS
 
     #25. UPDATE LAB AKUNS
     /**
@@ -2938,203 +3237,9 @@ class ApiController extends Controller
                 $response->message = $e->getMessage();
             }
         }
-        die(json_encode($response));
+        return json_encode($response);
     }
     #25. INSERT LAB AKUNS
-
-    #26. INSERT LAB AKUNS
-    /**
-     * @OA\Post(
-     *      path="/insertlabakuns/{metodes_id_s}/{akses_levels_id}/{nama}/{email}/{password}/{jabatan}/{status_akun}",
-     *      operationId="getProjectsList",
-     *      tags={"26. Insert Akun Lab"},
-     *      summary="Menambahkan Data Lab Akun Baru",
-     *      description="Menambahkan Data Lab Akun Baru",
-     *      @OA\Parameter(
-     *          name="metodes_id_s",
-     *          description="metodes_id_s",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          )
-     *      ),
-     *      @OA\Parameter(
-     *          name="akses_levels_id",
-     *          description="akses_levels_id",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          )
-     *      ),
-     *      @OA\Parameter(
-     *          name="nama",
-     *          description="nama",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          )
-     *      ),
-     *      @OA\Parameter(
-     *          name="email",
-     *          description="email",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          )
-     *      ),
-     *      @OA\Parameter(
-     *          name="password",
-     *          description="password",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          )
-     *      ),
-     *      @OA\Parameter(
-     *          name="jabatan",
-     *          description="jabatan",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          )
-     *      ),
-     *      @OA\Parameter(
-     *          name="status_akun",
-     *          description="status_akun",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          )
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="successful operation"
-     *       ),
-     *       @OA\Response(response=400, description="Bad request"),
-     *       security={
-     *           {"api_key_security_example": {}}
-     *       }
-     *     )
-     *
-     * Returns list of projects
-     */
-    public static function InsertLabAkuns(Request $request, $metodes_id_s = null, $akses_levels_id = null, 
-    $nama = null, $email = null, $password = null, $jabatan = null, $status_akun = null)
-    {
-        $response = new usr();
-        $s_metodes_id_s = ''; $s_akses_levels_id    = ''; 
-        $s_nama         = ''; $s_email              = ''; 
-        $s_password     = ''; $s_jabatan            = ''; 
-        $s_status_akun  = '';
-        if(
-            (!isset($request->metodes_id_s) OR !isset($request->akses_levels_id) OR 
-            !isset($request->nama) OR !isset($request->email) OR 
-            !isset($request->password) OR !isset($request->jabatan) OR 
-            !isset($request->status_akun)) AND
-            (!isset($metodes_id_s) OR !isset($akses_levels_id) OR 
-            !isset($nama) OR !isset($email) OR 
-            !isset($password) OR  !isset($jabatan) OR 
-            !isset($status_akun))
-        )
-        {
-            $response->success = 0;
-            $response->message = 'DATA KOSONG';
-        }
-        elseif( isset($request->metodes_id_s) OR isset($request->akses_levels_id) OR 
-                isset($request->nama) OR isset($request->email) OR 
-                isset($request->password) OR isset($request->jabatan) OR 
-                isset($request->status_akun))
-        {
-            $s_metodes_id_s     = $request->metodes_id_s;  
-            $s_akses_levels_id  = $request->akses_levels_id; 
-            $s_nama             = $request->nama; 
-            $s_email            = $request->email; 
-            $s_password         = $request->password; 
-            $s_jabatan          = $request->jabatan; 
-            $s_status_akun      = $request->status_akun;
-        }
-        elseif( isset($metodes_id_s) OR isset($akses_levels_id) OR 
-                isset($nama) OR isset($email) OR 
-                isset($password) OR  isset($jabatan) OR 
-                isset($status_akun))
-        {
-            $s_metodes_id_s     = $metodes_id_s;  
-            $s_akses_levels_id  = $akses_levels_id; 
-            $s_nama             = $nama; 
-            $s_email            = $email; 
-            $s_password         = $password; 
-            $s_jabatan          = $jabatan; 
-            $s_status_akun      = $status_akun;
-        }
-        $d_lab_akuns    = array('metodes_id_s'      => $s_metodes_id_s,
-                                'akses_levels_id'   => $s_akses_levels_id,
-                                'nama'              => $s_nama,
-                                'email'             => $s_email, 
-                                'password'          => $s_password,
-                                'jabatan'           => $s_jabatan,
-                                'status_akun'       => $s_status_akun);    
-        $rules          = [
-            'metodes_id_s'      => 'required|string|min:1',
-            'akses_levels_id'   => 'required|exists:akses_levels,id',
-            'nama'              => 'required|string|min:3|max:50',
-            'email'             => 'required|email',
-            'password'          => 'required|string|min:8',
-            'jabatan'           => 'required|string|min:2',
-            'status_akun'       => 'required|numeric|min:0|max:1'
-        ];
-        $messages       = [
-            'metodes_id_s.required'     => 'METODE ID HARUS DIISI',
-            'metodes_id_s.min'          => 'METODE ID HARUS DIISI DENGAN MINIMAL KARAKTER 1 HURUF',
-            'akses_levels_id.required'  => 'AKSES LEVEL WAJIB DIISI',
-            'akses_levels_id.exists'    => 'ID AKSES LEVEL TIDAK DITEMUKAN',
-            'nama.required'             => 'NAMA WAJIB DIISI',
-            'nama.min'                  => 'NAMA HARUS DIISI DENGAN MINIMAL KARAKTER 3 HURUF',
-            'nama.max'                  => 'BATAS KARAKTER UNTUK PENGISIAN NAMA ADALAH 50 KARAKTER',
-            'email.required'            => 'EMAIL WAJIB DIISI',
-            'email.email'               => 'FORMAT PENGISIAN HARUS DIISI DENGAN EMAIL',
-            'password.required'         => 'PASSWORD WAJIB DIISI',
-            'password.min'              => 'PASSWORD HARUS DIISI DENGAN MINIMAL KARAKTER 8 HURUF',
-            'jabatan.required'          => 'JABATAN WAJIB DIISI',
-            'jabatan.min'               => 'JABATAN HARUS DIISI DENGAN MINIMAL KARAKTER 2 HURUF',
-            'status_akun.required'      => 'STATUS AKUN WAJIB DIISI',
-            'status_akun.min'           => 'STATUS AKUN NONAKTIF ADALAH 0',
-            'status_akun.max'           => 'STATUS AKUN YANG AKTIF ADALAH 1'
-        ];
-
-        $validator = Validator::make($d_lab_akuns, $rules, $messages);
-        $m_lab_akuns    = new LabAkun();   
-
-        if($validator->fails()){
-            $response->success = 0;
-            $response->message = $validator->errors()->first();
-        }
-        else{
-            $m_lab_akuns->metodes_id_s      = $d_lab_akuns['metodes_id_s'];
-            $m_lab_akuns->akses_levels_id   = $d_lab_akuns['akses_levels_id'];
-            $m_lab_akuns->nama              = $d_lab_akuns['nama'];
-            $m_lab_akuns->email             = $d_lab_akuns['email'];
-            $m_lab_akuns->password          = $d_lab_akuns['password'];
-            $m_lab_akuns->jabatan           = $d_lab_akuns['jabatan'];
-            $m_lab_akuns->status_akun       = $d_lab_akuns['status_akun'];
-            try {
-                $m_lab_akuns->save();
-                $response->success = 0;
-                $response->message = 'AKUN LAB BARU DITAMBAHKAN';
-            } catch (Exception $e) {
-                $response->success = 0;
-                $response->message = $e->getMessage();
-            }
-        }
-        die(json_encode($response));
-    }
-    #26. INSERT LAB AKUNS
     
     #27. DELETE LAB AKUNS
     /**
@@ -3204,7 +3309,7 @@ class ApiController extends Controller
             $response->message = 'DATA TIDAK DITEMUKAN';
         }
 
-        die(json_encode($response));
+        return json_encode($response);
     }
     #27. DELETE LAB AKUNS
 #23 - 27 LAB AKUN

@@ -10,7 +10,7 @@ use App\Controllers\ApiController;
 
 class MasterController extends Controller
 {
-#PARAMETERS -> PAGES
+#1 - 4PARAMETERS -> PAGES
     public function Parameters()
     {
         $parameters         = app('App\Http\Controllers\ApiController')->GetParameters();
@@ -44,10 +44,9 @@ class MasterController extends Controller
         $delete_parameters      = json_decode($delete_parameters, true);
         return redirect()->back()->with('delete', $delete_parameters['message']);  
     }
-#PARAMATERS -> PAGES
+#1 - 4PARAMATERS -> PAGES
 
-
-#AKSES_LEVELS -> PAGES
+#5 AKSES_LEVELS -> PAGES
     #GET AKSES LEVELS
     public static function AksesLevels()
     {
@@ -82,9 +81,9 @@ class MasterController extends Controller
             return redirect()->back()->with('delete', 'ID KOSONG'); 
         }
     }
-#AKSES_LEVELS -> PAGES
+#5 AKSES_LEVELS -> PAGES
 
-#JENIS_SAMPELS -> PAGES
+#6 JENIS_SAMPELS -> PAGES
     #GET JENI SAMPELS
     public static function JenisSampels()
     {
@@ -111,9 +110,9 @@ class MasterController extends Controller
         $deletejenissampels     = json_decode($deletejenissampels, true);
         return redirect()->back()->with('delete', $deletejenissampels['message']); 
     }
-#JENIS_SAMPELS -> PAGES
+#6 JENIS_SAMPELS -> PAGES
 
-#METODES -> PAGES
+#7 METODES -> PAGES
     public static function Metodes()
     {
         $metodes = app('App\Http\Controllers\ApiController')->GetMetodes();    
@@ -144,9 +143,9 @@ class MasterController extends Controller
             return redirect()->back()->with('delete', 'ID KOSONG'); 
         }
     }
-#METODES -> PAGES
+#7 METODES -> PAGES
 
-#PELANGGANS -> PAGES
+#17 21 PELANGGANS -> PAGES
     #GET PELANGGANS
     public static function GetPelanggans(){
         $getpelanggans = app('App\Http\Controllers\ApiController')->GetPelanggans();
@@ -168,7 +167,7 @@ class MasterController extends Controller
         return redirect()->back()->with('update', $updatepelanggans['message']); 
     }
 
-    #UPDATE PELANGGANS
+    #DELETE PELANGGANS
     public static function DeletePelanggans($id = null){
         if(isset($id)){
             $deletepelanggans = app('App\Http\Controllers\ApiController')->DeletePelanggans($id);
@@ -179,5 +178,81 @@ class MasterController extends Controller
             return redirect()->back()->with('delete', 'ID PELANGGAN YANG INGIN DIHAPUS TIDAK DITEMUKAN'); 
         }
     }
-#PELANGGANS -> PAGES
+#17 21 PELANGGANS -> PAGES
+
+#22 AKTIVITAS
+    #GET AKTIVITAS
+    public static function GetAktivitas(){
+        $getaktivitas = app('App\Http\Controllers\ApiController')->GetAktivitas();
+        $getaktivitas = json_decode($getaktivitas, true);       
+        return view('admin.aktivitas.aktivitas', ['aktivitas' => $getaktivitas]);
+    }
+
+    #INSERT AKTIVITAS
+    public static function InsertAktivitas(Request $request){        
+        $insertaktivitas = app('App\Http\Controllers\ApiController')->InsertAktivitas($request);
+        $insertaktivitas = json_decode($insertaktivitas, true);     
+        return redirect()->back()->with('insert', $insertaktivitas['message']);   
+    }
+    
+    #UPDATE AKTIVITAS
+    public static function UpdateAktivitas(Request $request){        
+        $updateaktivitas = app('App\Http\Controllers\ApiController')->UpdateAktivitas($request);
+        $updateaktivitas = json_decode($updateaktivitas, true);       
+        return redirect()->back()->with('update', $updateaktivitas['message']);   
+    }
+
+    #DELETE AKTIVITAS
+    public static function DeleteAktivitas($id = null){    
+        if(isset($id))
+        {
+            $deleteaktivitas = app('App\Http\Controllers\ApiController')->DeleteAktivitas($id);
+            $deleteaktivitas = json_decode($deleteaktivitas, true);       
+            return redirect()->back()->with('delete', $deleteaktivitas['message']);  
+        }    
+        else{
+            return redirect()->back()->with('delete', 'ID AKTIVITAS YANG INGIN DIHAPUS TIDAK ADA');  
+        }
+    }
+#22 AKTIVITAS
+
+#23 - 27 LAB AKUNS
+    #GET LAB AKUNS
+    public static function GetLabAkuns(){
+        $getlabakuns = app('App\Http\Controllers\ApiController')->GetAkunLabs();
+        $getlabakuns = json_decode($getlabakuns, true);   
+        $getakseslevels = app('App\Http\Controllers\ApiController')->GetAksesLevels();
+        $getakseslevels = json_decode($getakseslevels, true);        
+        return view('admin.labakuns.labakuns', ['labakuns' => $getlabakuns, 'akseslevels' => $getakseslevels]);
+    }
+
+    #INSERT LAB AKUNS
+    public static function InsertLabAkuns(Request $request){
+        $insertlabakuns = app('App\Http\Controllers\ApiController')->InsertLabAkuns($request, $request->metodes_id_s,$request->akses_levels_id,$request->nama,$request->email,$request->password,$request->jabatan,$request->status_akun);
+        $insertlabakuns = json_decode($insertlabakuns, true);        
+        return redirect()->back()->with(['insert' => $insertlabakuns['message']]);   
+    }
+    
+    #UPDATE LAB AKUNS
+    public static function UpdateLabAkuns(Request $request){
+        $updatelabakuns = app('App\Http\Controllers\ApiController')->UpdateLabAkuns($request, $request->id, $request->metodes_id_s, $request->akses_levels_id, $request->nama, $request->email, $request->password, $request->jabatan, $request->status_akun);
+        $updatelabakuns = json_decode($updatelabakuns, true);        
+        return redirect()->back()->with(['update' => $updatelabakuns['message']]);   
+    }
+    
+    #DELETE LAB AKUNS
+    public static function DeleteLabAkuns(Request $request, $id = null){
+        $deletelabakuns = app('App\Http\Controllers\ApiController')->DeleteLabAkuns($request, $request->id);
+        $deletelabakuns = json_decode($deletelabakuns, true);        
+        return redirect()->back()->with(['delete' => $deletelabakuns['message']]); 
+    }
+
+    #LOGIN LAB AKUNS
+    public static function LoginLabAkuns(){
+        
+    }
+#23 - 27 LAB AKUNS
+
+#28 31 PAKETS
+#28 31 PAKETS
 }

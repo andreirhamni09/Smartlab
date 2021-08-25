@@ -41,12 +41,29 @@ Route::prefix('admin')->group(function () {
     Route::get('/deletemetodes/{id?}', [MasterController::class, 'DeleteMetodes']);
 #7 METODE
 
-#17 - 20 PELANGGAN
+#17 - 21 PELANGGAN
     Route::get('/pelanggans', [MasterController::class, 'GetPelanggans']);
     Route::post('/insertpelanggans', [MasterController::class, 'InsertPelanggans']);
     Route::post('/updatepelanggans', [MasterController::class, 'UpdatePelanggans']);
     Route::get('/deletepelanggans/{id?}', [MasterController::class, 'DeletePelanggans']);
-#17 - 20 PELANGGAN
+#17 - 21 PELANGGAN
+
+#22 AKTIVITAS
+    Route::get('/aktivitas', [MasterController::class, 'GetAktivitas']);
+    Route::post('/insertaktivitas', [MasterController::class, 'InsertAktivitas']);
+    Route::post('/updateaktivitas', [MasterController::class, 'UpdateAktivitas']);
+    Route::get('/deleteaktivitas/{id?}', [MasterController::class, 'DeleteAktivitas']);
+#22 AKTIVITAS
+
+#23 - 27 LAB AKUNS    
+    Route::get('/labakuns', [MasterController::class, 'GetLabAkuns']);
+    Route::post('/insertlabakuns', [MasterController::class, 'InsertLabAkuns']);
+    Route::post('/updatelabakuns', [MasterController::class, 'UpdateLabAkuns']);
+    Route::get('/deletelabakuns/{id?}', [MasterController::class, 'DeleteLabAkuns']);
+    Route::post('/loginlabakuns', [MasterController::class, 'LoginLabAkuns']);
+#23 - 27 LAB AKUNS
+
+
 
     Route::get('/login', [MasterController::class, 'Login']);
     Route::get('/register', [MasterController::class, 'Register']);
@@ -55,11 +72,6 @@ Route::prefix('admin')->group(function () {
     Route::get('/akseslevel', [MasterController::class, 'AksesLevel']);
     Route::match(['get', 'post'], '/crud_akseslevel', [MasterController::class, 'CrudAksesLevel']);
     # AKSESLEVEL
-
-    # USERLAB    
-    Route::get('/userlab', [MasterController::class, 'UserLab']);
-    Route::match(['get', 'post'], '/crud_akunlab', [MasterController::class, 'CrudUserLab']);
-    # USERLAB
 
     #INPUTSAMPEL
     Route::get('/inputsampel', [MasterController::class, 'InputSampel']);   
