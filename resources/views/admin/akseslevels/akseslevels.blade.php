@@ -49,7 +49,7 @@
                                         <div class="col-sm-3">
                                             <div class="form-group">
                                                 <label>Akses Level</label>
-                                                <input type="number" name="id" class="form-control" placeholder="Akses Level ...">
+                                                <input type="number" name="id" class="form-control" placeholder="Akses Level ..." required>
                                                 @if(session('error_insert'))
                                                     @if ($errors->has('id'))
                                                         <span class="text-danger">{{ $errors->first('id') }}</span>
@@ -60,7 +60,7 @@
                                         <div class="col-sm-3">
                                             <div class="form-group">
                                                 <label>Nama Jabatan</label>
-                                                <input type="text" name="jabatan" class="form-control" placeholder="Masukan Nama Jabatan ...">
+                                                <input type="text" name="jabatan" class="form-control" placeholder="Masukan Nama Jabatan ..." required>
                                                 @if(session('error_insert'))
                                                     @if ($errors->has('jabatan'))
                                                         <span class="text-danger">{{ $errors->first('jabatan') }}</span>
@@ -71,7 +71,7 @@
                                         <div class="col-sm-3">
                                             <div class="form-group">
                                                 <label>Halaman Id</label>
-                                                <input type="text" name="halamans_id_s" class="form-control" placeholder="Masukan Daftar Halaman Id ...">
+                                                <input type="text" name="halamans_id_s" class="form-control" placeholder="Masukan Daftar Halaman Id ..." required>
                                                 @if(session('error_insert'))
                                                     @if ($errors->has('jabatan'))
                                                         <span class="text-danger">{{ $errors->first('jabatan') }}</span>
@@ -79,10 +79,10 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        <div class="col-sm-3">
+                                        <div class="col-sm-1">
                                             <div class="form-group">
-                                                <label>Submit</label>
-                                                <button class="form-control btn btn-primary" name="action" value="add"><abbr title="Tambahkan Akses Level"><i class="fas fa-plus-square"></i></abbr></button>
+                                                <label style="color: white;">SSS</label>
+                                                <button class="form-control btn btn-primary" name="action" value="add"><abbr title="Tambahkan Akses Level"><i class="fas fa-plus-square btn-primary"></i></abbr></button>
                                             </div>
                                         </div>
                                     </div>
@@ -125,7 +125,7 @@
                                             <?php
                                                 $arr_level_akses_id             = explode('-', $akseslevels['id']);
                                                 $arr_level_akses_jabatan        = explode('-', $akseslevels['jabatan']);
-                                                $arr_level_akses_halamans_id_s  = explode('-', $akseslevels['halamans_id_s']);
+                                                $arr_level_akses_halamans_id_s  = explode(';', $akseslevels['halamans_id_s']);
                                                 $no = 1;
                                             ?>
                                             @for($i = 0; $i < count($arr_level_akses_id); $i++)
@@ -134,10 +134,10 @@
                                                 <input type="hidden" name="id" value="{{ $arr_level_akses_id[$i] }}">
                                                 <tr>
                                                     <td>{{ $no }}</td>
-                                                    <td><input type="number" name="u_id" value="{{ $arr_level_akses_id[$i] }}" class="form-control" placeholder="Akses Level Id ..."></td>
-                                                    <td><input type="text" name="u_jabatan" value="{{ $arr_level_akses_jabatan[$i] }}" class="form-control" placeholder="Update Jabatan ..."></td>
+                                                    <td><input required type="number" name="u_id" value="{{ $arr_level_akses_id[$i] }}" class="form-control" placeholder="Akses Level Id ..."></td>
+                                                    <td><input required type="text" name="u_jabatan" value="{{ $arr_level_akses_jabatan[$i] }}" class="form-control" placeholder="Update Jabatan ..."></td>
                                                     <td>    
-                                                        <input type="text" name="u_halamans_id_s" value="{{ $arr_level_akses_halamans_id_s[$i] }}" class="form-control" placeholder="Halaman Id ...">
+                                                        <input required type="text" name="u_halamans_id_s" value="{{ $arr_level_akses_halamans_id_s[$i] }}" class="form-control" placeholder="Halaman Id ...">
                                                     </td>
                                                     <td>
                                                         <button type="submit" class="btn btn-success">UPDATE</button>

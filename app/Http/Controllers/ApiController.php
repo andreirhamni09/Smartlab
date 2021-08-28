@@ -132,44 +132,63 @@ class ApiController extends Controller
     public static function InsertParameters(Request $request, $simbol = null, $nama_unsur = null)
     {
         $response           = new usr();
-        $insertparameters   = ''; 
         
-        $s_simbol             = ''; $s_nama_unsur = '';
+        $s_simbol           = ''; 
+        $s_nama_unsur       = '';
         if(
-            (!isset($request->simbol) OR !isset($request->nama_unsur)) AND
-            (empty($simbol) OR empty($nama_unsur))
-        )
+            (!isset($request->simbol) AND !isset($request->nama_unsur)) AND 
+            (!isset($simbol) AND !isset($nama_unsur)))
         {
             $response->success = 0;
             $response->message = 'DATA WAJIB DIISI';
         }
-        elseif (
-            (isset($request->simbol) OR isset($request->nama_unsur))
-        ) 
+        elseif ((isset($request->simbol) OR isset($request->nama_unsur))) 
         {
             $s_simbol       = $request->simbol; 
             $s_nama_unsur   = $request->nama_unsur;
         }
-        elseif (
-            (empty($simbol) OR empty($nama_unsur))
-        ) 
+        elseif ((isset($simbol) OR isset($nama_unsur))) 
         {
             $s_simbol       = $simbol; 
             $s_nama_unsur   = $nama_unsur;
         }
 
-        try {
-            DB::table('parameters')
-            ->insert([
-                'simbol'        => $s_simbol,
-                'nama_unsur'    => $s_nama_unsur
-            ]);
+        $rules      = [
+            'simbol'            => 'required|string|min:1|max:5',
+            'nama_unsur'        => 'required|string|min:1|max:25'
+        ];
+        $messages   = [
+            'simbol.required'          => 'SIMBOL WAJIB DIISI',
+            'simbol.min'               => 'SIMBOL WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'simbol.max'               => 'SIMBOL WAJIB DIISI DENGAN HURUF MAKSIMAL 5 KARAKTER',
+            'nama_unsur.required'      => 'NAMA UNSUR WAJIB DIISI',
+            'nama_unsur.min'           => 'NAMA UNSUR WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'nama_unsur.max'           => 'NAMA UNSUR WAJIB DIISI DENGAN HURUF MAKSIMAL 25 KARAKTER',
+        ];
+        $arr_parameter = array(
+            'simbol'        => $s_simbol,
+            'nama_unsur'    => $s_nama_unsur
+        );
 
-            $response->success  = 1;
-            $response->message  = 'BERHASIL MENAMBAHKAN DATA KE TABEL PARAMETERS';
-        } catch (Exception $e) {
+        $validator = Validator::make($arr_parameter, $rules, $messages);
+        if($validator->fails()){
             $response->success  = 0;
-            $response->message  = 'GAGAL MENAMBAHKAN DATA BARU :'. $e->getMessage();
+            $response->message = 'TERJADI KESALAHAN SAAT INGIN MENAMBAHKAN DATA, PESAN KESALAHAN :'.$validator->errors()->first();
+        }
+        else{
+            try {
+                DB::table('parameters')
+                ->insert([
+                    'simbol'        => $arr_parameter['simbol'],
+                    'nama_unsur'    => $arr_parameter['nama_unsur']
+                ]);
+
+                $response->success  = 1;
+                $response->message  = 'BERHASIL MENAMBAHKAN DATA KE TABEL PARAMETERS';
+            } catch (Exception $e) {
+                $response->success  = 0;
+                $response->message  = 'GAGAL MENAMBAHKAN DATA BARU :'. $e->getMessage();
+            }
         }
 
         return json_encode($response);
@@ -226,12 +245,11 @@ class ApiController extends Controller
     public static function UpdateParameters(Request $request, $id = null, $simbol = null, $nama_unsur = null)
     {
         $response           = new usr();
-        $updateparameters   = ''; 
         
         $s_id = ''; $s_simbol = ''; $s_nama_unsur = '';
         if(
-            (!isset($request->id) OR !isset($request->simbol) OR !isset($request->nama_unsur)) AND
-            (!isset($id) OR !isset($simbol) OR !isset($nama_unsur))
+            (!isset($request->id) AND !isset($request->simbol) AND !isset($request->nama_unsur)) AND
+            (!isset($id) AND !isset($simbol) AND !isset($nama_unsur))
         )
         {
             $response->success = 0;
@@ -253,17 +271,32 @@ class ApiController extends Controller
             $s_simbol       = $simbol; 
             $s_nama_unsur   = $nama_unsur;
         }
+        
+        $rules      = [
+            'id'                => 'required|exists:parameters,id',
+            'simbol'            => 'required|string|min:1|max:5',
+            'nama_unsur'        => 'required|string|min:1|max:25'
+        ];
+        $messages   = [
+            'id.required'              => 'ID PARAMETER YANG INGIN DIUPDATE HARUS ADA',
+            'id.exists'                => 'ID PARAMETER TIDAK DITEMUKAN',
+            'simbol.required'          => 'SIMBOL WAJIB DIISI',
+            'simbol.min'               => 'SIMBOL WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'simbol.max'               => 'SIMBOL WAJIB DIISI DENGAN HURUF MAKSIMAL 5 KARAKTER',
+            'nama_unsur.required'      => 'NAMA UNSUR WAJIB DIISI',
+            'nama_unsur.min'           => 'NAMA UNSUR WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'nama_unsur.max'           => 'NAMA UNSUR WAJIB DIISI DENGAN HURUF MAKSIMAL 25 KARAKTER',
+        ];
+        $arr_parameter = array(
+            'id'            => $s_id,
+            'simbol'        => $s_simbol,
+            'nama_unsur'    => $s_nama_unsur
+        );
 
-        $updateparameters       = DB::table('parameters')
-        ->where('id', '=', $s_id)
-        ->first();
-
-        $updateparameters       = json_decode(json_encode($updateparameters), true);
-
-        if(empty($updateparameters))
-        {
+        $validator = Validator::make($arr_parameter, $rules, $messages);
+        if($validator->fails()){
             $response->success  = 0;
-            $response->message  = 'DATA DENGAN ID :'.$s_id.' TIDAK DITEMUKAN';
+            $response->message = 'TERJADI KESALAHAN SAAT INGIN MENGUPDATE DATA, PESAN KESALAHAN :'.$validator->errors()->first();
         }
         else{
             try {
@@ -279,8 +312,8 @@ class ApiController extends Controller
             } catch (Exception $e) {
                 $response->success  = 0;
                 $response->message  = 'GAGAL MELAKUKAN UPDATE DATA :'. $e->getMessage();
-            }    
-        }
+            } 
+        }   
         return json_encode($response);
     }
     #3. UPDATE PARAMETERS
@@ -396,7 +429,7 @@ class ApiController extends Controller
                 foreach ($aksesLevels as $value) {
                     $str_id                 .= $value['id'] . '-';
                     $str_jabatan            .= $value['jabatan'] . '-';
-                    $str_halamans_id_s      .= $value['halamans_id_s'] . '-';
+                    $str_halamans_id_s      .= $value['halamans_id_s'] . ';';
                 }
 
                 $str_id                     = substr($str_id, 0, -1);
@@ -1078,8 +1111,8 @@ class ApiController extends Controller
         $str_lab_akuns_id                 = '';
 
         if(
-            (!isset($request->aktivitas_waktu) OR !isset($request->data_sampels_id) OR !isset($request->aktivitas_id) OR !isset($request->lab_akuns_id)) AND
-            (!isset($aktivitas_waktu) OR !isset($data_sampels_id) OR !isset($aktivitas_id) OR !isset($lab_akuns_id))
+            (!isset($request->aktivitas_waktu) AND !isset($request->data_sampels_id) AND !isset($request->aktivitas_id) AND !isset($request->lab_akuns_id)) AND
+            (!isset($aktivitas_waktu) AND !isset($data_sampels_id) AND !isset($aktivitas_id) AND !isset($lab_akuns_id))
         )
         {
             $response->success     = 0;
@@ -1099,20 +1132,51 @@ class ApiController extends Controller
             $str_lab_akuns_id                 = $lab_akuns_id;
         }
 
-        try {
-            DB::table('detail_trackings')->insert([
-                'aktivitas_waktu'           => $str_aktivitas_waktu,
-                'data_sampels_id'           => $str_data_sampels_id,
-                'aktivitas_id'              => $str_aktivitas_id,   
-                'lab_akuns_id'              => $str_lab_akuns_id   
-            ]);
-            $response->success     = 1;
-            $response->message     = 'BERHASIL MANAMBAHKAN AKTIVITAS TRACKING BARU';
-        } catch (Exception $e) {
-            $response->success     = 0;
-            $response->message     = $e->getMessage();
+        $rules      = [
+            'aktivitas_waktu'   => 'required|date|after:yesterday',
+            'data_sampels_id'   => 'required|exists:data_sampels,id',
+            'aktivitas_id'      => 'required|exists:aktivitas,id',
+            'lab_akuns_id'      => 'required|exists:lab_akuns,id'
+        ];
+        $messages   = [
+            'aktivitas_waktu.required'  => 'WAKTU WAJIB ADA',
+            'aktivitas_waktu.after'     => 'MINIMAL WAKTU UNTUK MENAMBAHKAN AKTIVITAS BARU ADALAH HARI INI',
+            'data_sampels_id.required'  => 'ID KUPA WAJIB ADA',
+            'data_sampels_id.exists'    => 'ID KUPA TIDAK DITEMUKAN',
+            'aktivitas_id.required'     => 'ID AKTIVITAS WAJIB ADA',
+            'aktivitas_id.exists'       => 'ID TIDAK DITEMUKAN',
+            'lab_akuns_id.required'     => 'ID LAB AKUNS WAJIB ADA',
+            'lab_akuns_id.exists'       => 'ID LAB AKUNS TIDAK DITEMUKAN'
+        ];
+        $arr_aktivitas = array(
+            'aktivitas_waktu'   => $str_aktivitas_waktu,
+            'data_sampels_id'   => $str_data_sampels_id,
+            'aktivitas_id'      => $str_aktivitas_id,
+            'lab_akuns_id'      => $str_lab_akuns_id
+        );
+
+        $validator = Validator::make($arr_aktivitas, $rules, $messages);
+        if($validator->fails()){
+            $response->success  = 0;
+            $response->message = 'TERJADI KESALAHAN SAAT INGIN MENGUPDATE DATA, PESAN KESALAHAN :'.$validator->errors()->first();
         }
-        die(json_encode($response));
+        else{
+            try {
+                
+                DB::table('detail_trackings')->insert([
+                    'aktivitas_waktu'           => $str_aktivitas_waktu,
+                    'data_sampels_id'           => $str_data_sampels_id,
+                    'aktivitas_id'              => $str_aktivitas_id,   
+                    'lab_akuns_id'              => $str_lab_akuns_id   
+                ]);
+                $response->success     = 1;
+                $response->message     = 'BERHASIL MANAMBAHKAN AKTIVITAS TRACKING BARU';
+            } catch (Exception $e) {
+                $response->success     = 0;
+                $response->message     = $e->getMessage();
+            }
+        }
+        return json_encode($response);
     }
     #10. INSERT DETAIL TRACKING
 #9 - 10 DETAIL TRACKING
@@ -1266,8 +1330,6 @@ class ApiController extends Controller
         ->select('data_sampels.*', 'pelanggans.nama as pelanggan', 'jenis_sampels.jenis_sampel as jenis_sampel')
         ->where('data_sampels.id', '=', $id_s)
         ->get();
-
-        
         $getdatasampelsbyid      = json_decode(json_encode($getdatasampelsbyid), true);
 
         #DATA SAMPELS
@@ -1448,18 +1510,18 @@ class ApiController extends Controller
         $s_tanggal_selesai      = ''; $s_nomor_surat        = ''; $s_jumlah_sampel  = ''; $s_status        = '';
 
         if(
-            (!isset($request->jenis_sampels_id) OR !isset($request->pelanggans_id) OR !isset($request->pakets_id_s) OR 
-            !isset($request->tanggal_masuk) OR !isset($request->tanggal_selesai) OR !isset($request->nomor_surat) OR 
-            !isset($request->jumlah_sampel) OR !isset($request->status)) AND
-            (!isset($jenis_sampels_id) OR !isset($pelanggans_id) OR !isset($pakets_id_s) OR 
-            !isset($tanggal_masuk) OR !isset($tanggal_selesai) OR !isset($nomor_surat) OR 
-            !isset($jumlah_sampel) OR !isset($status))
+            (!isset($request->jenis_sampels_id) AND !isset($request->pelanggans_id) AND !isset($request->pakets_id_s) AND 
+            !isset($request->tanggal_masuk) AND !isset($request->tanggal_selesai) AND !isset($request->nomor_surat) AND 
+            !isset($request->jumlah_sampel) AND !isset($request->status)) AND
+            (!isset($jenis_sampels_id) AND !isset($pelanggans_id) AND !isset($pakets_id_s) AND 
+            !isset($tanggal_masuk) AND !isset($tanggal_selesai) AND !isset($nomor_surat) AND 
+            !isset($jumlah_sampel) AND !isset($status))
         )
         {
             $response->success = 0;
             $response->message = 'DATA WAJIB DIISI';
         }
-        elseif(
+        else if(
             isset($request->jenis_sampels_id) OR isset($request->pelanggans_id) OR isset($request->pakets_id_s) OR 
             isset($request->tanggal_masuk) OR isset($request->tanggal_selesai) OR isset($request->nomor_surat) OR 
             isset($request->jumlah_sampel) OR isset($request->status)
@@ -1473,7 +1535,7 @@ class ApiController extends Controller
             $s_jumlah_sampel        = $request->jumlah_sampel;
             $s_status               = $request->status;
         }
-        elseif(
+        else if(
             isset($jenis_sampels_id) OR isset($pelanggans_id) OR isset($pakets_id_s) OR 
             isset($tanggal_masuk) OR isset($tanggal_selesai) OR isset($nomor_surat) OR 
             isset($jumlah_sampel) OR isset($status)
@@ -1583,8 +1645,19 @@ class ApiController extends Controller
                     
                     if($status_save == 1)
                     {
-                        $response->success = 1;
-                        $response->message = 'BERHASIL MEMASUKAN DATA KUPA BARU';
+                        try {
+                            DB::table('detail_trackings')->insert([
+                                'aktivitas_waktu'           => date('Y-m-d H:i', strtotime('now')),
+                                'data_sampels_id'           => $m_data_sampels->id,
+                                'aktivitas_id'              => 1,   
+                                'lab_akuns_id'              => 1   
+                            ]);
+                            $response->success = 1;
+                            $response->message = 'BERHASIL MEMASUKAN DATA KUPA BARU';
+                        } catch (Exception $e) {
+                            $response->success = 0;
+                            $response->message = 'GAGAL MEMASUKAN DATA : '.$e->getMessage();
+                        }
                     }
                 }
                 else{
@@ -1614,8 +1687,19 @@ class ApiController extends Controller
                     }
                     if($status_save == 1)
                     {
-                        $response->success = 1;
-                        $response->message = 'BERHASIL MEMASUKAN DATA KUPA BARU';
+                        try {
+                            DB::table('detail_trackings')->insert([
+                                'aktivitas_waktu'           => date('Y-m-d H:i', strtotime('now')),
+                                'data_sampels_id'           => $m_data_sampels->id,
+                                'aktivitas_id'              => 1,   
+                                'lab_akuns_id'              => 1   
+                            ]);
+                            $response->success = 1;
+                            $response->message = 'BERHASIL MEMASUKAN DATA KUPA BARU';
+                        } catch (Exception $e) {
+                            $response->success = 0;
+                            $response->message = 'GAGAL MEMASUKAN DATA : '.$e->getMessage();
+                        }
                     }
                 }
 
@@ -1624,7 +1708,7 @@ class ApiController extends Controller
                 $response->message = $e->getMessage();
             }
         }
-        die(json_encode($response));
+        return json_encode($response);
     }
     #13. INSERT DATA SAMPELS
 
@@ -3359,7 +3443,7 @@ class ApiController extends Controller
                     $s_jenis_sampels_id     .= $value['jenis_sampels_id'].'-'; 
                     $s_jenis_sampel         .= $value['jenis_sampel'].'-'; 
                     $s_paket                .= $value['paket'].'-'; 
-                    $s_parameters_id_s      .= $value['parameters_id_s'].'-'; 
+                    $s_parameters_id_s      .= $value['parameters_id_s'].';'; 
                     $s_harga                .= $value['harga'].'-';
                 }
                 $response->id               = substr($s_id, 0, -1);    
@@ -3376,7 +3460,7 @@ class ApiController extends Controller
             }
         }
 
-        die(json_encode($response));
+        return json_encode($response);
     }
     #28. GET PAKET
 
@@ -3442,8 +3526,8 @@ class ApiController extends Controller
         $response = new usr();
 
         $s_jenis_sampels_id = ''; $s_paket = ''; $s_parameters_id_s = ''; $s_harga = 0;
-        if  ((isset($jenis_sampels_id) or !isset($paket) or !isset($parameters_id_s) or !isset($harga)) AND
-             (!isset($request->jenis_sampels_id) or !isset($request->paket) or !isset($request->parameters_id_s) or !isset($request->harga)))   
+        if  ((isset($jenis_sampels_id) AND !isset($paket) AND !isset($parameters_id_s) AND !isset($harga)) AND
+             (!isset($request->jenis_sampels_id) AND !isset($request->paket) AND !isset($request->parameters_id_s) AND !isset($request->harga)))   
         {
             $response->success      = 0;
             $response->message      = 'DATA SWAGGER ATAU REQUEST KOSONG';
@@ -3464,7 +3548,7 @@ class ApiController extends Controller
         }
 
         $rules = [
-            'jenis_sampels_id'  => 'required|numeric|min:1',
+            'jenis_sampels_id'  => 'required|exists:jenis_sampels,id',
             'paket'             => 'required|string|min:1',
             'parameters_id_s'   => 'required|string|min:1',
             'harga'             => 'required|numeric|min:10000'
@@ -3472,8 +3556,7 @@ class ApiController extends Controller
 
         $messages   = [
             'jenis_sampels_id.required'     => 'Jenis Sampel Wajib Diisi',
-            'jenis_sampels_id.numeric'      => 'Jenis Sampel Harus Angka',
-            'jenis_sampels_id.min'          => 'Jenis Sampel Minimal 1',
+            'jenis_sampels_id.exists'       => 'Jenis Sampel Tidak Ditemukan',
             'paket.required'                => 'Paket Wajib Diisi',
             'paket.min'                     => 'Paket Wajib Diisi Minimal 1 Huruf',
             'parameters_id_s.required'      => 'Parameters ID Wajib Diisi',
@@ -3496,17 +3579,24 @@ class ApiController extends Controller
             $response->success = 0;
             $response->message = $validator->errors()->first();
         }
-        else{
-            $response->success = 1;
-            $response->message = 'MANTAP';
-        }
-        
-        try {
-        } catch (Exception $e) {
-            //throw $th;
+        else{        
+            try {
+                DB::table('pakets')
+                ->insert([
+                    'jenis_sampels_id'  => $s_jenis_sampels_id,
+                    'paket'             => $s_paket,
+                    'parameters_id_s'   => $s_parameters_id_s,
+                    'harga'             => $s_harga
+                ]);
+                $response->success = 1;
+                $response->message = 'BERHASIL MEMASUKAN DATA PAKET BARU';
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = $e->getMessage();
+            }
         }
 
-        die(json_encode($response));
+        return json_encode($response);
     }
     #29. INSERT PAKETS
 
@@ -3634,13 +3724,13 @@ class ApiController extends Controller
 
                 $response->success = 1;
                 $response->message = 'BERHASIL MELAKUKAN UPDATE DATA';
-            } catch (\Throwable $th) {
+            } catch (Exception $e) {
                 $response->success = 0;
                 $response->message = 'GAGAL MELAKUKAN UPDATE : '.$e->getMessage();
             }
         }
 
-        die(json_encode($response));
+        return json_encode($response);
     }
     #30. UPDATE PAKETS
 
@@ -3712,7 +3802,7 @@ class ApiController extends Controller
                 $response->message = $e->getMessage();
             }
         }
-        die(json_encode($response));
+        return json_encode($response);
     }
     #31. DELETE PAKETS
 #28 - 31 PAKETS

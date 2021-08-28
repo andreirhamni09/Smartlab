@@ -41,13 +41,13 @@
                                         <div class="col-sm">
                                             <div class="form-group">
                                                 <label>Simbol</label>
-                                                <input type="text" name="simbol" class="form-control" placeholder="Simbol ..." autofocus>
+                                                <input type="text" name="simbol" class="form-control" placeholder="Simbol ..." autofocus required>
                                             </div>
                                         </div>
                                         <div class="col-sm-6">                                            
                                             <div class="form-group">
                                                 <label>Nama Unsur</label>
-                                                <input type="text" name="nama_unsur" class="form-control" placeholder="Nama Unsur ...">
+                                                <input type="text" name="nama_unsur" class="form-control" placeholder="Nama Unsur ..." required>
                                             </div>
                                         </div>
                                         <div class="col-sm-2">
@@ -103,8 +103,8 @@
                                                     <input type="hidden" name="id" class="form-control" value="{{ $arr_parameters_id[$i] }}" placeholder="{{ $arr_parameters_id[$i] }}">
                                                     <tr>
                                                         <td>{{ $no_parameters }}</td>
-                                                        <td><input name="simbol" class="form-control" value="{{ $arr_parameters_simbol[$i] }}" placeholder="{{ $arr_parameters_simbol[$i] }}"></td>
-                                                        <td><input name="nama_unsur" class="form-control" value="{{ $arr_parameters_nama_unsur[$i] }}" placeholder="{{ $arr_parameters_nama_unsur[$i] }}"></td>
+                                                        <td><input name="simbol" class="form-control" value="{{ $arr_parameters_simbol[$i] }}" placeholder="{{ $arr_parameters_simbol[$i] }}" required></td>
+                                                        <td><input name="nama_unsur" class="form-control" value="{{ $arr_parameters_nama_unsur[$i] }}" placeholder="{{ $arr_parameters_nama_unsur[$i] }}" required></td>
                                                         <td style="width: 40%;">
                                                             <div class="row">
                                                                 <div class="col-md-6">

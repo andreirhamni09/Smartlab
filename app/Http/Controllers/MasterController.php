@@ -254,5 +254,145 @@ class MasterController extends Controller
 #23 - 27 LAB AKUNS
 
 #28 31 PAKETS
+    #GET AKSES LEVELS
+    public static function Pakets()
+    {
+        $pakets         = app('App\Http\Controllers\ApiController')->GetPakets();        
+        $pakets         = json_decode($pakets, true);
+
+        #JENIS SAMPELS
+        $jenissampels                    = app('App\Http\Controllers\ApiController')->GetJenisSampels();
+        $jenissampels                    = json_decode($jenissampels, true);
+        $arr_jenissampels_id             = explode('-',$jenissampels['id']);
+        $arr_jenissampels_jenis_sampel   = explode('-',$jenissampels['jenis_sampel']);
+        $arr_jenissampels_lambang_sampel = explode('-',$jenissampels['lambang_sampel']);
+        
+        $arr_jenissampels_all            = array();
+        for ($i = 0; $i < count($arr_jenissampels_id) ; $i++) { 
+            $data = [
+                'id'                => $arr_jenissampels_id[$i],
+                'jenis_sampel'      => $arr_jenissampels_jenis_sampel[$i],        
+                'lambang_sampel'    => $arr_jenissampels_lambang_sampel[$i]            
+            ];
+            array_push($arr_jenissampels_all, $data);
+        }
+        #JENIS SAMPELS
+
+        #PARAMETERS
+        $parameters                 = app('App\Http\Controllers\ApiController')->GetParameters();        
+        $parameters                 = json_decode($parameters, true);
+        $arr_parameters_id          = explode('-', $parameters['id']);
+        $arr_parameters_simbol      = explode('-', $parameters['simbol']);
+        $arr_parameters_nama_unsur  = explode('-', $parameters['nama_unsur']);
+
+        $arr_parameters_all         = array();
+        for ($i = 0; $i < count($arr_parameters_id) ; $i++) { 
+            $data = [
+                'id'            => $arr_parameters_id[$i],
+                'simbol'        => $arr_parameters_simbol[$i],        
+                'nama_unsur'    => $arr_parameters_nama_unsur[$i]            
+            ];
+            array_push($arr_parameters_all, $data);
+        }
+        $arr_pkt_pars_id_s          = explode(';', $pakets['parameters_id_s']);
+        $arr_parameters_id_s        = array();
+        for ($i = 0; $i < count($arr_pkt_pars_id_s) ; $i++) { 
+            $data = explode('-', $arr_pkt_pars_id_s[$i]);
+            array_push($arr_parameters_id_s, $data);
+        }
+
+        $arr_paket_par = array();
+        for ($i = 0; $i < count($arr_parameters_id_s) ; $i++) { 
+            $str_paket_par_id   = '';
+            $str_paket_par      = '';
+
+            for ($j = 0; $j < count($arr_parameters_id_s[$i]); $j++) { 
+                for ($k = 0; $k < count($arr_parameters_all); $k++) { 
+                    if($arr_parameters_id_s[$i][$j] == $arr_parameters_all[$k]['id']){
+                        $str_paket_par_id   .= $arr_parameters_all[$k]['id'].'-';
+                        $str_paket_par      .= $arr_parameters_all[$k]['nama_unsur'].'-';
+                    }
+                }
+            }
+            $str_paket_par_id   = substr($str_paket_par_id, 0, -1);
+            $str_paket_par      = substr($str_paket_par, 0, -1);
+
+            $arr_ = [
+                'id'            => explode('-', $str_paket_par_id),
+                'nama_unsur'    => explode('-', $str_paket_par)
+            ];
+
+            array_push($arr_paket_par, $arr_);
+            
+        }
+        #PARAMETERS
+
+        return view('admin.pakets.pakets', ['pakets' => $pakets, 'jenissampels' => $arr_jenissampels_all, 'parameters' => $arr_parameters_all, 'arr_paket_par' => $arr_paket_par]);
+    }
+
+    #INSERT AKSES LEVELS
+    public static function InsertPakets(Request $request)
+    {
+        $str_jenis_sampels_id       = $request->jenis_sampels_id;
+        $str_paket            = $request->paket;
+        $str_parameters_id_s  = '';
+        foreach($request->parameters_id_s as $par){
+            $str_parameters_id_s .= $par.'-';
+        }
+        $str_parameters_id_s  = substr($str_parameters_id_s, 0, -1);
+        $str_harga            = str_replace('.', '',$request->harga);
+
+        $arr_pakets     = [
+            'jenis_sampels_id'      => $str_jenis_sampels_id,
+            'paket'                 => $str_paket,
+            'parameters_id_s'       => $str_parameters_id_s,
+            'harga'                 => $str_harga
+        ];
+
+        $insertpakets = app('App\Http\Controllers\ApiController')->InsertPakets($request, $arr_pakets['jenis_sampels_id'], $arr_pakets['paket'], $arr_pakets['parameters_id_s'], $arr_pakets['harga']);      
+        $insertpakets = json_decode($insertpakets, true);
+        return redirect()->back()->with('insert', $insertpakets['message']);  
+    }
+    #UPDATE AKSES LEVELS
+    public static function UpdatePakets(Request $request)
+    {
+        $str_id                     = $request->id;
+        $str_jenis_sampels_id       = $request->jenis_sampels_id;
+        $str_paket                  = $request->paket;
+        $str_parameters_id_s        = '';
+        foreach($request->parameters_id_s as $par){
+            $str_parameters_id_s .= $par.'-';
+        }
+        $str_parameters_id_s  = substr($str_parameters_id_s, 0, -1);
+        $str_harga            = str_replace('.', '',$request->harga);
+
+        $arr_pakets     = [
+            'id'                    => $str_id,
+            'jenis_sampels_id'      => $str_jenis_sampels_id,
+            'paket'                 => $str_paket,
+            'parameters_id_s'       => $str_parameters_id_s,
+            'harga'                 => $str_harga
+        ];
+
+        $updatepakets = app('App\Http\Controllers\ApiController')->UpdatePakets($request, $arr_pakets['id'], $arr_pakets['jenis_sampels_id'], $arr_pakets['paket'], $arr_pakets['parameters_id_s'], $arr_pakets['harga']);      
+        $updatepakets = json_decode($updatepakets, true);
+        return redirect()->back()->with('update', $updatepakets['message']);  
+    }
+    #DELETE AKSES LEVELS
+    public static function DeletePakets(Request $request, $id = null)
+    { 
+        if(isset($id)){
+            $deletepakets = app('App\Http\Controllers\ApiController')->DeletePakets($id);      
+            $deletepakets = json_decode($deletepakets, true);
+            return redirect()->back()->with('delete', $deletepakets['message']); 
+        }
+        else{
+            return redirect()->back()->with('delete', 'ID KOSONG'); 
+        }
+    }
+
+
+
+
 #28 31 PAKETS
 }

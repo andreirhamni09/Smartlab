@@ -15,8 +15,8 @@
     $arr_harga                  = array();    
 
     # JENIS SAMPEL
-    $arr_jenis_sampel       = array();
-    $arr_opt_jenis_sampel   = array();
+    $arr_jenis_sampel           = array();
+    $arr_opt_jenis_sampel       = array();
     $arr_id_jenis_sample_par    = array();
 ?>
 
@@ -85,7 +85,6 @@
                                             </div>
                                         </div>
                                         <!-- NOMOR SURAT -->
-
                                     </div>
 
                                     <div class="row">   

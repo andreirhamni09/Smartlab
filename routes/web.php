@@ -63,15 +63,15 @@ Route::prefix('admin')->group(function () {
     Route::post('/loginlabakuns', [MasterController::class, 'LoginLabAkuns']);
 #23 - 27 LAB AKUNS
 
-
+#28 - 31 PAKETS
+    Route::get('/pakets', [MasterController::class, 'Pakets']);
+    Route::post('/insertpakets', [MasterController::class, 'InsertPakets']);
+    Route::post('/updatepakets', [MasterController::class, 'UpdatePakets']);
+    Route::get('/deletepakets/{id?}', [MasterController::class, 'DeletePakets']);
+#28 - 31 PAKETS
 
     Route::get('/login', [MasterController::class, 'Login']);
     Route::get('/register', [MasterController::class, 'Register']);
-
-    # AKSESLEVEL
-    Route::get('/akseslevel', [MasterController::class, 'AksesLevel']);
-    Route::match(['get', 'post'], '/crud_akseslevel', [MasterController::class, 'CrudAksesLevel']);
-    # AKSESLEVEL
 
     #INPUTSAMPEL
     Route::get('/inputsampel', [MasterController::class, 'InputSampel']);   
