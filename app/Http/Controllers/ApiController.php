@@ -452,6 +452,21 @@ class ApiController extends Controller
     public static function InsertAksesLevels(Request $request)
     {
         $response   = new usr();
+
+        $str_id             = $request->id;
+        $str_jabatan        = $request->jabatan;
+        $str_halamans_id_s  = '';
+        for ($i = 0; $i < count($request->halamans_id_s); $i++) { 
+            $str_halamans_id_s .= $request->halamans_id_s[$i].'-';
+        }
+        $str_halamans_id_s = substr($str_halamans_id_s, 0, -1);
+
+        $arr_akseslevels  = [
+            'id'            => $str_id,
+            'jabatan'       => $str_jabatan,
+            'halamans_id_s' => $str_halamans_id_s
+        ]; 
+
         $rules      = [
             'id'            => 'required|numeric|min:1',
             'jabatan'       => 'required|string|min:2'
@@ -462,7 +477,7 @@ class ApiController extends Controller
             'jabatan.required'          => 'JABATAN WAJIB DIISI',
             'jabatan.min'               => 'JABATAN WAJIB DIISI DENGAN HURUF MINIMAL 2 KARAKTER'
         ];
-        
+
         $validator = Validator::make($request->all(), $rules, $messages);
         if($validator->fails()){
             $response->success = 0;
@@ -472,9 +487,9 @@ class ApiController extends Controller
             try {
                 DB::table('akses_levels')
                 ->insert([
-                    'id'            => $request->id,
-                    'jabatan'       => $request->jabatan,
-                    'halamans_id_s' => $request->halamans_id_s
+                    'id'            => $arr_akseslevels['id'],
+                    'jabatan'       => $arr_akseslevels['jabatan'],
+                    'halamans_id_s' => $arr_akseslevels['halamans_id_s']
                 ]);
                 $response->success = 1;
                 $response->message = 'AKSES LEVEL BARU BERHASIL DIINPUTKAN';
@@ -491,12 +506,14 @@ class ApiController extends Controller
     {
         $response = new usr();  
         $rules      = [
-            'u_id'            => 'required|numeric|min:1|exists:akses_levels,id',
+            'id'              => 'required|exists:akses_levels,id',
+            'u_id'            => 'required|numeric|min:1',
             'u_jabatan'       => 'required|string|min:2'
         ];
         $messages   = [
+            'id.required'                 => 'ID AKSES LEVEL WAJIB DIISI',
+            'id.exists'                   => 'ID AKSES TIDAK DITEMUKAN',
             'u_id.required'               => 'ID AKSES LEVEL WAJIB DIISI',
-            'u_id.exists'                 => 'ID AKSES LEVEL TIDAK DITEMUKAN',
             'u_id.min'                    => 'ID AKSES LEVEL MINIMAL DIISI DENGAN ANGKA MINIMAL 1',
             'u_jabatan.required'          => 'JABATAN WAJIB DIISI',
             'u_jabatan.min'               => 'JABATAN WAJIB DIISI DENGAN HURUF MINIMAL 2 KARAKTER'
@@ -768,7 +785,9 @@ class ApiController extends Controller
         $metodes    = DB::table('metodes')->get();
         $metodes    = json_decode(json_encode($metodes), true);
 
-        $str_id                 = ''; $str_metode             = ''; $str_parameters_id_s    = '';
+        $str_id                 = ''; 
+        $str_metode             = ''; 
+        $str_parameters_id_s    = '';
 
         if(empty($metodes))
         {
@@ -800,20 +819,31 @@ class ApiController extends Controller
     #INSERT METODES
     public static function InsertMetodes(Request $request)
     {
+        $str_metode             = $request->metodes;
+        $str_parameters_id_s    = '';
+        foreach ($request->parameters_id_s as $value) {
+            $str_parameters_id_s .= $value.'-';
+        } 
+        $str_parameters_id_s = substr($str_parameters_id_s, 0, -1);
+        $arr_metode         = [
+            'metode'            => $str_metode,
+            'parameters_id_s'   => $str_parameters_id_s
+        ];
+
         $response   = new usr();
         $rules      = [
-            'metodes'            => 'required|string|min:1|max:75',
+            'metode'            => 'required|string|min:1|max:75',
             'parameters_id_s'   => 'required|string|min:1|max:45'
         ];
         $messages   = [
-            'metodes.required'          => 'METODE WAJIB DIISI',
-            'metodes.min'               => 'METODE WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
-            'metodes.max'               => 'METODE WAJIB DIISI DENGAN HURUF MAKSIMAL 75 KARAKTER',
+            'metode.required'          => 'METODE WAJIB DIISI',
+            'metode.min'               => 'METODE WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'metode.max'               => 'METODE WAJIB DIISI DENGAN HURUF MAKSIMAL 75 KARAKTER',
             'parameters_id_s.required'  => 'PARAMETER ID WAJIB DIISI',
             'parameters_id_s.min'       => 'PARAMETER ID WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
             'parameters_id_s.max'       => 'PARAMETER ID WAJIB DIISI DENGAN HURUF MAKSIMAL 45 KARAKTER',
         ];
-        $validator = Validator::make($request->all(), $rules, $messages);
+        $validator = Validator::make($arr_metode, $rules, $messages);
         if($validator->fails()){
             $response->success = 0;
             $response->message = 'TERJADI KESALAHAN PENGISIAN DATA, PESAN KESALAHAN :'.$validator->errors()->first();
@@ -822,8 +852,8 @@ class ApiController extends Controller
             try {
                 DB::table('metodes')
                 ->insert([
-                    'metode'            => $request->metodes,
-                    'parameters_id_s'   => $request->parameters_id_s
+                    'metode'            => $arr_metode['metode'],
+                    'parameters_id_s'   => $arr_metode['parameters_id_s']
                 ]);
                 $response->success = 1;
                 $response->message = 'METODE BARU BERHASIL DIINPUTKAN';
@@ -840,23 +870,35 @@ class ApiController extends Controller
     public static function UpdateMetodes(Request $request)
     {
         $response = new usr();
+        $str_id                 = $request->id;
+        $str_metode             = $request->metode;
+        $str_parameters_id_s    = '';
+        foreach ($request->parameters_id_s as $value) {
+            $str_parameters_id_s .= $value.'-';
+        } 
+        $str_parameters_id_s = substr($str_parameters_id_s, 0, -1);
+        $arr_metode         = [
+            'id'                => $str_id,
+            'metode'            => $str_metode,
+            'parameters_id_s'   => $str_parameters_id_s
+        ];
         $rules      = [
-            'uid'                => 'required|exists:metodes,id',
-            'umetode'            => 'required|string|min:1|max:75',
-            'uparameters_id_s'   => 'required|string|min:1|max:45'
+            'id'                => 'required|exists:metodes,id',
+            'metode'            => 'required|string|min:1|max:75',
+            'parameters_id_s'   => 'required|string|min:1|max:45'
         ];
         $messages   = [
-            'uid.required'               => 'ID WAJIB DIISI',
-            'uid.exists'                 => 'ID METODE TIDAK DITEMUKAN',
-            'umetode.required'           => 'METODE WAJIB DIISI',
-            'umetode.exists'             => 'METODE ID TIDAK DITEMUKAN',
-            'umetode.min'                => 'METODE WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
-            'umetode.max'                => 'METODE WAJIB DIISI DENGAN HURUF MAKSIMAL 75 KARAKTER',
-            'uparameters_id_s.required'  => 'PARAMETER ID WAJIB DIISI',
-            'uparameters_id_s.min'       => 'PARAMETER ID WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
-            'uparameters_id_s.max'       => 'PARAMETER ID WAJIB DIISI DENGAN HURUF MAKSIMAL 45 KARAKTER',
+            'id.required'               => 'ID WAJIB DIISI',
+            'id.exists'                 => 'ID METODE TIDAK DITEMUKAN',
+            'metode.required'           => 'METODE WAJIB DIISI',
+            'metode.exists'             => 'METODE ID TIDAK DITEMUKAN',
+            'metode.min'                => 'METODE WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'metode.max'                => 'METODE WAJIB DIISI DENGAN HURUF MAKSIMAL 75 KARAKTER',
+            'parameters_id_s.required'  => 'PARAMETER ID WAJIB DIISI',
+            'parameters_id_s.min'       => 'PARAMETER ID WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'parameters_id_s.max'       => 'PARAMETER ID WAJIB DIISI DENGAN HURUF MAKSIMAL 45 KARAKTER',
         ];
-        $validator = Validator::make($request->all(), $rules, $messages);
+        $validator = Validator::make($arr_metode, $rules, $messages);
         if($validator->fails()){
             $response->success  = 0;
             $response->message = 'TERJADI KESALAHAN SAAT INGIN MENGUPDATE DATA, PESAN KESALAHAN :'.$validator->errors()->first();
@@ -864,14 +906,14 @@ class ApiController extends Controller
         else{
             try {
                 DB::table('metodes')
-                ->where('id', '=', $request->uid)
+                ->where('id', '=', $arr_metode['id'])
                 ->update([
-                    'metode'            => $request->umetode,
-                    'parameters_id_s'   => $request->uparameters_id_s
+                    'metode'            => $arr_metode['metode'],
+                    'parameters_id_s'   => $arr_metode['parameters_id_s']
                 ]);
 
                 $response->success  = 1;
-                $response->message = 'DATA DENGAN ID: '.$request->uid.' BERHASIL DIUPDATE';
+                $response->message = 'DATA BERHASIL DIUPDATE';
                 
             } catch (Exception $e) {
                 $response->success  = 0;
@@ -930,7 +972,7 @@ class ApiController extends Controller
         ->get();        
         $get_halamans                = json_decode(json_encode($get_halamans), true);
 
-        $s_id = ''; $s_halaman = ''; $s_url = ''; 
+        $s_id = ''; $s_halaman = ''; $s_url = ''; $s_simbol = '';
         if(empty($get_halamans)){
             $response->success = 0;
             $response->message = 'DATA PADA TABEL HALAMAN MASIH BELUM TERISI';
@@ -941,10 +983,12 @@ class ApiController extends Controller
                     $s_id       .= $value['id'].'-'; 
                     $s_halaman  .= $value['halaman'].'-'; 
                     $s_url      .= $value['url'].'-'; 
+                    $s_simbol   .= $value['simbol'].';'; 
                 }
                 $response->id       = substr($s_id, 0, -1);
                 $response->halaman  = substr($s_halaman, 0, -1);    
-                $response->url      = substr($s_url, 0, -1);
+                $response->url      = substr($s_url, 0, -1); 
+                $response->simbol   = substr($s_simbol, 0, -1);
                 $response->success  = 1;
                 $response->message  = 'BERIKUT LIST HALAMAN YANG TERSEDIA'; 
             } catch (Exception $e) {
@@ -952,9 +996,132 @@ class ApiController extends Controller
                 $response->message  = 'GAGAL GET DATA HALAMAN, PESAN KESALAHAN : '.$e->getMessage(); 
             }
         }
-        die(json_encode($response));
+        return json_encode($response);
     }
     #8. GET HALAMANS
+
+    #INSERT HALAMANS
+    public static function InsertHalamans(Request $request)
+    {
+        $response  = new usr();
+        $rules      = [
+            'halaman'   => 'required|string|min:1|max:75',
+            'url'       => 'required|string|min:1|max:45',
+            'simbol'    => 'nullable|string|max:100'
+        ];
+        $messages   = [
+            'halaman.required' => 'HALAMAN WAJIB DIISI',
+            'halaman.min'      => 'HALAMAN WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'halaman.max'      => 'HALAMAN WAJIB DIISI DENGAN HURUF MAKSIMAL 45 KARAKTER',
+            'url.required'     => 'URL WAJIB DIISI',
+            'url.min'          => 'URL WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'url.max'          => 'URL WAJIB DIISI DENGAN HURUF MAKSIMAL 75 KARAKTER',
+            'simbol.max'       => 'SIMBOL WAJIB DIISI DENGAN HURUF MAKSIMAL 100 KARAKTER',
+        ];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = 'TERJADI KESALAHAN PENGISIAN DATA, PESAN KESALAHAN :'.$validator->errors()->first();
+        }
+        else{
+            try {
+                DB::table('halamans')
+                ->insert([
+                    'halaman'   => $request->halaman,
+                    'url'       => $request->url,
+                    'simbol'    => $request->simbol
+                ]);
+                $response->success = 1;
+                $response->message = 'BERHASIL MEMASUKAN DATA HALAMAN BARU';
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = 'GAGAL INSERT HALAMAN BARU, PESAN KESALAHAN :'.$e->getMessage();
+            }
+        }
+        return json_encode($response);
+    }
+    #INSERT HALAMANS
+
+    #UPDATE HALAMANS
+    public static function UpdateHalamans(Request $request)
+    {
+        $response  = new usr();
+        $rules      = [
+            'id'        => 'required|exists:halamans,id',
+            'halaman'   => 'required|string|min:1|max:75',
+            'url'       => 'required|string|min:1|max:45',
+            'simbol'    => 'nullable|string|max:100'
+        ];
+        $messages   = [
+            'id.required'      => 'ID HALAMAN WAJIB DIISI',
+            'id.exists'        => 'ID HALAMAN TIDAK DITEMUKAN',
+            'halaman.required' => 'HALAMAN WAJIB DIISI',
+            'halaman.min'      => 'HALAMAN WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'halaman.max'      => 'HALAMAN WAJIB DIISI DENGAN HURUF MAKSIMAL 45 KARAKTER',
+            'url.required'     => 'URL WAJIB DIISI',
+            'url.min'          => 'URL WAJIB DIISI DENGAN HURUF MINIMAL 1 KARAKTER',
+            'url.max'          => 'URL WAJIB DIISI DENGAN HURUF MAKSIMAL 75 KARAKTER',
+            'simbol.max'       => 'SIMBOL WAJIB DIISI DENGAN HURUF MAKSIMAL 100 KARAKTER',
+        ];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = 'TERJADI KESALAHAN PENGISIAN DATA, PESAN KESALAHAN :'.$validator->errors()->first();
+        }
+        else{
+            try {
+                DB::table('halamans')
+                ->where('id', '=', $request->id)
+                ->update([
+                    'halaman'   => $request->halaman,
+                    'url'       => $request->url,
+                    'simbol'    => $request->simbol
+                ]);
+                $response->success = 1;
+                $response->message = 'BERHASIL UPDATE DATA HALAMAN';
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = 'GAGAL UDATE HALAMAN, PESAN KESALAHAN :'.$e->getMessage();
+            }
+        }
+        return json_encode($response);
+    }
+    #UPDATE HALAMANS
+
+    #DELETE HALAMANS
+    public static function DeleteHalamans($id)
+    {
+        $response  = new usr();
+        $arr_halamans = [
+            'id' => $id
+        ];
+        $rules      = [
+            'id'        => 'required|exists:halamans,id'
+        ];
+        $messages   = [
+            'id.required'      => 'ID HALAMAN WAJIB DIISI',
+            'id.exists'        => 'ID HALAMAN TIDAK DITEMUKAN'
+        ];
+        $validator = Validator::make($arr_halamans, $rules, $messages);
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = 'TERJADI KESALAHAN PENGISIAN DATA, PESAN KESALAHAN :'.$validator->errors()->first();
+        }
+        else{
+            try {
+                DB::table('halamans')
+                ->where('id', '=', $arr_halamans['id'])
+                ->delete();
+                $response->success = 1;
+                $response->message = 'BERHASIL HAPUS DATA HALAMAN';
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = 'GAGAL UDATE HALAMAN, PESAN KESALAHAN :'.$e->getMessage();
+            }
+        }
+        return json_encode($response);
+    }
+    #DELETE HALAMANS
 #8 HALAMANS
 
 #9 - 10 DETAIL TRACKING

@@ -46,8 +46,12 @@
                                         </div>
                                         <div class="col-sm-6">                                            
                                             <div class="form-group">
-                                                <label>PARAMETER ID</label>
-                                                <input type="text" name="parameters_id_s" class="form-control" placeholder="Parameter Id ...">
+                                                <label>PARAMETER</label>
+                                                <select name="parameters_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH PARAMETERS --" style="width: 100%;">
+                                                    @foreach($parameters as $par)
+                                                        <option value="{{ $par['id'] }}">{{ strtoupper($par['nama_unsur']) }}</option>                                                        
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="col-sm-2">
@@ -81,7 +85,7 @@
                                         <tr>
                                             <th class="hijau" style="width:15%;">NO</th>
                                             <th class="biru" style="width:40%;">METODE</th>
-                                            <th class="biru" style="width: 20%;">PARAMETER ID</th>
+                                            <th class="biru" style="width: 20%;">PARAMETER</th>
                                             <th class="biru" style="width: 20%;">ACTION</th>
                                         </tr>
                                     </thead>
@@ -100,11 +104,21 @@
                                             @for($i = 0; $i < count($arr_metodes_id); $i++)                                                
                                                 <form action="{{ url('admin/updatemetodes')}}" method="post">
                                                     {{ csrf_field() }}
-                                                    <input type="hidden" name="uid" class="form-control" value="{{ $arr_metodes_id[$i] }}">
+                                                    <input type="hidden" name="id" class="form-control" value="{{ $arr_metodes_id[$i] }}">
                                                     <tr>
                                                         <td>{{ $no_metodes }}</td>
-                                                        <td><input name="umetode" class="form-control" value="{{ $arr_metodes_met[$i] }}" placeholder="{{ $arr_metodes_met[$i] }}"></td>
-                                                        <td><input name="uparameters_id_s" class="form-control" value="{{ $arr_metodes_par_id[$i] }}" placeholder="{{ $arr_metodes_par_id[$i] }}"></td>
+                                                        <td><input name="metode" class="form-control" value="{{ $arr_metodes_met[$i] }}" placeholder="{{ $arr_metodes_met[$i] }}"></td>
+                                                        <td>
+                                                            <select name="parameters_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH PARAMETERS --" style="width: 100%;">
+                                                            @foreach($parameters as $par)
+                                                                <?php if(in_array($par['id'], $metode_par[$i]['id'])):?>
+                                                                    <option value="{{ $par['id'] }}" selected>{{ strtoupper($par['nama_unsur']) }}</option>                                                           
+                                                                <?php else:?>
+                                                                    <option value="{{ $par['id'] }}">{{ strtoupper($par['nama_unsur']) }}</option>
+                                                                <?php endif;?>
+                                                            @endforeach
+                                                            </select>
+                                                        </td>
                                                         <td>
                                                             <button class="btn btn-success" type="submit" name="update">UPDATE</button>
                                                             <a href="deletemetodes/{{$arr_metodes_id[$i]}}" value="add" class="btn btn-danger">DELETE</a>

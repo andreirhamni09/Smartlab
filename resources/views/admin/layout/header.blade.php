@@ -84,38 +84,25 @@
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
 
-                        <!-- USER LAB -->
-                        <li class="nav-item">                            
-                            <a href="{{ url('admin/userlab') }}" class="nav-link">
-                                <i class="nav-icon fa fa-list"></i>
-                                <p>
-                                    USER LAB
-                                </p>
-                            </a>
-                        </li> 
-                        <!-- USER LAB -->
+                        <?php
+                            $arr_halaman = explode('-', $halamans['halaman']);
+                            $arr_url     = explode('-', $halamans['url']);
+                            $arr_simbol  = explode(';', $halamans['simbol']);
+                            $no_halaman  = 1;
+                        ?>
 
-                        <!-- PELANGGAN -->
+                        @for($i = 0; $i < count($arr_halaman); $i++)
+                        <!-- USER LAB -->
                         <li class="nav-item">                            
-                            <a href="{{ url('admin/pelanggan') }}" class="nav-link">
-                                <i class="nav-icon fa fa-list"></i>
+                            <a href="{{ url($arr_url[$i]) }}" class="nav-link">
+                                <i class="{{ $arr_simbol[$i] }}"></i>
                                 <p>
-                                    PELANGGAN
+                                    {{ $arr_halaman[$i] }}
                                 </p>
                             </a>
                         </li> 
-                        <!-- PELANGGAN -->
-                        
-                        <!-- DAFTAR SAMPEL -->
-                        <li class="nav-item">                            
-                            <a href="{{ url('admin/inputsampel') }}" class="nav-link">
-                                <i class="nav-icon fa fa-list"></i>
-                                <p>
-                                    DAFTAR SAMPEL
-                                </p>
-                            </a>
-                        </li> 
-                        <!-- DAFTAR SAMPEL -->
+                        @endfor
+                        <!-- USER LAB -->
 
                         <!-- LOGOUT -->
                         <li class="nav-item">                            

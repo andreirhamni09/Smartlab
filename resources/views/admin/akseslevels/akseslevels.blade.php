@@ -70,8 +70,12 @@
                                         </div>
                                         <div class="col-sm-3">
                                             <div class="form-group">
-                                                <label>Halaman Id</label>
-                                                <input type="text" name="halamans_id_s" class="form-control" placeholder="Masukan Daftar Halaman Id ..." required>
+                                                <label>Halaman</label>
+                                                <select name="halamans_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH HALAMAN --" style="width: 100%;">
+                                                    @foreach($arr_halamans as $hal)
+                                                        <option value="{{ $hal['id'] }}">{{ strtoupper($hal['halaman']) }}</option>
+                                                    @endforeach
+                                                </select>
                                                 @if(session('error_insert'))
                                                     @if ($errors->has('jabatan'))
                                                         <span class="text-danger">{{ $errors->first('jabatan') }}</span>
@@ -135,9 +139,17 @@
                                                 <tr>
                                                     <td>{{ $no }}</td>
                                                     <td><input required type="number" name="u_id" value="{{ $arr_level_akses_id[$i] }}" class="form-control" placeholder="Akses Level Id ..."></td>
-                                                    <td><input required type="text" name="u_jabatan" value="{{ $arr_level_akses_jabatan[$i] }}" class="form-control" placeholder="Update Jabatan ..."></td>
+                                                    <td><input required type="text" name="jabatan" value="{{ $arr_level_akses_jabatan[$i] }}" class="form-control" placeholder="Update Jabatan ..."></td>
                                                     <td>    
-                                                        <input required type="text" name="u_halamans_id_s" value="{{ $arr_level_akses_halamans_id_s[$i] }}" class="form-control" placeholder="Halaman Id ...">
+                                                        <select name="halamans_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH HALAMAN --" style="width: 100%;">
+                                                            @foreach($arr_halamans as $hal)
+                                                                <?php if(in_array($hal['id'], $akseslevels_hal[$i]['id'])):?>
+                                                                    <option value="{{ $hal['id'] }}" selected>{{ strtoupper($hal['halaman']) }}</option>
+                                                                <?php else:?>
+                                                                    <option value="{{ $hal['id'] }}">{{ strtoupper($hal['halaman']) }}</option>
+                                                                <?php endif;?>
+                                                            @endforeach
+                                                        </select>
                                                     </td>
                                                     <td>
                                                         <button type="submit" class="btn btn-success">UPDATE</button>

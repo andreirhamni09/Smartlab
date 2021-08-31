@@ -41,6 +41,13 @@ Route::prefix('admin')->group(function () {
     Route::get('/deletemetodes/{id?}', [MasterController::class, 'DeleteMetodes']);
 #7 METODE
 
+#8 HALAMANS
+    Route::get('/halamans', [MasterController::class, 'Halamans']);
+    Route::post('/inserthalamans', [MasterController::class, 'InsertHalamans']);
+    Route::post('/updatehalamans', [MasterController::class, 'UpdateHalamans']);
+    Route::get('/deletehalamans/{id?}', [MasterController::class, 'DeleteHalamans']);
+#8 HALAMANS
+
 #17 - 21 PELANGGAN
     Route::get('/pelanggans', [MasterController::class, 'GetPelanggans']);
     Route::post('/insertpelanggans', [MasterController::class, 'InsertPelanggans']);

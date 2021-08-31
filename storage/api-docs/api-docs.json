@@ -1018,24 +1018,15 @@
                 ]
             }
         },
-        "/updatelabakuns/{id}/{metodes_id_s}/{akses_levels_id}/{nama}/{email}/{password}/{jabatan}/{status_akun}": {
+        "/insertlabakuns/{metodes_id_s}/{akses_levels_id}/{nama}/{email}/{password}/{jabatan}/{status_akun}": {
             "post": {
                 "tags": [
-                    "25. Update Akun Lab"
+                    "26. Insert Akun Lab"
                 ],
-                "summary": "Mengubah Data Lab Akun Baru",
-                "description": "Mengubah Data Lab Akun Baru",
+                "summary": "Menambahkan Data Lab Akun Baru",
+                "description": "Menambahkan Data Lab Akun Baru",
                 "operationId": "getProjectsList",
                 "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "id",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
                     {
                         "name": "metodes_id_s",
                         "in": "path",
@@ -1115,15 +1106,24 @@
                 ]
             }
         },
-        "/insertlabakuns/{metodes_id_s}/{akses_levels_id}/{nama}/{email}/{password}/{jabatan}/{status_akun}": {
+        "/updatelabakuns/{id}/{metodes_id_s}/{akses_levels_id}/{nama}/{email}/{password}/{jabatan}/{status_akun}": {
             "post": {
                 "tags": [
-                    "26. Insert Akun Lab"
+                    "25. Update Akun Lab"
                 ],
-                "summary": "Menambahkan Data Lab Akun Baru",
-                "description": "Menambahkan Data Lab Akun Baru",
+                "summary": "Mengubah Data Lab Akun Baru",
+                "description": "Mengubah Data Lab Akun Baru",
                 "operationId": "getProjectsList",
                 "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     {
                         "name": "metodes_id_s",
                         "in": "path",

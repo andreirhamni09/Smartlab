@@ -153,15 +153,12 @@
 
                                                         <td>
                                                         <select name="parameters_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH PARAMETERS --" style="width: 100%;">
-                                                            
                                                             @foreach($parameters as $par)
-                                                                <?php for ($j = 0; $j < count($arr_paket_par[$i]['id']); $j++):?>
-                                                                    <?php if($arr_paket_par[$i]['id'][$j] == $par['id']):?>
-                                                                        <option value="{{ $par['id'] }}" selected>{{ strtoupper($par['nama_unsur']) }}</option>  
-                                                                    <?php else:?>
-                                                                        <option value="{{ $par['id'] }}">{{ strtoupper($par['nama_unsur']) }}</option>
-                                                                    <?php endif;?>                                                              
-                                                                <?php endfor;?>
+                                                                <?php if(in_array($par['id'], $arr_paket_par[$i]['id'])):?>
+                                                                    <option value="{{ $par['id'] }}" selected>{{ strtoupper($par['nama_unsur']) }}</option>
+                                                                <?php else:?>
+                                                                    <option value="{{ $par['id'] }}">{{ strtoupper($par['nama_unsur']) }}</option>
+                                                                <?php endif;?>
                                                             @endforeach
                                                         </select>
                                                         </td>

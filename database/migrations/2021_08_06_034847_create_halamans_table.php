@@ -17,6 +17,7 @@ class CreateHalamansTable extends Migration
             $table->tinyInteger('id')->primary()->autoIncrement();
             $table->string('halaman');
             $table->string('url');
+            $table->string('simbol')->nullable();
         });
     }
 
