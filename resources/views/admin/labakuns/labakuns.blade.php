@@ -43,8 +43,12 @@
                                     <div class="row">
                                         <div class="col-sm">
                                             <div class="form-group">
-                                                <label>Metode Id</label>
-                                                <input type="text" name="metodes_id_s" class="form-control" placeholder="Metode Id ..." autofocus>
+                                                <label>Metode</label>
+                                                <select name="metodes_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH METODE --" style="width: 100%;">
+                                                @foreach($metodes as $met)
+                                                    <option value="{{ $met['id'] }}">{{ strtoupper($met['metode']) }}</option>
+                                                @endforeach
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="col-sm">
@@ -130,7 +134,7 @@
                                     <thead>
                                         <tr>
                                             <th class="hijau">NO</th>
-                                            <th class="biru" style="width: 5%;">METODE ID</th>
+                                            <th class="biru" style="width: 17.5%;">METODE ID</th>
                                             <th class="biru" style="width: 10%;">AKSES LEVEL</th>
                                             <th class="biru">NAMA</th>
                                             <th class="biru">EMAIL</th>
@@ -165,10 +169,19 @@
                                                 {{ csrf_field() }}
                                                 <input type="hidden" name="id" value="{{ $arr_labakuns_id[$i] }}">
                                                 <tr>
-                                                    <input type="hidden" name="id" value="{{ $arr_labakuns_id[$i] }}">
                                                     <td>{{ $no_labakuns }} </td>
                                                     <!-- METODES ID S -->
-                                                    <td><input type="text" name="metodes_id_s" class="form-control" value="{{ $arr_labakuns_metodes_id_s[$i] }}"></td>
+                                                    <td>
+                                                    <select name="metodes_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH METODE --" style="width: 100%;">
+                                                    @foreach($metodes as $met)
+                                                        <?php if(in_array($met['id'], $labakuns_met[$i]['id'])):?>
+                                                            <option value="{{ $met['id'] }}" selected>{{ strtoupper($met['metode']) }}</option>
+                                                        <?php else:?>
+                                                            <option value="{{ $met['id'] }}">{{ strtoupper($met['metode']) }}</option>
+                                                        <?php endif;?>
+                                                    @endforeach
+                                                    </select>
+                                                    </td>
                                                     <!-- METODES ID S -->
                                                     <!-- AKSES LEVELS -->
                                                     <td>

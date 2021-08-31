@@ -360,12 +360,62 @@ class MasterController extends Controller
     public static function GetLabAkuns(){
         $getlabakuns = app('App\Http\Controllers\ApiController')->GetAkunLabs();
         $getlabakuns = json_decode($getlabakuns, true);   
+        
         $getakseslevels = app('App\Http\Controllers\ApiController')->GetAksesLevels();
         $getakseslevels = json_decode($getakseslevels, true);        
 
+        $metodes     = app('App\Http\Controllers\ApiController')->GetMetodes();
+        $metodes     = json_decode($metodes, true);
+        $arr_metodes_id     = explode('-', $metodes['id']);
+        $arr_metodes_metode = explode('-', $metodes['metode']);
+        $arr_metodes_all    = array();
+        for ($i = 0; $i < count($arr_metodes_id); $i++) { 
+            $data = [
+                'id'        => $arr_metodes_id[$i],
+                'metode'    => $arr_metodes_metode[$i]
+            ];
+            array_push($arr_metodes_all, $data);
+        }
+        //print_r($arr_metodes_all);
+                
+        $arr_labakuns_mets_id_s       = explode(';', $getlabakuns['metodes_id_s']);
+        $arr_labakuns_metodes_id_s    = array();
+        for ($i=0; $i < count($arr_labakuns_mets_id_s); $i++) { 
+            $data = explode('-', $arr_labakuns_mets_id_s[$i]);
+            array_push($arr_labakuns_metodes_id_s, $data);
+        }       
+
+        $arr_labakuns_metode_all = array();
+        for ($i = 0; $i < count($arr_labakuns_metodes_id_s); $i++) { 
+            $str_labakuns_metodes_id = '';
+            $str_labakuns_metodes_met = '';
+            for ($j = 0; $j < count($arr_labakuns_metodes_id_s[$i]); $j++) { 
+                for ($k = 0; $k < count($arr_metodes_all); $k++) { 
+                    if($arr_labakuns_metodes_id_s[$i][$j] == $arr_metodes_all[$k]['id']){
+                        $str_labakuns_metodes_id    .= $arr_metodes_all[$k]['id'].'-';
+                        $str_labakuns_metodes_met   .= $arr_metodes_all[$k]['metode'].'-';
+                    }
+                }
+            }
+            $str_labakuns_metodes_id    = substr($str_labakuns_metodes_id, 0, -1);
+            $str_labakuns_metodes_met   = substr($str_labakuns_metodes_met, 0, -1);
+
+            $arr_ = [
+                'id'        => explode('-', $str_labakuns_metodes_id),
+                'metode'    => explode('-', $str_labakuns_metodes_met)
+            ];
+
+            array_push($arr_labakuns_metode_all, $arr_);
+        }
+
         $halamans           = app('App\Http\Controllers\ApiController')->GetHalamans(); 
         $halamans           = json_decode($halamans, true);
-        return view('admin.labakuns.labakuns', ['labakuns' => $getlabakuns, 'akseslevels' => $getakseslevels, 'halamans' => $halamans]);
+        
+        return view('admin.labakuns.labakuns', ['labakuns_met'  => $arr_labakuns_metode_all, 
+                                                'metodes'       => $arr_metodes_all,
+                                                'labakuns'      => $getlabakuns, 
+                                                'akseslevels'   => $getakseslevels, 
+                                                'halamans'      => $halamans]);
     }
 
     #INSERT LAB AKUNS

@@ -505,21 +505,38 @@ class ApiController extends Controller
     public static function UpdateAksesLevels(Request $request)
     {
         $response = new usr();  
+        $str_id             = $request->id;
+        $str_u_id           = $request->u_id;
+        $str_jabatan        = $request->jabatan;
+        $str_halamans_id_s  = '';
+        for ($i = 0; $i < count($request->halamans_id_s); $i++) { 
+            $str_halamans_id_s .= $request->halamans_id_s[$i].'-';
+        }
+        $str_halamans_id_s = substr($str_halamans_id_s, 0, -1);
+
+        $arr_akseslevels  = [
+            'id'            => $str_id,
+            'u_id'          => $str_u_id,
+            'jabatan'       => $str_jabatan,
+            'halamans_id_s' => $str_halamans_id_s
+        ]; 
+
         $rules      = [
             'id'              => 'required|exists:akses_levels,id',
             'u_id'            => 'required|numeric|min:1',
-            'u_jabatan'       => 'required|string|min:2'
+            'jabatan'         => 'required|string|min:2'
         ];
         $messages   = [
             'id.required'                 => 'ID AKSES LEVEL WAJIB DIISI',
             'id.exists'                   => 'ID AKSES TIDAK DITEMUKAN',
             'u_id.required'               => 'ID AKSES LEVEL WAJIB DIISI',
             'u_id.min'                    => 'ID AKSES LEVEL MINIMAL DIISI DENGAN ANGKA MINIMAL 1',
-            'u_jabatan.required'          => 'JABATAN WAJIB DIISI',
-            'u_jabatan.min'               => 'JABATAN WAJIB DIISI DENGAN HURUF MINIMAL 2 KARAKTER'
+            'jabatan.required'            => 'JABATAN WAJIB DIISI',
+            'jabatan.min'                 => 'JABATAN WAJIB DIISI DENGAN HURUF MINIMAL 2 KARAKTER'
         ];
-        
-        $validator = Validator::make($request->all(), $rules, $messages);
+    
+
+        $validator = Validator::make($arr_akseslevels, $rules, $messages);
         if($validator->fails()){
             $response->success = 0;
             $response->message = 'TERJADI KESALAHAN PENGISIAN DATA, PESAN KESALAHAN :'.$validator->errors()->first();
@@ -529,9 +546,9 @@ class ApiController extends Controller
                 DB::table('akses_levels')
                 ->where('id', '=', $request->id)
                 ->update([
-                    'id'            => $request->u_id,
-                    'jabatan'       => $request->u_jabatan,
-                    'halamans_id_s' => $request->u_halamans_id_s
+                    'id'            => $arr_akseslevels['u_id'],
+                    'jabatan'       => $arr_akseslevels['jabatan'],
+                    'halamans_id_s' => $arr_akseslevels['halamans_id_s']
                 ]);
                 $response->success = 1;
                 $response->message = 'AKSES LEVEL BARU BERHASIL DI UPDATE';
@@ -3218,7 +3235,13 @@ class ApiController extends Controller
             $s_jabatan          = $jabatan; 
             $s_status_akun      = $status_akun;
         }
-        $d_lab_akuns    = array('metodes_id_s'      => $s_metodes_id_s,
+        $str_metodes_id_s = '';
+        foreach ($s_metodes_id_s as $value) {
+            $str_metodes_id_s .= $value.'-';
+        }
+        $str_metodes_id_s = substr($str_metodes_id_s, 0, -1);
+
+        $d_lab_akuns    = array('metodes_id_s'      => $str_metodes_id_s,
                                 'akses_levels_id'   => $s_akses_levels_id,
                                 'nama'              => $s_nama,
                                 'email'             => $s_email, 
@@ -3423,8 +3446,15 @@ class ApiController extends Controller
             $s_jabatan          = $jabatan; 
             $s_status_akun      = $status_akun;
         }
+        
+        $str_metodes_id_s = '';
+        foreach ($s_metodes_id_s as $value) {
+            $str_metodes_id_s .= $value.'-';
+        }
+        $str_metodes_id_s = substr($str_metodes_id_s, 0, -1);
+
         $d_lab_akuns    = array('id'                => $s_id,
-                                'metodes_id_s'      => $s_metodes_id_s,
+                                'metodes_id_s'      => $str_metodes_id_s,
                                 'akses_levels_id'   => $s_akses_levels_id,
                                 'nama'              => $s_nama,
                                 'email'             => $s_email, 
