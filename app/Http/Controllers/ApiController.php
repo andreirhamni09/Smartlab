@@ -2139,6 +2139,7 @@ class ApiController extends Controller
      *     )
      *
      * Returns list of projects
+     * @todo PERBAIKI GET DATA
      */
     public static function GetPelanggans(){
         $response       = new usr();
@@ -2268,6 +2269,7 @@ class ApiController extends Controller
      *     )
      *
      * Returns list of projects
+     * @todo TAMBAH PARAMETER NPWP
      */
     public static function InsertPelanggans(Request $request, $email = null,
     $password = null, $nama = null, $perusahaan = null,
@@ -2475,6 +2477,7 @@ class ApiController extends Controller
      *     )
      *
      * Returns list of projects
+     * @todo TAMBAH PARAMETER NPWP
      */  
     public static function UpdatePelanggans(Request $request, $id = null, $email = null,
     $password = null, $nama = null, $perusahaan = null,
@@ -2794,6 +2797,7 @@ class ApiController extends Controller
      *     )
      *
      * Returns list of projects
+     * @todo PERBAIKI GET DATA
      */
     public static function GetAktivitas()
     {
@@ -2835,6 +2839,8 @@ class ApiController extends Controller
     #22. GET AKTIVITAS
 
     #INSERT AKTIVITAS
+    /* @todo PERBAIKI GET DATA
+    */
     public static function InsertAktivitas(Request $request){  
         $response   = new usr();      
         $rules      = [
@@ -4005,7 +4011,28 @@ class ApiController extends Controller
 #28 - 31 PAKETS
 
 
-#32 - 36 GROUP AKTIFITAS
+#32 - 35 GROUP AKTIFITAS
+    #32. INSERT GRUP AKTIVITAS
+    /**
+     * @OA\Get(
+     *      path="/getgroupaktivitas",
+     *      operationId="getProjectById",
+     *      tags={"32. Get Grup Aktivitas"},
+     *      summary="Get Grup Aktivitas",
+     *      description="Get Grup Aktivitas",
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *      @OA\Response(response=400, description="Bad request"),
+     *      @OA\Response(response=404, description="Resource Not Found"),
+     *      security={
+     *         {
+     *             "oauth2_security_example": {"write:projects", "read:projects"}
+     *         }
+     *     },
+     * )
+     */
     public static function GetGroupAktivitas(){
         $response           = new usr();
         $getgroupaktivitas  = DB::table('group_aktivitas')->get();
@@ -4038,7 +4065,38 @@ class ApiController extends Controller
 
         return json_encode($response);
     }
+    #32. INSERT GRUP AKTIVITAS    
 
+    #33. INSERT GRUP AKTIVITAS
+    /**
+     * @OA\Post(
+     *      path="/insertgroupaktivitas/{group}",
+     *      operationId="getProjectById",
+     *      tags={"33. Insert Grup Aktivitas"},
+     *      summary="Insert Grup Aktivitas",
+     *      description="Returns project data",
+     *      @OA\Parameter(
+     *          name="group",
+     *          description="Group Aktivitas",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *      @OA\Response(response=400, description="Bad request"),
+     *      @OA\Response(response=404, description="Resource Not Found"),
+     *      security={
+     *         {
+     *             "oauth2_security_example": {"write:projects", "read:projects"}
+     *         }
+     *     },
+     * )
+     */
     public static function InsertGroupAktivitas(Request $request, $group = null){
         $response   = new usr();
         $str_group  = '';
@@ -4086,7 +4144,47 @@ class ApiController extends Controller
 
         return json_encode($response);
     }
+    #33. INSERT GRUP AKTIVITAS    
 
+    #34. UPDATE GRUP AKTIVITAS    
+    /**
+     * @OA\Post(
+     *      path="/updategroupaktivitas/{id}/{group}",
+     *      operationId="getProjectById",
+     *      tags={"33. Update Grup Aktivitas"},
+     *      summary="Update Grup Aktivitas",
+     *      description="Returns project data",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Id Group Aktivitas",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="group",
+     *          description="Group Aktivitas",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *      @OA\Response(response=400, description="Bad request"),
+     *      @OA\Response(response=404, description="Resource Not Found"),
+     *      security={
+     *         {
+     *             "oauth2_security_example": {"write:projects", "read:projects"}
+     *         }
+     *     },
+     * )
+     */
     public static function UpdateGroupAktivitas(Request $request, $id = null, $group = null){
         $response   = new usr();
         $str_id     = '';
@@ -4144,7 +4242,39 @@ class ApiController extends Controller
 
         return json_encode($response);
     }
+    #34. UPDATE GRUP AKTIVITAS
 
+    #35. DELETE GRUP AKTIVITAS
+    /**
+     * @OA\Get(
+     *      path="/deletegroupaktivitas/{id}",
+     *      operationId="getProjectById",
+     *      tags={"35. Delete Grup Aktivitas"},
+     *      summary="Delete Grup Aktivitas",
+     *      description="Returns project data",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Id Group Aktivitas",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation"
+     *       ),
+     *      @OA\Response(response=400, description="Bad request"),
+     *      @OA\Response(response=404, description="Resource Not Found"),
+     *      security={
+     *         {
+     *             "oauth2_security_example": {"write:projects", "read:projects"}
+     *         }
+     *     },
+     * )
+     */
+    
     public static function DeleteGroupAktivitas($id = null){
         $response   = new usr();
         $data       = [
@@ -4164,11 +4294,18 @@ class ApiController extends Controller
         }
         else{
             try {
-                
+                DB::table('group_aktivitas')
+                ->where('id', '=', $data['id'])
+                ->delete();
+
+                $response->success = 1;
+                $response->message = 'DATA BERHASIL DIHAPUS';
             } catch (Exception $e) {
-                //throw $th;
+                $response->success = 0;
+                $response->message = $e->getMessage();
             }
         }
     }
-#32 - 36 GROUP AKTIFITAS
+    #35. DELETE GRUP AKTIVITAS
+#32 - 35 GROUP AKTIFITAS
 }

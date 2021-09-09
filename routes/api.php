@@ -154,5 +154,18 @@ Route::prefix('admin')->group(function () {
     Route::get('deletepakets/{id?}', [ApiController::class, 'DeletePakets']);
     #31. DELETE PAKETS
 #28 - 31 PAKETS
+
+#32 - 35 GROUP AKTIVITAS
+    Route::get('getgroupaktivitas', [ApiController::class, 'DeletePakets']);
+
+    
+    Route::post('insertgroupaktivitas/{group?}', [ApiController::class, 'InsertGroupAktivitas']);
+
+    
+    Route::post('updategroupaktivitas/{id?}/{group?}', [ApiController::class, 'UpdateGroupAktivitas']);
+
+    
+    Route::get('deletegroupaktivitas/{id?}', [ApiController::class, 'DeleteGroupAktivitas']);
+#32 - 35 GROUP AKTIVITAS
 });
 

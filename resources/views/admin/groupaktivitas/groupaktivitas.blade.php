@@ -30,7 +30,7 @@
                 <div class="col-md-12">
                     <div class="card card-primary card-outline">
                         <div class="card-header">
-                            <h3 class="text-success"><strong>DAFTAR JENIS SAMPELS</strong></h3>
+                            <h3 class="text-success"><strong>DAFTAR GRUP AKTIVITAS</strong></h3>
                         </div>
 
                         <div class="card-body table-responsive">
@@ -40,14 +40,8 @@
                                     <div class="row">
                                         <div class="col-sm">
                                             <div class="form-group">
-                                                <label>JENIS SAMPELS</label>
-                                                <input type="text" name="jenissampels" class="form-control" placeholder="Jenis Sampel ..." autofocus>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">                                            
-                                            <div class="form-group">
-                                                <label>Lambang Sampel</label>
-                                                <input type="text" name="lambangsampel" class="form-control" placeholder="Lambang sampels ...">
+                                                <label>NAMA GRUP AKTIVITAS</label>
+                                                <input type="text" name="group" class="form-control" placeholder="Jenis Sampel ..." autofocus>
                                             </div>
                                         </div>
                                         <div class="col-sm-2">
