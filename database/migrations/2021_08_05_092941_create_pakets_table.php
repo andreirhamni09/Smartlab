@@ -18,6 +18,7 @@ class CreatePaketsTable extends Migration
             $table->unsignedTinyInteger('jenis_sampels_id');
             $table->string('paket', 45);
             $table->string('parameters_id_s', 45);
+            $table->string('metodes_id_s', 45);
             $table->integer('harga');
         });
     }

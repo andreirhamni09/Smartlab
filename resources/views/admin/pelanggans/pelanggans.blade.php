@@ -30,7 +30,7 @@
                 <div class="col-md-12">
                     <div class="card card-primary card-outline">
                         <div class="card-header">
-                            <h3 class="text-success"><strong>DAFTAR USER LAB</strong></h3>
+                            <h3 class="text-success"><strong>DAFTAR USER PELANGGAN</strong></h3>
                         </div>
 
                         <div class="card-body table-responsive">
@@ -99,17 +99,6 @@
                                                 <input type="text" name="alamat" class="form-control" placeholder="Alamat ...">
                                             </div>
                                         </div>
-                                        <div class="col-sm">
-                                            <div class="form-group">
-                                                <label>Tanggal</label>
-                                                <input type="date" name="tanggal_registrasi" class="form-control" value="">
-                                                @if(session('error_insert'))
-                                                    @if ($errors->has('tanggal'))
-                                                    <span class="text-danger">{{ $errors->first('tanggal') }}</span>
-                                                    @endif
-                                                @endif
-                                            </div>
-                                        </div>
                                         <div class="col-sm-1">
                                             <div class="form-group">
                                                 <label>Submit</label>
@@ -142,7 +131,7 @@
                                         <tr>
                                             <th class="hijau">NO</th>
                                             <th class="biru" style="width: 15%;">EMAIL</th>
-                                            <th class="biru" style="width: 15%;">PASSWORD</th>
+                                            <th class="biru" style="width: 20%;">PASSWORD</th>
                                             <th class="biru" style="width: 15%;">NAMA</th>
                                             <th class="biru">PERUSAHAAN</th>
                                             <th class="biru" style="width: 12%;">NO. TELEPON</th>
@@ -178,13 +167,18 @@
                                                         <td><input type="text" class="form-control" name="email" value="{{ $arr_pelanggan_email[$i] }}"></td>
                                                         <td>
                                                             <div class="row">
-                                                                <div class="col-md-9">
-                                                                    <input type="password" name="password" id="u_hidden_password_{{$no_pelanggan}}" class="form-control" value="{{ $arr_pelanggan_password[$i] }}">
+                                                                <div class="col-md">
+                                                                    <div class="form-group">
+                                                                        <input type="password" name="password" id="u_hidden_password_{{$no_pelanggan}}" class="form-control" value="{{ $arr_pelanggan_password[$i] }}">
+                                                                    </div>
                                                                 </div>
                                                                 <div class="col-md-3">
-                                                                    <button class="btn btn-secondary" id="lihat_{{ $no_pelanggan }}" type="button"><abbr title="Lihat Password"><i class="far fa-eye"></i></abbr></button>
+                                                                    <div class="form-group">
+                                                                        <button class="btn btn-secondary" id="lihat_{{ $no_pelanggan }}" type="button"><abbr title="Lihat Password"><i class="far fa-eye"></i></abbr></button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
+                                                                    
                                                         </td>
                                                         <td>
                                                             <input type="text" name="nama" class="form-control" value="{{ $arr_pelanggan_nama[$i] }}">
@@ -203,7 +197,7 @@
                                                                 $tanggal        = strtotime(str_replace('/', '-', $arr_pelanggan_tanggal_registrasi[$i]));
                                                                 $f_tanggal      = date('Y-m-d', $tanggal);
                                                             ?>
-                                                            <input type="date" name="tanggal_registrasi" class="form-control" value="{{ $f_tanggal }}">
+                                                            {{ $f_tanggal }}
                                                         </td>
                                                         <td>
                                                             <button type="submit" class="btn btn-success">UPDATE</button>

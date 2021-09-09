@@ -29,7 +29,7 @@
                 <div class="col-md-12">
                     <div class="card card-primary card-outline">
                         <div class="card-header">
-                            <h3 class="text-success"><strong>DAFTAR USER LAB</strong></h3>
+                            <h3 class="text-success"><strong>DAFTAR HALAMAN</strong></h3>
                         </div>
 
                         <div class="card-body table-responsive">

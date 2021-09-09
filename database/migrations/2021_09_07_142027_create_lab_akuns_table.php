@@ -15,10 +15,10 @@ class CreateLabAkunsTable extends Migration
     {
         Schema::create('lab_akuns', function (Blueprint $table) {
             $table->tinyIncrements('id');
-            $table->string('metodes_id_s', 45);
             $table->tinyInteger('akses_levels_id');
+            $table->string('metodes_id_s', 45);
             $table->string('nama', 100);
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('password');
             $table->string('jabatan', 45);
             $table->enum('status_akun', ['0', '1']);

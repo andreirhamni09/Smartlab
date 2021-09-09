@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAktivitasTable extends Migration
+class UpdateAktivitasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class CreateAktivitasTable extends Migration
      */
     public function up()
     {
-        Schema::create('aktivitas', function (Blueprint $table) {
-            $table->tinyIncrements('id');
-            $table->unsignedTinyInteger('groups_id');
-            $table->string('aktivitas', 45);
+        Schema::table('aktivitas', function (Blueprint $table) {
+            $table->foreign('groups_id')->references('id')->on('group_aktivitas')->onUpdate('cascade');
         });
     }
 
@@ -27,6 +25,8 @@ class CreateAktivitasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('aktivitas');
+        Schema::table('aktivitas', function (Blueprint $table) {
+            $table->dropIfExists(['groups_id']);    
+        });
     }
 }

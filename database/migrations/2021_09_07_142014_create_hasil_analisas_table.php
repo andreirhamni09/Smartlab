@@ -14,16 +14,19 @@ class CreateHasilAnalisasTable extends Migration
     public function up()
     {
         Schema::create('hasil_analisas', function (Blueprint $table) {
-            $table->increments('id');
+            $table->unsignedInteger('id');
             $table->unsignedTinyInteger('jenis_sampels_id');
             $table->smallInteger('data_sampels_id');
             $table->string('tahun', 2);
             $table->integer('no_lab');
             $table->string('kode_contoh', 45);
-            $table->string('parameters_id_s', 45);
+            $table->text('lab_akuns_id');
+            $table->string('parameters_id', 45);
             $table->text('hasil');
             $table->enum('status', ['0', '1']);
-            $table->integer('retry');
+            $table->text('log');
+            $table->tinyIncrements('batch');
+            $table->integer('verifikasi_hasil');
         });
     }
 

@@ -78,6 +78,7 @@
             Schema::create('akses_levels', function (Blueprint $table) {
                 $table->tinyInteger('id')->primary()->autoincrement();
                 $table->string('jabatan')->unique();
+                $table->string('halamans_id_s', 45)->nullable();
             });
         }
         public function down()
@@ -144,7 +145,8 @@
                 $table->smallIncrements('id');
                 $table->unsignedTinyInteger('jenis_sampels_id');
                 $table->string('paket', 45);
-                $table->string('parameters_id', 45);
+                $table->string('parameters_id_s', 45);
+                $table->string('metodes_id_s', 45);
                 $table->integer('harga');
             });
         }
@@ -153,7 +155,9 @@
             Schema::dropIfExists('pakets');
         }
     # MIGRATION
+# 7. PAKET
 
+# 8. PAKET
     # MIGRATION UPDATE
         public function up()
         {
@@ -167,9 +171,9 @@
             $table->dropIfExists(['jenis_sampels_id']);        
         }
     # MIGRATION
-# 7. PAKET
+# 8. PAKET
 
-# 8. DATA SAMPEL
+# 9. DATA SAMPEL
     # MODEL
         class DataSampel extends Model
         {
@@ -185,11 +189,14 @@
                 $table->smallInteger('id')->primary()->autoIncrement();
                 $table->unsignedTinyInteger('jenis_sampels_id');
                 $table->unsignedInteger('pelanggans_id');
-                $table->string('paket_id', 45);
+                $table->string('pakets_id_s', 45);
                 $table->dateTime('tanggal_masuk');
                 $table->tinyInteger('tanggal_selesai');
                 $table->string('nomor_surat');
                 $table->integer('jumlah_sampel');
+                $table->unsignedSmallInteger('ketersedian_id');
+                $table->text('catatan_userlabs');
+                $table->text('catatan_pelanggans');
                 $table->string('status');
             });
         }
@@ -198,9 +205,36 @@
             Schema::dropIfExists('data_sampels');
         }
     # MIGRATION
-# 8. DATA SAMPEL
+# 9. DATA SAMPEL
 
-# 9. HASIL ANALISA 
+# 10. KETERSEDIAAN ALAT
+    public function up()
+    {
+        Schema::create('ketersedian_alats', function (Blueprint $table) {
+            $table->smallIncrements('id');
+            $table->string('ketersedian_alat', 45);
+        });
+    }
+# 10. KETERSEDIAAN ALAT
+
+# 11. DATA SAMPEL
+    public function up()
+    {
+        Schema::table('data_sampels', function (Blueprint $table) {
+            $table->foreign('jenis_sampels_id')->references('id')->on('jenis_sampels')->onUpdate('cascade');
+            $table->foreign('pelanggans_id')->references('id')->on('pelanggans')->onUpdate('cascade');
+            $table->foreign('ketersedian_alats_id')->references('id')->on('ketersedian_alats')->onUpdate('cascade');
+        });
+    }
+    public function down()
+    {
+        $table->dropIfExists(['jenis_sampels_id']);   
+        $table->dropIfExists(['pelanggans_id']); 
+        $table->dropIfExists(['ketersedian_alats_id']);      
+    }
+# 11. DATA SAMPEL
+
+# 12. HASIL ANALISA 
     # MODEL
         class HasilAnalisa extends Model
         {
@@ -223,11 +257,15 @@
                 $table->string('parameters_id', 45);
                 $table->text('hasil');
                 $table->enum('status', ['0', '1']);
+                $table->text('log');
+                $table->tinyIncrements('batch');
                 $table->integer('retry');
             });
         }
     # MIGRATION CREATE
+# 12. HASIL ANALISA 
 
+# 13. HASIL ANALISA
     # MIGRATION UPDATE
         public function up()
         {
@@ -242,9 +280,9 @@
             $table->dropIfExists(['data_sampels_id']);        
         }
     # MIGRATION
-# 9. HASIL ANALISA 
+# 13. HASIL ANALISA
 
-# 10. LAB AKUN
+# 14. LAB AKUN
     # MODEL
         class LabAkun extends Model
         {
@@ -268,7 +306,9 @@
             });
         }
     # MIGRATION CREATE
+# 14. LAB AKUN
 
+# 15. LAB AKUN
     # MIGRATION UPDATE
         public function up()
         {
@@ -283,9 +323,9 @@
             $table->dropIfExists(['akses_levels_id']);        
         }
     # MIGRATION UPDATE
-# 10. LAB AKUN
+# 15. LAB AKUN
 
-# 11. DETAIL TRACKING
+# 16. DETAIL TRACKING
     # MIGRATION CREATE
         public function up()
         {
@@ -297,7 +337,9 @@
             });
         }
     # MIGRATION CREATE
+# 16. DETAIL TRACKING
 
+# 17. DETAIL TRACKING
     # MIGRATION UPDATE
         public function up()
         {
@@ -314,4 +356,16 @@
             $table->dropIfExists(['lab_akuns_id']);        
         }
     # MIGRATION
-# 11. DETAIL TRACKING
+# 17. DETAIL TRACKING
+
+# 18. HALAMANS
+        public function up()
+        {
+            Schema::create('halamans', function (Blueprint $table) {
+                $table->tinyIncrements('id');
+                $table->string('halaman');
+                $table->string('url');
+                $table->string('simbol');
+            });
+        }
+# 18. HALAMANS

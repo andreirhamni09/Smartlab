@@ -2042,7 +2042,7 @@ class ApiController extends Controller
                     $str_id                 .= $value['id'] . '-';
                     $str_tahun              .= $value['tahun'] . '-';
                     $str_jenis_samples_id   .= $value['jenis_sampels_id'] . '-';
-                    $str_parameters_id_s    .= $value['parameters_id_s'] . '-';
+                    $str_parameters_id_s    .= $value['parameters_id_s'] . ';';
                     $str_no_lab             .= $value['no_lab'] . '-';
                     $str_hasil              .= $value['hasil'] . '-';
                     $str_status             .= $value['status'] . '-';
@@ -4003,4 +4003,172 @@ class ApiController extends Controller
     }
     #31. DELETE PAKETS
 #28 - 31 PAKETS
+
+
+#32 - 36 GROUP AKTIFITAS
+    public static function GetGroupAktivitas(){
+        $response           = new usr();
+        $getgroupaktivitas  = DB::table('group_aktivitas')->get();
+        $getgroupaktivitas  = json_decode(json_encode($getgroupaktivitas), true);
+        $str_id             = '';
+        $str_group          = '';
+        if(empty($getgroupaktivitas))
+        {
+            $response->success = 0;
+            $response->message = 'DATA BELUM TERISI';
+        }
+        else{
+            try {
+                foreach ($getgroupaktivitas as $value) {
+                    $str_id             .= $value['id'].'-';
+                    $str_group          .= $value['group'].'-';
+                }
+                $str_id         = substr($str_id, 0, -1);
+                $str_group      = substr($str_group, 0, -1);
+
+                $response->id       = $str_id;
+                $response->group    = $str_group;
+                $response->success  = 1;
+                $response->message  = 'BERIKUT LIST DATA GROUP AKTIVITAS';
+            } catch (Exception $e) {
+                $response->success  = 0;
+                $response->message  = 'KESALAHAN SAAT MENGAMBAIL DATA :'.$e->getMessage();
+            }
+        }
+
+        return json_encode($response);
+    }
+
+    public static function InsertGroupAktivitas(Request $request, $group = null){
+        $response   = new usr();
+        $str_group  = '';
+        if(!isset($request->group) AND !isset($group)){
+            $response->success = 0;
+            $response->message = 'DATA TIDAK DAPAT KOSONG';
+        }
+        elseif(isset($request->group)){
+            $str_group         = $request->group;
+        }
+        elseif(!empty($group)){
+            $str_group         = $group;
+        }
+        $data       = [
+            'group' => $str_group
+        ];
+
+        $rules      = [
+            'group' => 'required|string|min:3|max:45'
+        ];
+        $messages   = [
+            'group.required'    => 'GROUP AKTIVITAS TIDAK BOLEH KOSONG',
+            'group.min'         => 'GROUP AKTIVITAS HARUS DIISI DENGAN KARAKTER MINIMAL 3 HURUF',
+            'group.max'         => 'GROUP AKTIVITAS HARUS DIISI DENGAN KARAKTER MAKSIMAL 45 HURUF'
+        ];
+
+        $validator = Validator::make($data, $rules, $messages);
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = $validator->errors()->first();
+        }
+        else{
+            try {
+                DB::table('group_aktivitas')
+                ->insert([
+                    'group' => $data['group']
+                ]);
+                $response->success = 1;
+                $response->message = 'BERHASIL MENAMBAHKAN GROUP BARU';
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = $e->getMessage();
+            }
+        }
+
+        return json_encode($response);
+    }
+
+    public static function UpdateGroupAktivitas(Request $request, $id = null, $group = null){
+        $response   = new usr();
+        $str_id     = '';
+        $str_group  = '';
+        if((!isset($request->id) AND !isset($request->group)) AND 
+            (!isset($id) AND !isset($group))
+            ){
+            $response->success = 0;
+            $response->message = 'DATA TIDAK DAPAT KOSONG';
+        }
+        elseif(isset($request->id) AND isset($request->group)){
+            $str_id         = $request->id;
+            $str_group      = $request->group;
+        }
+        elseif(!empty($group) AND !empty($id)){
+            $str_id         = $id;
+            $str_group      = $group;
+        }
+        $data       = [
+            'id'    => $str_id,
+            'group' => $str_group
+        ];
+
+        $rules      = [
+            'id'    => 'required|exists:group_aktivitas,id',
+            'group' => 'required|string|min:3|max:45'
+        ];
+        $messages   = [
+            'id.required'       => 'ID GROUP WAJIB ADA',
+            'id.exitst'         => 'ID GROUP TIDAK DITEMUKAN',
+            'group.required'    => 'GROUP AKTIVITAS TIDAK BOLEH KOSONG',
+            'group.min'         => 'GROUP AKTIVITAS HARUS DIISI DENGAN KARAKTER MINIMAL 3 HURUF',
+            'group.max'         => 'GROUP AKTIVITAS HARUS DIISI DENGAN KARAKTER MAKSIMAL 45 HURUF'
+        ];
+
+        $validator = Validator::make($data, $rules, $messages);
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = $validator->errors()->first();
+        }
+        else{
+            try {
+                DB::table('group_aktivitas')
+                ->where('id', '=', $data['id'])
+                ->update([
+                    'group' => $data['group']
+                ]);
+                $response->success = 1;
+                $response->message = 'BERHASIL MENAMBAHKAN GROUP BARU';
+            } catch (Exception $e) {
+                $response->success = 0;
+                $response->message = $e->getMessage();
+            }
+        }
+
+        return json_encode($response);
+    }
+
+    public static function DeleteGroupAktivitas($id = null){
+        $response   = new usr();
+        $data       = [
+            'id'    => $id
+        ];
+        $rules      = [
+            'id'    => 'required|exists:group_aktivitas,1'
+        ];
+        $messages   = [
+            'id.required'   => 'ID GRUP AKTIVITAS WAJIB ADA',
+            'id.exists'     => 'ID GRUP AKTIVITAS TIDAK DITEMUKAN DIDATABASE'
+        ];
+        $validator  = Validator::make($data, $rules, $messages);
+        if($validator->fails()){
+            $response->success = 0;
+            $response->message = $validator->errors()->first();
+        }
+        else{
+            try {
+                
+            } catch (Exception $e) {
+                //throw $th;
+            }
+        }
+    }
+#32 - 36 GROUP AKTIFITAS
 }

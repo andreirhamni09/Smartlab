@@ -21,6 +21,8 @@ class CreatePelanggansTable extends Migration
             $table->string('perusahaan');
             $table->string('nomor_telepon');
             $table->text('alamat');            
+            $table->string('npwp', 25);            
+            $table->text('kuesioner');
             $table->date('tanggal_registrasi');
         });
     }

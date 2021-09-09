@@ -1,17 +1,39 @@
 1.  php artisan make:migration create_parameters_table
+
 2.  php artisan make:migration create_jenis_sampels_table
+
 3.  php artisan make:model Pelanggan -m
+
 4.  php artisan make:model AksesLevel -m
+
 5.  php artisan make:model Metode -m
+
 6.  php artisan make:migration create_aktivitas_table
+
 7.  php artisan make:model Paket -m
-    php artisan make:migration update_pakets_table --table=pakets
-8.  php artisan make:model DataSampel -m
-    php artisan make:migration update_data_sampels_table --table=data_sampels
-9.  php artisan make:model HasilAnalisa -m
-    php artisan make:migration update_hasil_analisas_table --table=hasil_analisas
-10. php artisan make:model LabAkun -m
-    php artisan make:migration update_lab_akuns_table --table=lab_akuns
-11. php artisan make:migration create_detail_trackings_table
-    php artisan make:migration update_detail_trackings_table --table=detail_trackings
-12. php artisan make:migration update_halamans_table 
+
+8   php artisan make:migration update_pakets_table --table=pakets
+
+9.  php artisan make:model DataSampel -m
+
+10. php artisan make:migration create_ketersedian_alats
+
+11. php artisan make:migration update_data_sampels_table --table=data_sampels
+
+12. php artisan make:model HasilAnalisa -m
+
+13. php artisan make:migration update_hasil_analisas_table --table=hasil_analisas
+
+14. php artisan make:model LabAkun -m
+
+15. php artisan make:migration update_lab_akuns_table --table=lab_akuns
+
+16. php artisan make:migration create_detail_trackings_table
+
+17. php artisan make:migration update_detail_trackings_table --table=detail_trackings
+
+18. php artisan make:migration create_halamans_table
+
+19. php artisan make:migration create_group_aktivitas_table
+
+20. php artisan make:migration update_aktivitas_table --table=aktivitas

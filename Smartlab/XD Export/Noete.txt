@@ -1,21 +1,24 @@
-$table->increments('id');
-            $table->integer('id_kupa')->unsigned();
-            $table->string('id_petugas');
-            $table->string('no_lab');
-            $table->string('kode_contoh');
-            $table->float('N');
-            $table->float('P');
-            $table->float('K');
-            $table->float('Mg');
-            $table->float('Ca');
-            $table->float('B');
-            $table->float('Cu');
-            $table->float('Zn');
-            $table->float('Fe');
-            $table->float('Mn');
-            $table->enum('status', ['draft', 'hasil']);
-            $table->enum('retry', [0, 1]);
-            $table->timestamps();
+REVISI SMARTLAB 07/09/2021
+PELANGGAN
+    - TABEL pelanggans => Tambah Kolom NPWP, KUESIONER
 
-$table->foreign('id_kupa')->references('id')->on('data_sampels')->constrained()->onUpdate('cascade');
-        
+USERLAB
+    - AKSES HANYA BISA DIAKSES OLEH STAFF
+
+HASIL ANALISA
+    - DATA HASIL ANALISA TIDAK DAPAT DIHAPUS
+    - USERLAB DENGAN AKSES LEVEL 'ADMIN' DAPAT MELAKUKAN EDIT DATA HASIL ANALISA
+    - TAMBAH KOLOM 'LOG'
+    - TAMBAHKAN KOLOM BATCH (JUMLAH BATCH SESUAI DENGAN INPUTAN USER)
+
+DATA SAMPEL 
+    - TAMBAHKAN KOLOM 'CATATAN USERLAB, CATATAN PELANGGAN'
+    - TAMBAHKAN KOLOM 'KETERSEDIAN_ALAT' , 'VERIFIKASI', 'EMAIL'
+    - TAMPILAN 'ID KUPA DITAMPILKAN DIATAS'
+
+PAKETS
+    - TAMBAHKAN KOLOM 'METODES_ID_S'
+    
+DETAIL TRACKING
+    - TAMPILKAN PROSES PALING TERAKHIR DARI BATCH
+

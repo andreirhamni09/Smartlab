@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAktivitasTable extends Migration
+class CreateHalamansTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateAktivitasTable extends Migration
      */
     public function up()
     {
-        Schema::create('aktivitas', function (Blueprint $table) {
+        Schema::create('halamans', function (Blueprint $table) {
             $table->tinyIncrements('id');
-            $table->unsignedTinyInteger('groups_id');
-            $table->string('aktivitas', 45);
+            $table->string('halaman');
+            $table->string('url');
+            $table->string('simbol');
         });
     }
 
@@ -27,6 +28,6 @@ class CreateAktivitasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('aktivitas');
+        Schema::dropIfExists('halamans');
     }
 }
