@@ -1507,28 +1507,26 @@ class ApiController extends Controller
             $response->message = 'DATA SAMPEL DENGAN :' . $id_s . ' TIDAK DITEMUKAN';
         } else {
             try {
-                foreach ($getdatasampelsbyid as $value) {
-                    #DATA SAMPELS
-                    $s_id               .= $value['id'] . '-';
-                    $s_pakets_id_s      .= $value['jenis_sampels_id'] . '-';
+                #DATA SAMPELS
+                $s_id               .= $getdatasampelsbyid['id'].'-';
+                $s_pakets_id_s      .= $getdatasampelsbyid['jenis_sampels_id'].'-'; 
 
-                    $date       = date_create($value['tanggal_masuk']);
-                    $waktu      = date_format($date, 'H:i:s d-m-Y');
+                $date       = date_create($getdatasampelsbyid['tanggal_masuk']);
+                $waktu      = date_format($date, 'H:i:s d-m-Y');
 
-                    $s_tanggal_masuk    .= str_replace('-', '/', $waktu) . '-';
-                    $s_tanggal_selesai  .= $value['tanggal_selesai'] . '-';
-                    $s_nomor_surat      .= $value['nomor_surat'] . '-';
-                    $s_jumlah_sampel    .= $value['jumlah_sampel'] . '-';
-                    $s_status           .= $value['status'] . '-';
+                $s_tanggal_masuk    .= str_replace('-', '/', $waktu).'-'; 
+                $s_tanggal_selesai  .= $getdatasampelsbyid['tanggal_selesai'].'-'; 
+                $s_nomor_surat      .= $getdatasampelsbyid['nomor_surat'].'-'; 
+                $s_jumlah_sampel    .= $getdatasampelsbyid['jumlah_sampel'].'-'; 
+                $s_status           .= $getdatasampelsbyid['status'].'-';
 
-                    #PELANGGANS
-                    $s_pelanggans_id    .= $value['pelanggans_id'] . '-';
-                    $s_pelanggans_nama  .= $value['pelanggan'] . '-';
+                #PELANGGANS
+                $s_pelanggans_id    .= $getdatasampelsbyid['pelanggans_id'].'-'; 
+                $s_pelanggans_nama  .= $getdatasampelsbyid['pelanggan'].'-';
 
-                    #JENIS SAMPELS
-                    $s_jenis_sampels_id .= $value['jenis_sampels_id'] . '-';
-                    $s_jenis_sampel     .= $value['jenis_sampel'] . '-';
-                }
+                #JENIS SAMPELS
+                $s_jenis_sampels_id .= $getdatasampelsbyid['jenis_sampels_id'].'-'; 
+                $s_jenis_sampel     .= $getdatasampelsbyid['jenis_sampel'].'-';
 
                 #DATA SAMPELS
                 $response->id               = substr($s_id, 0, -1);
@@ -2081,8 +2079,6 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-
-    /** @todo finish the functions*/
     public static function UpdateHasilAnalisas(Request $request, $id = null, $hasil = null)
     {
         $response           = new usr();
@@ -4237,7 +4233,7 @@ class ApiController extends Controller
                         'group' => $data['group']
                     ]);
                 $response->success = 1;
-                $response->message = 'BERHASIL MENAMBAHKAN GROUP BARU';
+                $response->message = 'BERHASIL UPDATE DATA GRUP';
             } catch (Exception $e) {
                 $response->success = 0;
                 $response->message = $e->getMessage();
