@@ -1508,25 +1508,25 @@ class ApiController extends Controller
         } else {
             try {
                 #DATA SAMPELS
-                $s_id               .= $getdatasampelsbyid['id'].'-';
-                $s_pakets_id_s      .= $getdatasampelsbyid['jenis_sampels_id'].'-'; 
+                $s_id               .= $getdatasampelsbyid['id'] . '-';
+                $s_pakets_id_s      .= $getdatasampelsbyid['jenis_sampels_id'] . '-';
 
                 $date       = date_create($getdatasampelsbyid['tanggal_masuk']);
                 $waktu      = date_format($date, 'H:i:s d-m-Y');
 
-                $s_tanggal_masuk    .= str_replace('-', '/', $waktu).'-'; 
-                $s_tanggal_selesai  .= $getdatasampelsbyid['tanggal_selesai'].'-'; 
-                $s_nomor_surat      .= $getdatasampelsbyid['nomor_surat'].'-'; 
-                $s_jumlah_sampel    .= $getdatasampelsbyid['jumlah_sampel'].'-'; 
-                $s_status           .= $getdatasampelsbyid['status'].'-';
+                $s_tanggal_masuk    .= str_replace('-', '/', $waktu) . '-';
+                $s_tanggal_selesai  .= $getdatasampelsbyid['tanggal_selesai'] . '-';
+                $s_nomor_surat      .= $getdatasampelsbyid['nomor_surat'] . '-';
+                $s_jumlah_sampel    .= $getdatasampelsbyid['jumlah_sampel'] . '-';
+                $s_status           .= $getdatasampelsbyid['status'] . '-';
 
                 #PELANGGANS
-                $s_pelanggans_id    .= $getdatasampelsbyid['pelanggans_id'].'-'; 
-                $s_pelanggans_nama  .= $getdatasampelsbyid['pelanggan'].'-';
+                $s_pelanggans_id    .= $getdatasampelsbyid['pelanggans_id'] . '-';
+                $s_pelanggans_nama  .= $getdatasampelsbyid['pelanggan'] . '-';
 
                 #JENIS SAMPELS
-                $s_jenis_sampels_id .= $getdatasampelsbyid['jenis_sampels_id'].'-'; 
-                $s_jenis_sampel     .= $getdatasampelsbyid['jenis_sampel'].'-';
+                $s_jenis_sampels_id .= $getdatasampelsbyid['jenis_sampels_id'] . '-';
+                $s_jenis_sampel     .= $getdatasampelsbyid['jenis_sampel'] . '-';
 
                 #DATA SAMPELS
                 $response->id               = substr($s_id, 0, -1);
@@ -1654,6 +1654,8 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
+
+    /**  @todo fix this function **/
     public static function InsertDataSampels(
         Request $request,
         $jenis_sampels_id = null,
@@ -1663,34 +1665,44 @@ class ApiController extends Controller
         $tanggal_selesai = null,
         $nomor_surat = null,
         $jumlah_sampel = null,
-        $status = null
+        $status = null,
+        $batch_size = null,
+        $ketersediaan_alat = null,
+        $catatan_userlabs = null,
+        $catatan_pelanggan = null
     ) {
         $m_data_sampels = new DataSampel();
         $response = new usr();
-
         $s_jenis_sampels_id     = '';
-        $s_pelanggans_id      = '';
-        $s_pakets_id_s    = '';
-        $s_tanggal_masuk = '';
+        $s_pelanggans_id        = '';
+        $s_pakets_id_s          = '';
+        $s_tanggal_masuk        = '';
         $s_tanggal_selesai      = '';
-        $s_nomor_surat        = '';
-        $s_jumlah_sampel  = '';
-        $s_status        = '';
+        $s_nomor_surat          = '';
+        $s_jumlah_sampel        = '';
+        $s_status               = '';
+        $s_batch_size           = '';
+        $s_ketersediaan_alat    = '';
+        $s_catatan_userlabs     = '';
+        $s_catatan_pelanggan    = '';
 
         if (
-            (!isset($request->jenis_sampels_id) and !isset($request->pelanggans_id) and !isset($request->pakets_id_s) and
-                !isset($request->tanggal_masuk) and !isset($request->tanggal_selesai) and !isset($request->nomor_surat) and
-                !isset($request->jumlah_sampel) and !isset($request->status)) and
-            (!isset($jenis_sampels_id) and !isset($pelanggans_id) and !isset($pakets_id_s) and
-                !isset($tanggal_masuk) and !isset($tanggal_selesai) and !isset($nomor_surat) and
-                !isset($jumlah_sampel) and !isset($status))
+            (!isset($request->jenis_sampels_id) and !isset($request->pelanggans_id)     and !isset($request->pakets_id_s) and
+                !isset($request->tanggal_masuk)     and !isset($request->tanggal_selesai)   and !isset($request->nomor_surat) and
+                !isset($request->jumlah_sampel)     and !isset($request->status)            and !isset($request->batch_size) and
+                !isset($request->ketersediaan_alat) and !isset($request->catatan_userlabs)  and !isset($request->catatan_pelanggan)) and
+            (!isset($jenis_sampels_id)  and !isset($pelanggans_id)      and !isset($pakets_id_s) and
+                !isset($tanggal_masuk)      and !isset($tanggal_selesai)    and !isset($nomor_surat) and
+                !isset($jumlah_sampel)      and !isset($status)             and !isset($batch_size)  and
+                !isset($ketersediaan_alat)  and !isset($catatan_userlabs)   and !isset($catatan_pelanggan))
         ) {
             $response->success = 0;
             $response->message = 'DATA WAJIB DIISI';
         } else if (
-            isset($request->jenis_sampels_id) or isset($request->pelanggans_id) or isset($request->pakets_id_s) or
-            isset($request->tanggal_masuk) or isset($request->tanggal_selesai) or isset($request->nomor_surat) or
-            isset($request->jumlah_sampel) or isset($request->status)
+            isset($request->jenis_sampels_id)   or isset($request->pelanggans_id)     or isset($request->pakets_id_s) or
+            isset($request->tanggal_masuk)      or isset($request->tanggal_selesai)   or isset($request->nomor_surat) or
+            isset($request->jumlah_sampel)      or isset($request->status)            or isset($request->batch_size)  or
+            isset($request->ketersediaan_alat)  or isset($request->catatan_userlabs)  or isset($request->catatan_pelanggan)
         ) {
             $s_jenis_sampels_id     = $request->jenis_sampels_id;
             $s_pelanggans_id        = $request->pelanggans_id;
@@ -1700,10 +1712,15 @@ class ApiController extends Controller
             $s_nomor_surat          = $request->nomor_surat;
             $s_jumlah_sampel        = $request->jumlah_sampel;
             $s_status               = $request->status;
+            $s_batch_size           = $request->batch_size;
+            $s_ketersediaan_alat    = $request->ketersediaan_alat;
+            $s_catatan_userlabs     = $request->catatan_userlabs;
+            $s_catatan_pelanggan    = $request->catatan_pelanggan;
         } else if (
-            isset($jenis_sampels_id) or isset($pelanggans_id) or isset($pakets_id_s) or
-            isset($tanggal_masuk) or isset($tanggal_selesai) or isset($nomor_surat) or
-            isset($jumlah_sampel) or isset($status)
+            isset($jenis_sampels_id)  or isset($pelanggans_id)      or isset($pakets_id_s)      or
+            isset($tanggal_masuk)     or isset($tanggal_selesai)    or isset($nomor_surat)      or
+            isset($jumlah_sampel)     or isset($status)             or isset($batch_size)       or
+            isset($ketersediaan_alat) or isset($catatan_userlabs)   or isset($catatan_pelanggan)
         ) {
             $s_jenis_sampels_id     = $jenis_sampels_id;
             $s_pelanggans_id        = $pelanggans_id;
@@ -1713,6 +1730,10 @@ class ApiController extends Controller
             $s_nomor_surat          = $nomor_surat;
             $s_jumlah_sampel        = $jumlah_sampel;
             $s_status               = $status;
+            $s_batch_size           = $batch_size;
+            $s_ketersediaan_alat    = $ketersediaan_alat;
+            $s_catatan_userlabs     = $catatan_userlabs;
+            $s_catatan_pelanggan    = $catatan_pelanggan;
         }
 
         $arr_data_sampels   = array(
@@ -1723,7 +1744,10 @@ class ApiController extends Controller
             'tanggal_selesai'   => $s_tanggal_selesai,
             'nomor_surat'       => $s_nomor_surat,
             'jumlah_sampel'     => $s_jumlah_sampel,
-            'status'            => $s_status
+            'status'            => $s_status,
+            'batch_size'        => $s_batch_size,
+            'ketersediaan_alat' => $s_ketersediaan_alat,
+            'catatan_userlabs'  => $s_catatan_userlabs
         );
 
         $rules = [
@@ -1734,7 +1758,10 @@ class ApiController extends Controller
             'tanggal_selesai'   => 'required|numeric|min:1',
             'nomor_surat'       => 'required|string|min:1',
             'jumlah_sampel'     => 'required|numeric|min:1',
-            'status'            => 'required'
+            'status'            => 'required',
+            'batch_size'        => 'required|string|min:1|max:30',
+            'ketersediaan_alat' => 'required|numeric|min:0|max:1',
+            'catatan_userlabs'  => 'nullable|string|min:1',
         ];
 
         $messages = [
@@ -1752,7 +1779,14 @@ class ApiController extends Controller
             'nomor_surat.min'               => 'MINIMAL PENGISIAN UNTUK NOMOR SURAT ADALAH 1 HURUF',
             'jumlah_sampel.required'        => 'JUMLAH SAMPEL WAJIB DIISI',
             'jumlah_sampel.min'             => 'MINIMAL PENGISIAN UNTUK JUMLAH SAMPEL ADALAH 1 BUAH',
-            'status.required'               => 'STATUS WAJIB DIISI'
+            'status.required'               => 'STATUS WAJIB DIISI',
+            'batch_size.required'           => 'BATCH SIZE WAJIB DIISI',
+            'batch_size.min'                => 'MINIMAL PENGISIAN BATCH SIZE ADALAH 1 KARAKTER',
+            'batch_size.max'                => 'MAKSIMAL PENGISIAN BATCH SIZE ADALAH 30 KARAKTER',
+            'ketersediaan_alat.required'    => 'KETERSEDIAN ALAT WAJIB DIISI',
+            'ketersediaan_alat.min'         => 'KETERSEDIAAN ALAT KETERSEDIAN VALUE ADALAH TRUE ATAU FALSE',
+            'ketersediaan_alat.max'         => 'KETERSEDIAAN ALAT KETERSEDIAN VALUE ADALAH TRUE ATAU FALSE',
+            'catatan_userlabs.min'          => 'MAKSIMAL PENGISIAN CATATAN ADALAH 1 KARAKTER',
         ];
 
         $validator = Validator::make($arr_data_sampels, $rules, $messages);
@@ -1770,6 +1804,9 @@ class ApiController extends Controller
             $m_data_sampels->nomor_surat        = $s_nomor_surat;
             $m_data_sampels->jumlah_sampel      = $s_jumlah_sampel;
             $m_data_sampels->status             = $s_status;
+            $m_data_sampels->ketersediaan_alat  = $s_ketersediaan_alat;
+            $m_data_sampels->catatan_userlabs   = $s_catatan_userlabs;
+            $m_data_sampels->catatan_pelanggan  = '';
             try {
                 $m_data_sampels->save();
 
@@ -1778,9 +1815,64 @@ class ApiController extends Controller
                     ->orderByDesc('no_lab')->take(1)->get();
 
                 $l_hasil_analisis   = json_decode(json_encode($l_hasil_analisis), true);
-                $n                  = 0;
+                $n                  = $l_hasil_analisis['no_lab'];
                 $t                  = date('y', strtotime($m_data_sampels->tanggal_masuk));
-                $index  = 0;
+                $index              = 0;
+
+                array_sum
+
+                if ($n != null) {
+                    $n == 0;
+                }
+
+                $batch      = explode(',',$s_batch_size);
+
+                try {
+                    for($k = 0; $k < count($batch); $k++){
+                        $minBatch = 0;
+                        try{
+                            $minBatch = $batch[$k-1];
+                        }catch(Exception $e){
+                            $minBatch = 0;
+                        }
+                        for ($i = $n + $minBatch; $i <= $n + $batch[$k] + $minBatch; $i++) {
+                            DB::table('hasil_analisas')
+                                ->insert([
+                                    'jenis_sampels_id'  => $m_data_sampels->jenis_sampels_id,
+                                    'data_sampels_id'   => $m_data_sampels->id,
+                                    'tahun'             => $t,
+                                    'no_lab'            => $i + 1,
+                                    'kode_contoh'       => '',
+                                    'parameters_id_s'   => $m_data_sampels->pakets_id_s,
+                                    'hasil'             => '-;-;-',
+                                    'status'            => '0',
+                                    'retry'             => 0,
+                                    'batch'             => 0
+                                ]);
+                        }
+                    }
+                    $status_save = 1;
+                } catch (Exception $e) {
+                    $response->success = 0;
+                    $response->message = 'GAGAL MEMASUKAN DATA : ' . $e->getMessage();
+                }
+                if ($status_save == 1) {
+                    try {
+                        DB::table('detail_trackings')->insert([
+                            'aktivitas_waktu'           => date('Y-m-d H:i', strtotime('now')),
+                            'data_sampels_id'           => $m_data_sampels->id,
+                            'aktivitas_id'              => 1,
+                            'lab_akuns_id'              => 1
+                        ]);
+                        $response->success = 1;
+                        $response->message = 'BERHASIL MEMASUKAN DATA KUPA BARU';
+                    } catch (Exception $e) {
+                        $response->success = 0;
+                        $response->message = 'GAGAL MEMASUKAN DATA : ' . $e->getMessage();
+                    }
+                }
+
+/* 
                 if (empty($l_hasil_analisis)) {
                     $n = $m_data_sampels->jumlah_sampel;
                     for ($i = 1; $i <= $n; $i++) {
@@ -1859,7 +1951,7 @@ class ApiController extends Controller
                             $response->message = 'GAGAL MEMASUKAN DATA : ' . $e->getMessage();
                         }
                     }
-                }
+                } */
             } catch (Exception $e) {
                 $response->success = 0;
                 $response->message = $e->getMessage();
@@ -2116,7 +2208,7 @@ class ApiController extends Controller
             $response->message = $validator->errors()->first();
         } else {
             $hasil_analisas     = DB::table('hasil_analisas')
-                ->where('id','=', $data['id'])
+                ->where('id', '=', $data['id'])
                 ->get();
 
             $hasil_analisas     = json_decode(json_encode($hasil_analisas), true);
@@ -2136,16 +2228,15 @@ class ApiController extends Controller
             ];
 
 
-            
+
             for ($i = 0; $i < count($ex_hasil); $i++) {
                 if ($ex_hasil[$i] == "-" and $str_hasil[$i] != "-") {
                     $ex_hasil[$i] = $str_hasil[$i];
                 } elseif ($str_hasil[$i] != "-") {
                     $ex_hasil[$i] .= $str_hasil[$i];
                 }
-                if(in_array($ex_param[$i], $param['id']))
-                {
-                    $ex_log .= date('Y-m-d H:m:s', strtotime('now')).': Nilai '.$param['simbol'][array_search($ex_param[$i], $param['id'])].' ditambahkan dengan nilai '.$str_hasil[$i];
+                if (in_array($ex_param[$i], $param['id'])) {
+                    $ex_log .= date('Y-m-d H:m:s', strtotime('now')) . ': Nilai ' . $param['simbol'][array_search($ex_param[$i], $param['id'])] . ' ditambahkan dengan nilai ' . $str_hasil[$i];
                 }
             }
 
@@ -2155,7 +2246,7 @@ class ApiController extends Controller
                 $str_hasil .= ';';
             }
 
-            $str_hasil = rtrim($str_hasil,';');
+            $str_hasil = rtrim($str_hasil, ';');
 
             $data       = [
                 'id'    => $str_id,
