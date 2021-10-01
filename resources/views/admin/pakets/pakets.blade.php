@@ -189,7 +189,7 @@
                                                     </td>
                                                     <td>
                                                         <div class="row">
-                                                            <div class="col-sm-3">
+                                                            <div class="col-sm-2">
                                                                 <strong>Rp.</strong>
                                                             </div>
                                                             <div class="col-sm">
