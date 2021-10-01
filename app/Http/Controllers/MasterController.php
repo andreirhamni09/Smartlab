@@ -452,9 +452,35 @@ class MasterController extends Controller
     public static function GetAktivitas(){
         $getaktivitas = app('App\Http\Controllers\ApiController')->GetAktivitas();
         $getaktivitas = json_decode($getaktivitas, true);      
+        $aktivitas    = array();
+        if($getaktivitas['success'] == 1){
+            $aktivitas = [
+                'id'            => explode('-', $getaktivitas['id']),
+                'aktivitas'     => explode('-', $getaktivitas['aktivitas']),
+                'groups_id'     => explode('-', $getaktivitas['groups_id'])
+            ];
+        }
+        else{
+            $aktivitas = array();
+        }
 
-        $halamans =app('App\Http\Controllers\MasterController')->GetHal();
-        return view('admin.aktivitas.aktivitas', ['aktivitas' => $getaktivitas, 'halamans' => $halamans]);
+        $getgroupaktivitas  = app('App\Http\Controllers\ApiController')->GetGroupAktivitas();
+        $getgroupaktivitas  = json_decode($getgroupaktivitas, true);  
+        $groupaktivitas     = array();
+        if($getgroupaktivitas['success'] == 1){
+            $groupaktivitas = [
+                'id'        => explode('-', $getgroupaktivitas['id']),
+                'group'     => explode('-', $getgroupaktivitas['group'])
+            ];
+        }
+        else{
+            $groupaktivitas     = array();
+        }
+        
+        $halamans = app('App\Http\Controllers\MasterController')->GetHal();
+        return view('admin.aktivitas.aktivitas', ['aktivitas'       => $aktivitas, 
+                                                  'groupaktivitas'  => $groupaktivitas,
+                                                  'halamans'        => $halamans]);
     }
 
     #INSERT AKTIVITAS
@@ -739,8 +765,7 @@ class MasterController extends Controller
         $groupaktivitas = json_decode($groupaktivitas, true);
         
 
-        $halamans           = app('App\Http\Controllers\ApiController')->GetHalamans(); 
-        $halamans           = json_decode($halamans, true);
+        $halamans           = app('App\Http\Controllers\MasterController')->GetHal(); 
 
         $arr_groupaktivitas = '';
         if($groupaktivitas['success'] == 0)
@@ -753,7 +778,9 @@ class MasterController extends Controller
                 'group' => explode('-', $groupaktivitas['group'])
             ];
         }
-        return view('admin.groupaktivitas.groupaktivitas', ['arrgroupaktivitas' => $arr_groupaktivitas, 'groupaktivitas' => $groupaktivitas, 'halamans' => $halamans]);
+        return view('admin.groupaktivitas.groupaktivitas', ['arrgroupaktivitas' => $arr_groupaktivitas, 
+                                                            'groupaktivitas' => $groupaktivitas, 
+                                                            'halamans' => $halamans]);
     }
 
     public static function AjaxTest(){

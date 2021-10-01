@@ -46,6 +46,22 @@
                                         </div>
                                         <div class="col-sm">
                                             <div class="form-group">
+                                                <label>Group</label>
+                                                @if(empty($groupaktivitas))
+                                                <a href="groupaktivitas" class="form-control btn btn-primary">
+                                                    <abbr title="INSERT GROUP AKTIVITAS"><i class="fas fa-plus"></i></abbr> 
+                                                </a>
+                                                @else
+                                                    <select class="form-control" name="groups_id">
+                                                    @for($i = 0; $i < count($groupaktivitas['id']); $i++)
+                                                        <option value="{{ $groupaktivitas['id'][$i] }}">{{ $groupaktivitas['group'][$i] }}</option>
+                                                    @endfor
+                                                    </select>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-group">
                                                 <label>Submit</label>
                                                 <input type="submit" class="form-control btn btn-primary" value="TAMBAHKAN">
                                             </div>
@@ -76,6 +92,7 @@
                                         <tr>
                                             <th class="hijau">NO</th>
                                             <th class="biru">AKTIVITAS</th>
+                                            <th class="biru">GROUP</th>
                                             <th class="biru">ACTION</th>
                                         </tr>
                                     </thead>
@@ -86,29 +103,37 @@
                                                 <td colspan="9">BELUM ADA PELANGGAN YANG DIINSERTKAN</td>
                                             </tr>
                                         @else
-                                            <?php
-                                                $arr_aktivitas_id       = explode('-', $aktivitas['id']);
-                                                $arr_aktivitas_akt      = explode('-', $aktivitas['aktivitas']);
-                                                $no_aktivitas           = 1;
-                                            ?>
-                                            @for($i = 0; $i < count($arr_aktivitas_id); $i++)
+                                            <?php $no_aktivitas = 1;  ?>
+                                            @for($i = 0; $i < count($aktivitas['id']); $i++)
                                                 <form action="{{ url('admin/updateaktivitas') }}" method="POST">
                                                 {{ csrf_field() }}
                                                     <tr>
-                                                        <input type="hidden" name="id" value="{{ $arr_aktivitas_id[$i] }}">
+                                                        <input type="hidden" name="id" value="{{ $aktivitas['id'][$i] }}">
                                                         <td>{{ $no_aktivitas }}</td>
-                                                        <td><input type="text" class="form-control" name="aktivitas" value="{{ $arr_aktivitas_akt[$i] }}"></td>
-                                                        
                                                         <td>
-                                                            <button type="submit" class="btn btn-success">UPDATE</button>
-                                                            <a href="deleteaktivitas/{{$arr_aktivitas_id[$i]}}" class="btn btn-danger">DELETE</a>
+                                                            <input type="text" class="form-control" name="aktivitas" value="{{ $aktivitas['aktivitas'][$i] }}"></td>
+                                                        <td>
+                                                            <select class="form-control" name="groups_id">
+                                                                @for($j = 0; $j < count($groupaktivitas['id']); $j++)
+                                                                    @if($groupaktivitas['id'][$j] == $aktivitas['groups_id'][$i])
+                                                                        <option selected value="{{ $groupaktivitas['id'][$j] }}">{{ $groupaktivitas['group'][$j] }}</option>
+                                                                    @else
+                                                                        <option value="{{ $groupaktivitas['id'][$j] }}">{{ $groupaktivitas['group'][$j] }}</option>
+                                                                    @endif
+                                                                @endfor
+                                                            </select>                                                
+                                                        </td>
+                                                        <td>
+                                                            <button type="submit" class="btn btn-success">
+                                                                <abbr title="UPDATE"><i class="fas fa-redo"></i></abbr>
+                                                            </button>
+                                                            <a href="deleteaktivitas/{{$aktivitas['id'][$i]}}" class="btn btn-danger">
+                                                                <abbr title="DELETE"><i class="fas fa-trash"></i></abbr>
+                                                            </a>
                                                         </td>
                                                     </tr>
                                                 </form>
-
-                                                <?php
-                                                  $no_aktivitas++;  
-                                                ?>
+                                                <?php $no_aktivitas++;?>                                                
                                             @endfor
                                         @endif
                                         <!-- UPDATE DATA USER LAB -->

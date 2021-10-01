@@ -2873,6 +2873,7 @@ class ApiController extends Controller
             $aktivitas          = json_decode(json_encode($aktivitas), true);
 
             $str_aktivitas_id   = '';
+            $str_groups_id      = '';
             $str_aktivitas      = '';
 
             if (count($aktivitas) < 1) {
@@ -2881,18 +2882,23 @@ class ApiController extends Controller
             } else if (count($aktivitas) > 0) {
                 $str_aktivitas_id           = '';
                 $str_aktivitas              = '';
+                $str_groups_id              = '';
 
                 foreach ($aktivitas as $value) {
                     $str_aktivitas_id         .= $value['id'] . '-';
                     $str_aktivitas            .= $value['aktivitas'] . '-';
+                    $str_groups_id            .= $value['groups_id'] . '-';
                 }
 
                 $str_aktivitas_id             = substr($str_aktivitas_id, 0, -1);
                 $str_aktivitas                = substr($str_aktivitas, 0, -1);
+                $str_groups_id                = substr($str_groups_id, 0, -1);
 
                 $response->id                 = $str_aktivitas_id;
                 $response->aktivitas          = $str_aktivitas;
+                $response->groups_id          = $str_groups_id;
                 $response->success            = 1;
+                $response->message            = 'BERIKUT LIST AKTIVITAS';
             }
         } catch (Exception $e) {
             $response->success      = 0;
@@ -2909,11 +2915,14 @@ class ApiController extends Controller
         $response   = new usr();
         $rules      = [
             'aktivitas'            => 'required|string|min:2|max:75',
+            'groups_id'            => 'required|exists:group_aktivitas,id'
         ];
         $messages   = [
             'aktivitas.required'               => 'AKTIVITAS WAJIB DIISI',
             'aktivitas.min'                    => 'AKTIVITAS WAJIB DIISI DENGAN HURUF MINIMAL 2 KARAKTER',
             'aktivitas.max'                    => 'AKTIVITAS WAJIB DIISI DENGAN HURUF MAKSIMAL 75 KARAKTER',
+            'groups_id.required'               => 'GROUP WAJIB DIISI',
+            'groups_id.exists'                 => 'GROUP TIDAK DITEMUKAN',
         ];
         $validator = Validator::make($request->all(), $rules, $messages);
 
@@ -2924,7 +2933,8 @@ class ApiController extends Controller
             try {
                 DB::table('aktivitas')
                     ->insert([
-                        'aktivitas' => $request->aktivitas
+                        'aktivitas' => $request->aktivitas,
+                        'groups_id' => $request->groups_id
                     ]);
                 $response->success = 1;
                 $response->message = 'AKTIVITAS BARU BERHASIL DITAMBAHKAN';
