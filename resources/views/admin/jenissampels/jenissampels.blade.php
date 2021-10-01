@@ -92,28 +92,25 @@
                                             </tr>
                                         @else
                                             <?php
-                                                $arr_jenissampels_id            = explode('-', $jenissampels['id']);
-                                                $arr_jenissampels_jen           = explode('-', $jenissampels['jenis_sampel']);
-                                                $arr_jenissampels_lambang       = explode('-', $jenissampels['lambang_sampel']);
                                                 $no_jenissampels              = 1;
                                             ?>            
-                                            @for($i = 0; $i < count($arr_jenissampels_id); $i++)                                  
+                                            @for($i = 0; $i < count($jenissampels['id']); $i++)                                  
                                                 <form action="{{ url('admin/updatejenissampels')}}" method="post" >
                                                     {{ csrf_field() }}    
-                                                    <input type="hidden" name="uid" value="{{ $arr_jenissampels_id[$i] }}">        
+                                                    <input type="hidden" name="uid" value="{{ $jenissampels['id'][$i] }}">        
                                                     <tr>
                                                         <td>
                                                             {{ $no_jenissampels }}
                                                         </td>
                                                         <td>
-                                                            <input type="text" class="form-control"  name="ujenissampels" value="{{ $arr_jenissampels_jen[$i] }}">
+                                                            <input type="text" class="form-control"  name="ujenissampels" value="{{ $jenissampels['jenis_sampel'][$i] }}">
                                                         </td>
                                                         <td>
-                                                            <input type="text" class="form-control" name="ulambangsampels" value="{{ $arr_jenissampels_lambang[$i] }}" >
+                                                            <input type="text" class="form-control" name="ulambangsampels" value="{{ $jenissampels['lambang_sampel'][$i] }}" >
                                                         </td>
                                                         <td>
                                                             <button type="submit" class="btn btn-success" name="update">UPDATE</button>
-                                                            <a href="deletejenissampels/{{$arr_jenissampels_id[$i]}}" class="btn btn-danger">DELETE</a>
+                                                            <a href="deletejenissampels/{{$jenissampels['id'][$i]}}" class="btn btn-danger">DELETE</a>
                                                         </td>
                                                     </tr>                               
                                                 </form>

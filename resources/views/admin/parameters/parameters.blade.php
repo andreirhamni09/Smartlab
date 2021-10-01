@@ -92,22 +92,19 @@
                                             </tr>
                                         @else
                                             <?php
-                                                $arr_parameters_id          = explode('-', $parameters['id']);
-                                                $arr_parameters_simbol      = explode('-', $parameters['simbol']);
-                                                $arr_parameters_nama_unsur  = explode('-', $parameters['nama_unsur']);
                                                 $no_parameters              = 1;
                                             ?>
-                                            @for($i = 0; $i < count($arr_parameters_id); $i++)                                                
+                                            @for($i = 0; $i < count($parameters['id']); $i++)                                                
                                                 <form action="{{ url('admin/updateparameters')}}" method="post" >
                                                     {{ csrf_field() }}
-                                                    <input type="hidden" name="id" class="form-control" value="{{ $arr_parameters_id[$i] }}" placeholder="{{ $arr_parameters_id[$i] }}">
+                                                    <input type="hidden" name="id" class="form-control" value="{{ $parameters['id'][$i] }}" placeholder="{{ $parameters['id'][$i] }}">
                                                     <tr>
                                                         <td>{{ $no_parameters }}</td>
-                                                        <td><input name="simbol" class="form-control" value="{{ $arr_parameters_simbol[$i] }}" placeholder="{{ $arr_parameters_simbol[$i] }}" required></td>
-                                                        <td><input name="nama_unsur" class="form-control" value="{{ $arr_parameters_nama_unsur[$i] }}" placeholder="{{ $arr_parameters_nama_unsur[$i] }}" required></td>
+                                                        <td><input name="simbol" class="form-control" value="{{ $parameters['simbol'][$i] }}" placeholder="{{ $parameters['simbol'][$i] }}" required></td>
+                                                        <td><input name="nama_unsur" class="form-control" value="{{ $parameters['nama_unsur'][$i] }}" required></td>
                                                         <td>
                                                             <button class="btn btn-success" type="submit" name="update"><abbr title="UPDATE"><i class="fas fa-redo"></i></abbr></button>
-                                                            <a href="deleteparameters/{{$arr_parameters_id[$i]}}" value="add" class="btn btn-danger"><abbr title="DELETE"><i class="fas fa-trash"></i></abbr></a>
+                                                            <a href="deleteparameters/{{$parameters['id'][$i]}}" value="add" class="btn btn-danger"><abbr title="DELETE"><i class="fas fa-trash"></i></abbr></a>
                                                         </td>
                                                     </tr>
                                                 </form>

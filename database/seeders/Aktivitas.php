@@ -16,19 +16,24 @@ class Aktivitas extends Seeder
     {
         DB::table('aktivitas')->insert(array(
             array(
-                'aktivitas'     => 'registrasi_sampel'
+                'aktivitas'     => 'registrasi_sampel',
+                'groups_id'     => 1
             ),
             array(
-                'aktivitas'     => 'verifikasi_lab'
+                'aktivitas'     => 'verifikasi_lab',
+                'groups_id'     => 1
             ),
             array(
-                'aktivitas'     => 'verifikasi_pelanggan'
+                'aktivitas'     => 'verifikasi_pelanggan',
+                'groups_id'     => 1
             ),
             array(
-                'aktivitas'     => 'oven'
+                'aktivitas'     => 'oven',
+                'groups_id'     => 2
             ),
             array(
-                'aktivitas'     => 'preparasi'
+                'aktivitas'     => 'preparasi',
+                'groups_id'     => 3
             ),
         )); 
     }

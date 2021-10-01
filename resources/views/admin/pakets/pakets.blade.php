@@ -40,36 +40,58 @@
                                     <div class="row">
                                         <div class="col-sm-2">
                                             <div class="form-group">
-                                                <label>Simbol</label>
-                                                <select name="jenis_sampels_id" class="form-control">                                                    
-                                                    @foreach($jenissampels as $jen)
-                                                        <option value="{{ $jen['id'] }}">{{ strtoupper($jen['jenis_sampel']) }}</option>
-                                                    @endforeach
-                                                </select>
+                                                <label>Jenis Sampel</label>
+                                                @if(!empty($jenissampels))
+                                                    <select name="jenis_sampels_id" class="form-control">                                                    
+                                                        <?php for($i = 0; $i < count($jenissampels['id']); $i++):?>
+                                                            <option value="{{ $jenissampels['id'][$i] }}">{{ strtoupper($jenissampels['jenis_sampel'][$i]) }}</option>                                                        
+                                                        <?php endfor;?>
+                                                    </select>
+                                                @else
+                                                    <a href="{{ url('admin/jenissampels') }}" class="btn btn-primary form-control"><abbr title="TAMBAHKAN JENIS SAMPEL"><i class="fas fa-plus"></i></abbr></a>
+                                                @endif
                                             </div>
                                         </div>
-                                        <div class="col-sm-3">                                            
+                                        <div class="col-sm-2">                                            
                                             <div class="form-group">
                                                 <label>Paket</label>
                                                 <input type="text" name="paket" class="form-control" placeholder="Paket ...">
                                             </div>
                                         </div>
-                                        <div class="col-sm-3">                                            
+                                        <div class="col-sm-2">                                            
                                             <div class="form-group">
-                                                <label>Parameter ID</label> 
-                                                <select name="parameters_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH PARAMETERS --" style="width: 100%;">
-                                                    @foreach($parameters as $par)
-                                                        <option value="{{ $par['id'] }}">{{ strtoupper($par['nama_unsur']) }}</option>                                                        
-                                                    @endforeach
-                                                </select>
+                                                <label>Parameter</label> 
+                                                @if(!empty($parameters))                                                    
+                                                    <select name="parameters_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH PARAMETERS --" style="width: 100%;">
+                                                        @for($i = 0; $i < count($parameters['id']); $i++)
+                                                            <option value="{{ $parameters['id'][$i] }}">{{ $parameters['simbol'][$i] }}</option>
+                                                        @endfor
+                                                    </select>
+                                                @else
+                                                    <a href="{{ url('admin/parameters') }}" class="btn btn-primary form-control"><abbr title="TAMBAHKAN JENIS SAMPEL"><i class="fas fa-plus"></i></abbr></a>
+                                                @endif
                                             </div>
                                         </div>
-                                        <div class="col-sm">                                            
+                                        <div class="col-sm-2">                                            
+                                            <div class="form-group">
+                                                <label>Metode</label> 
+                                                @if(!empty($metodes))                                                    
+                                                    <select name="metodes_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH METODE --" style="width: 100%;">
+                                                        @for($i = 0; $i < count($metodes['id']); $i++)
+                                                            <option value="{{ $metodes['id'][$i] }}">{{ $metodes['metode'][$i] }}</option>
+                                                        @endfor
+                                                    </select>
+                                                @else
+                                                    <a href="{{ url('admin/metodes') }}" class="btn btn-primary form-control"><abbr title="TAMBAHKAN JENIS SAMPEL"><i class="fas fa-plus"></i></abbr></a>
+                                                @endif                                                
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">                                            
                                             <div class="form-group">
                                                 <label>Harga (Rp.)</label>
                                                 <div class="row">
                                                     <div class="col-sm-2">
-                                                        <label for="">Rp.</label>
+                                                        <label for="" class="float-sm-right">Rp.</label>
                                                     </div>                                                    
                                                     <div class="col-sm-10">
                                                         <input type="text" id="rupiah" name="harga" class="form-control" placeholder="Harga ...">
@@ -80,7 +102,7 @@
                                         <div class="col-sm-2">
                                             <div class="form-group">
                                                 <label>Submit</label>
-                                                <button name="action" value="add" class="form-control btn btn-primary">TAMBAHKAN</button>
+                                                <button name="action" value="add" class="form-control btn btn-primary"><abbr title="TAMBAHKAN"><i class="fas fa-plus"></i></abbr></button>
                                             </div>
                                         </div>
                                     </div>
@@ -102,82 +124,85 @@
                         </div>            
                         
                         <div class="card-body table-responsive">
-                            <div style="width:70%; margin-left: auto; margin-right: auto;">
+                            <div style="width:100%; margin-left: auto; margin-right: auto;">
                                 <table class="table table-bordered table-hover text-center">
                                     <thead>
                                         <tr>
-                                            <th class="hijau" style="width:15%;">NO</th>
-                                            <th class="biru"  style="width: 20%;">JENIS SAMPEL</th>
-                                            <th class="biru"  style="width: 22.5%;">PAKET</th>
-                                            <th class="biru"  style="width: 22.5%;">PARAMETER</th>
-                                            <th class="biru"  style="width: 22.5%;">HARGA</th>
-                                            <th class="biru"  style="width: 20%;">ACTION</th>
+                                            <th class="hijau" style="width:5%;">NO</th>
+                                            <th class="biru"  style="width: 15%;">JENIS SAMPEL</th>
+                                            <th class="biru"  style="width: 15%;">PAKET</th>
+                                            <th class="biru"  style="width: 15%;">PARAMETER</th>
+                                            <th class="biru"  style="width: 15%;">METODE</th>
+                                            <th class="biru"  style="width: 17.5%;">HARGA</th>
+                                            <th class="biru"  style="width: 13.5%;">ACTION</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @if(empty($pakets))
                                             <tr>
-                                                <td colspan="5"><h4>BELUM ADA DATA YANG DIINPUTKAN</h4></td>
+                                                <td colspan="7"><h4>BELUM ADA DATA YANG DIINPUTKAN</h4></td>
                                             </tr>
                                         @else
                                             <?php
-                                                $arr_pakets_id                  = explode('-', $pakets['id']);
-                                                $arr_pakets_jenis_sampels_id    = explode('-', $pakets['jenis_sampels_id']);
-                                                $arr_pakets_jenis_sampel        = explode('-', $pakets['jenis_sampel']);
-                                                $arr_pakets_paket               = explode('-', $pakets['paket']);
-
-                                                $arr_pakets_parameters_id_s     = explode(';', $pakets['parameters_id_s']);
-                                                $arr_pakets_parameters          = array();
-
-                                                $arr_pakets_harga               = explode('-', $pakets['harga']);
                                                 $no_pakets                      = 1;
                                             ?>
-                                            @for($i = 0; $i < count($arr_pakets_id); $i++)                                                
-                                                <form action="{{ url('admin/updatepakets')}}" method="post" >
-                                                    {{ csrf_field() }}
-                                                    <input type="hidden" name="id" class="form-control" value="{{ $arr_pakets_id[$i] }}" placeholder="{{ $arr_pakets_id[$i] }}">
-                                                    <tr>
-                                                        <td>{{ $no_pakets }}</td>
-                                                        <td>
-                                                            <select name="jenis_sampels_id" class="form-control" data-placeholder="-- PILIH JENIS SAMPELS --">
-                                                                <option value="{{ $arr_pakets_jenis_sampels_id[$i] }}" selected>{{ strtoupper($arr_pakets_jenis_sampel[$i]) }}</option>
-                                                                @foreach($jenissampels as $jen)
-                                                                    <option value="{{ $jen['id'] }}">{{ strtoupper($jen['jenis_sampel']) }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </td>
-                                                            
-                                                        <td>
-                                                            <input type="text" name="paket" class="form-control" value="{{ $arr_pakets_paket[$i] }}">
-                                                        </td>
-
-                                                        <td>
-                                                        <select name="parameters_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH PARAMETERS --" style="width: 100%;">
-                                                            @foreach($parameters as $par)
-                                                                <?php if(in_array($par['id'], $arr_paket_par[$i]['id'])):?>
-                                                                    <option value="{{ $par['id'] }}" selected>{{ strtoupper($par['nama_unsur']) }}</option>
-                                                                <?php else:?>
-                                                                    <option value="{{ $par['id'] }}">{{ strtoupper($par['nama_unsur']) }}</option>
-                                                                <?php endif;?>
-                                                            @endforeach
+                                            @for($i = 0; $i < count($pakets['id']); $i++)
+                                            <form action="{{ url('admin/updatepakets') }}" method="post">            
+                                                <tr>
+                                                    <input type="hidden" name="id" value="{{ $pakets['id'][$i] }}">
+                                                    <td>{{ $no_pakets }}</td>
+                                                    <td>
+                                                        <select name="jenis_sampels_id" id="" class="form-control">
+                                                        @for($j = 0; $j < count($jenissampels['id']); $j++)
+                                                            @if($pakets['jenis_sampels_id'][$i] == $jenissampels['id'][$j])
+                                                                <option selected value="{{ $jenissampels['id'][$j] }}">{{ strtoupper($jenissampels['jenis_sampel'][$j]) }}</option>
+                                                            @else
+                                                                <option value="{{ $jenissampels['id'][$j] }}">{{ strtoupper($jenissampels['jenis_sampel'][$j]) }}</option>
+                                                            @endif
+                                                        @endfor    
                                                         </select>
-                                                        </td>
-                                                        <td>
-                                                            <div class="row">
-                                                                <div class="col-sm-2">
-                                                                    <label for="">Rp.</label>
-                                                                </div>                                                    
-                                                                <div class="col-sm-10">
-                                                                    <input class="form-control harga" type="text" name="harga" value="{{ $arr_pakets_harga[$i] }}">
-                                                                </div>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" name="paket" value="{{ $pakets['paket'][$i] }}">
+                                                    </td>
+                                                    <td>
+                                                        <select name="parameters_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH PARAMETERS --" style="width: 100%;">
+                                                            @for($j = 0; $j < count($parameters['id']); $j++)
+                                                                @if(in_array($parameters['id'][$j], explode('-', $pakets['parameters_id_s'][$i])))
+                                                                    <option value="{{ $parameters['id'][$j] }}" selected>{{ $parameters['simbol'][$j] }}</option>
+                                                                @else
+                                                                    <option value="{{ $parameters['id'][$j] }}">{{ $parameters['simbol'][$j] }}</option>
+                                                                @endif
+                                                            @endfor
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <select name="metodes_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH METODE --" style="width: 100%;">
+                                                            @for($j = 0; $j < count($metodes['id']); $j++)
+                                                                @if(in_array($metodes['id'][$j], explode('-', $pakets['metodes_id_s'][$i])))
+                                                                    <option selected value="{{ $metodes['id'][$j] }}">{{ $metodes['metode'][$j] }}</option>
+                                                                @else
+                                                                    <option value="{{ $metodes['id'][$j] }}">{{ $metodes['metode'][$j] }}</option>
+                                                                @endif
+                                                            @endfor
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <div class="row">
+                                                            <div class="col-sm-3">
+                                                                <strong>Rp.</strong>
                                                             </div>
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-primary" type="submit" name="update">UPDATE</button>
-                                                            <a href="deletepakets/{{$arr_pakets_id[$i]}}" value="add" class="btn btn-danger">DELETE</a>
-                                                        </td>
-                                                    </tr>
-                                                </form>
+                                                            <div class="col-sm">
+                                                                <input value="{{ $pakets['harga'][$i] }}" class="form-control harga" type="text" name="harga">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <button type="submit" class="btn btn-success"><abbr title="UPDATE"><i class="fas fa-redo"></i></abbr></button>
+                                                        <a href="" class="btn btn-danger"><abbr title="DELETE"><i class="fas fa-trash"></i></abbr></a>
+                                                    </td>
+                                                </tr>
+                                            </form>          
                                             <?php $no_pakets++; ?>
                                             @endfor
                                         @endif

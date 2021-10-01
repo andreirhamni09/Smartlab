@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\DataSampel;
 use App\Models\HasilAnalisa;
 use App\Models\LabAkun;
+use Illuminate\Bus\Batch;
 use SebastianBergmann\Exporter\Exporter;
 
 class usr
@@ -25,7 +26,7 @@ class usr
 class ApiController extends Controller
 {
 
-    #1 - 4 PARAMETERS
+#1 - 4 PARAMETERS
     #1. GET PARAMETERS
     /**
      * @OA\Get(
@@ -371,9 +372,9 @@ class ApiController extends Controller
     }
     #4. DELETE PARAMETERS
 
-    #1 - 4 PARAMETERS
+#1 - 4 PARAMETERS
 
-    #5 AKSES LEVEL
+#5 AKSES LEVEL
     #5. GET AKSES LEVEL
     /**
      * @OA\Get(
@@ -577,9 +578,9 @@ class ApiController extends Controller
         return json_encode($response);
     }
     #5. GET AKSES LEVEL
-    #5 AKSES LEVEL
+#5 AKSES LEVEL
 
-    #6 JENIS SAMPEL
+#6 JENIS SAMPEL
     #6. GET JENIS SAMPELS
     /**
      * @OA\Get(
@@ -637,6 +638,7 @@ class ApiController extends Controller
         }
         return json_encode($response);
     }
+
     #INSERT JENIS SAMPELS
     public static function InsertJenisSampels(Request $request)
     {
@@ -749,9 +751,9 @@ class ApiController extends Controller
     }
     #DELETE JENIS SAMPELS
     #6. GET JENIS SAMPELS
-    #6 JENIS SAMPEL
+#6 JENIS SAMPEL
 
-    #7 METODES
+#7 METODES
     #7. GET METODES
     /**
      * @OA\Get(
@@ -929,9 +931,9 @@ class ApiController extends Controller
         return json_encode($response);
     }
     #DELETE METODES
-    #7 METODES
+#7 METODES
 
-    #8 HALAMANS
+#8 HALAMANS
     #8. GET HALAMANS
     /**
      * @OA\Get(
@@ -1108,9 +1110,9 @@ class ApiController extends Controller
         return json_encode($response);
     }
     #DELETE HALAMANS
-    #8 HALAMANS
+#8 HALAMANS
 
-    #9 - 10 DETAIL TRACKING
+#9 - 10 DETAIL TRACKING
     #9. GET DETAIL TRACKING
     /**
      * @OA\Get(
@@ -1331,9 +1333,9 @@ class ApiController extends Controller
         return json_encode($response);
     }
     #10. INSERT DETAIL TRACKING
-    #9 - 10 DETAIL TRACKING
+#9 - 10 DETAIL TRACKING
 
-    #11 - 14 DATA SAMPELS
+#11 - 14 DATA SAMPELS
     #11. GET DATA SAMPELS ALL
     /**
      * @OA\Get(
@@ -1367,22 +1369,17 @@ class ApiController extends Controller
         $getdatasampelsall      = json_decode(json_encode($getdatasampelsall), true);
 
         #DATA SAMPELS
-        $s_id                   = '';
-        $s_pakets_id_s        = '';
-        $s_tanggal_masuk  = '';
-        $s_tanggal_selesai  = '';
-        $s_nomor_surat          = '';
-        $s_jumlah_sampel      = '';
-        $s_status         = '';
-
+        $s_id                   = ''; $s_pakets_id_s        = ''; $s_tanggal_masuk  = ''; $s_tanggal_selesai  = ''; 
+        $s_nomor_surat          = ''; $s_jumlah_sampel      = ''; $s_status         = '';
+        $s_catatan_userlabs     = '';
         #PELANGGANS
         $s_pelanggans_id        = '';
         $s_pelanggans_nama    = '';
 
         #JENIS SAMPELS
-        $s_jenis_sampels_id     = '';
-        $s_jenis_sampel       = '';
-        if (empty($getdatasampelsall)) {
+        $s_jenis_sampels_id     = ''; $s_jenis_sampel       = ''; $s_ketersediaan_alat = '';
+        if(empty($getdatasampelsall))
+        {
             $response->success = 0;
             $response->message = 'DATA SAMPEL MASIH KOSONG';
         } else {
@@ -1395,43 +1392,51 @@ class ApiController extends Controller
                     $date       = date_create($value['tanggal_masuk']);
                     $waktu      = date_format($date, 'H:i:s d-m-Y');
 
-                    $s_tanggal_masuk    .= str_replace('-', '/', $waktu) . '-';
-                    $s_tanggal_selesai  .= $value['tanggal_selesai'] . '-';
-                    $s_nomor_surat      .= $value['nomor_surat'] . '-';
-                    $s_jumlah_sampel    .= $value['jumlah_sampel'] . '-';
-                    $s_status           .= $value['status'] . '-';
+                    $s_tanggal_masuk    .= str_replace('-', '/', $waktu).'-'; 
+                    $s_tanggal_selesai  .= $value['tanggal_selesai'].'-'; 
+                    $s_nomor_surat      .= $value['nomor_surat'].'-'; 
+                    $s_jumlah_sampel    .= $value['jumlah_sampel'].'-';
+                    $s_catatan_userlabs .= $value['catatan_userlabs'].'-'; 
+                    $s_status           .= $value['status'].'-';
 
                     #PELANGGANS
                     $s_pelanggans_id    .= $value['pelanggans_id'] . '-';
                     $s_pelanggans_nama  .= $value['pelanggan'] . '-';
 
                     #JENIS SAMPELS
-                    $s_jenis_sampels_id .= $value['jenis_sampels_id'] . '-';
-                    $s_jenis_sampel     .= $value['jenis_sampel'] . '-';
+                    $s_jenis_sampels_id .= $value['jenis_sampels_id'].'-'; 
+                    $s_jenis_sampel     .= $value['jenis_sampel'].'-';
+
+                    $s_ketersediaan_alat .= $value['ketersedian_alats_id'].'-';
                 }
 
                 #DATA SAMPELS
                 $response->id               = substr($s_id, 0, -1);
-                $response->pakets_id_s      = substr($s_pakets_id_s, 0, -1);
-                $response->tanggal_masuk    = substr($s_tanggal_masuk, 0, -1);
-                $response->tanggal_selesai  = substr($s_tanggal_selesai, 0, -1);
-                $response->nomor_surat      = substr($s_nomor_surat, 0, -1);
-                $response->jumlah_sampel    = substr($s_jumlah_sampel, 0, -1);
+                $response->pakets_id_s      = substr($s_pakets_id_s, 0, -1); 
+                $response->tanggal_masuk    = substr($s_tanggal_masuk, 0, -1); 
+                $response->tanggal_selesai  = substr($s_tanggal_selesai, 0, -1); 
+                $response->nomor_surat      = substr($s_nomor_surat, 0, -1); 
+                $response->jumlah_sampel    = substr($s_jumlah_sampel, 0, -1); 
+                $response->catatan_userlabs = substr($s_catatan_userlabs, 0, -1); 
                 $response->status           = substr($s_status, 0, -1);
 
                 #PELANGGANS
-                $response->pelanggans_id    = substr($s_pelanggans_id, 0, -1);
-                $response->pelanggans_nama  = substr($s_pelanggans_nama, 0, -1);
+                $response->pelanggans_id    = substr($s_pelanggans_id, 0, -1); 
+                $response->pelanggans       = substr($s_pelanggans_nama, 0, -1);
 
                 #JENIS SAMPELS
-                $response->jenis_sampels_id = substr($s_jenis_sampels_id, 0, -1);
-                $response->jenis_sampel     = substr($s_jenis_sampel, 0, -1);
+                $response->jenis_sampels_id     = substr($s_jenis_sampels_id, 0, -1); 
+                $response->jenis_sampel         = substr($s_jenis_sampel, 0, -1);
+                $response->ketersediaan_alat    = substr($s_ketersediaan_alat, 0, -1);
+                $response->success = 1;
+                $response->message = 'BERIKUT LIST DATA SAMPELS';
+
             } catch (Exception $e) {
                 $response->success = 0;
                 $response->message = $e->getMessage();
             }
         }
-        die(json_encode($response));
+        return json_encode($response);
     }
 
     #12. GET DATA SAMPELS BY ID
@@ -1549,14 +1554,14 @@ class ApiController extends Controller
                 $response->message = $e->getMessage();
             }
         }
-        die(json_encode($response));
+        return json_encode($response);
     }
     #12. GET DATA SAMPELS BY ID
 
     #13. INSERT DATA SAMPELS
     /**
      * @OA\Post(
-     *      path="/insertdatasampels/{jenis_sampels_id}/{pelanggans_id}/{pakets_id_s}/{tanggal_masuk}/{tanggal_selesai}/{nomor_surat}/{jumlah_sampel}/{status}",
+     *      path="/insertdatasampels/{jenis_sampels_id}/{pelanggans_id}/{pakets_id_s}/{tanggal_masuk}/{tanggal_selesai}/{nomor_surat}/{jumlah_sampel}/{status}/{batch_size}/{ketersediaan_alat}/{catatan_userlabs}",
      *      operationId="getProjectsList",
      *      tags={"13. Insert Data Sampel"},
      *      summary="Menginputkan Data Kupa Baru",
@@ -1636,6 +1641,33 @@ class ApiController extends Controller
      *      @OA\Parameter(
      *          name="status",
      *          description="STATUS",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="batch_size",
+     *          description="BATCH SIZE",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="ketersediaan_alat",
+     *          description="KETERSEDIAN ALAT",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="catatan_userlabs",
+     *          description="CATATAN USERLAB",
      *          required=true,
      *          in="path",
      *          @OA\Schema(
@@ -1744,7 +1776,6 @@ class ApiController extends Controller
             'tanggal_selesai'   => $s_tanggal_selesai,
             'nomor_surat'       => $s_nomor_surat,
             'jumlah_sampel'     => $s_jumlah_sampel,
-            'status'            => $s_status,
             'batch_size'        => $s_batch_size,
             'ketersediaan_alat' => $s_ketersediaan_alat,
             'catatan_userlabs'  => $s_catatan_userlabs
@@ -1754,14 +1785,13 @@ class ApiController extends Controller
             'jenis_sampels_id'  => 'required|exists:jenis_sampels,id',
             'pelanggans_id'     => 'required|exists:pelanggans,id',
             'pakets_id_s'       => 'required|string|min:1',
-            'tanggal_masuk'     => 'required|date|after:today',
+            'tanggal_masuk'     => 'required|date|after:yesterday',
             'tanggal_selesai'   => 'required|numeric|min:1',
             'nomor_surat'       => 'required|string|min:1',
             'jumlah_sampel'     => 'required|numeric|min:1',
-            'status'            => 'required',
             'batch_size'        => 'required|string|min:1|max:30',
             'ketersediaan_alat' => 'required|numeric|min:0|max:1',
-            'catatan_userlabs'  => 'nullable|string|min:1',
+            'catatan_userlabs'  => 'nullable|string|min:1'
         ];
 
         $messages = [
@@ -1779,7 +1809,6 @@ class ApiController extends Controller
             'nomor_surat.min'               => 'MINIMAL PENGISIAN UNTUK NOMOR SURAT ADALAH 1 HURUF',
             'jumlah_sampel.required'        => 'JUMLAH SAMPEL WAJIB DIISI',
             'jumlah_sampel.min'             => 'MINIMAL PENGISIAN UNTUK JUMLAH SAMPEL ADALAH 1 BUAH',
-            'status.required'               => 'STATUS WAJIB DIISI',
             'batch_size.required'           => 'BATCH SIZE WAJIB DIISI',
             'batch_size.min'                => 'MINIMAL PENGISIAN BATCH SIZE ADALAH 1 KARAKTER',
             'batch_size.max'                => 'MAKSIMAL PENGISIAN BATCH SIZE ADALAH 30 KARAKTER',
@@ -1796,255 +1825,119 @@ class ApiController extends Controller
             $response->success = 0;
             $response->message = $validator->errors()->first();
         } else {
-            $m_data_sampels->jenis_sampels_id   = $s_jenis_sampels_id;
-            $m_data_sampels->pelanggans_id      = $s_pelanggans_id;
-            $m_data_sampels->pakets_id_s        = $s_pakets_id_s;
-            $m_data_sampels->tanggal_masuk      = $s_tanggal_masuk;
-            $m_data_sampels->tanggal_selesai    = $s_tanggal_selesai;
-            $m_data_sampels->nomor_surat        = $s_nomor_surat;
-            $m_data_sampels->jumlah_sampel      = $s_jumlah_sampel;
-            $m_data_sampels->status             = $s_status;
-            $m_data_sampels->ketersediaan_alat  = $s_ketersediaan_alat;
-            $m_data_sampels->catatan_userlabs   = $s_catatan_userlabs;
-            $m_data_sampels->catatan_pelanggan  = '';
-            try {
-                $m_data_sampels->save();
-
-                $l_hasil_analisis   = DB::table('hasil_analisas')
-                    ->where('jenis_sampels_id', '=', $m_data_sampels->jenis_sampels_id)
-                    ->orderByDesc('no_lab')->take(1)->get();
-
-                $l_hasil_analisis   = json_decode(json_encode($l_hasil_analisis), true);
-                $n                  = $l_hasil_analisis['no_lab'];
-                $t                  = date('y', strtotime($m_data_sampels->tanggal_masuk));
-                $index              = 0;
-
-                array_sum
-
-                if ($n != null) {
-                    $n == 0;
-                }
-
-                $batch      = explode(',',$s_batch_size);
-
+            $m_data_sampels->jenis_sampels_id       = $s_jenis_sampels_id;
+            $m_data_sampels->pelanggans_id          = $s_pelanggans_id;
+            $m_data_sampels->pakets_id_s            = $s_pakets_id_s;
+            $m_data_sampels->tanggal_masuk          = $s_tanggal_masuk;
+            $m_data_sampels->tanggal_selesai        = $s_tanggal_selesai;
+            $m_data_sampels->nomor_surat            = $s_nomor_surat;
+            $m_data_sampels->jumlah_sampel          = $s_jumlah_sampel;
+            $m_data_sampels->status                 = '0';
+            $m_data_sampels->ketersedian_alats_id   = $s_ketersediaan_alat;
+            $m_data_sampels->catatan_userlabs       = $s_catatan_userlabs;
+            $m_data_sampels->catatan_pelanggans     = '';
+            
+            
+            $batch      = explode(',', $s_batch_size);
+            $arr_batch  = array();                    
+            $val_batch  = 0;
+            for ($i = 0; $i < count($batch); $i++) {
+                $val_batch += (int)$batch[$i];
+                array_push($arr_batch, $val_batch);
+            }
+            if($val_batch != $s_jumlah_sampel)
+            {
+                $response->success = 0;
+                $response->message = 'JUMLAH BATCH TIDAK SAMA DENGAN JUMLAH SAMPEL'; 
+            }
+            else{
                 try {
-                    for($k = 0; $k < count($batch); $k++){
-                        $minBatch = 0;
-                        try{
-                            $minBatch = $batch[$k-1];
-                        }catch(Exception $e){
-                            $minBatch = 0;
-                        }
-                        for ($i = $n + $minBatch; $i <= $n + $batch[$k] + $minBatch; $i++) {
-                            DB::table('hasil_analisas')
-                                ->insert([
-                                    'jenis_sampels_id'  => $m_data_sampels->jenis_sampels_id,
-                                    'data_sampels_id'   => $m_data_sampels->id,
-                                    'tahun'             => $t,
-                                    'no_lab'            => $i + 1,
-                                    'kode_contoh'       => '',
-                                    'parameters_id_s'   => $m_data_sampels->pakets_id_s,
-                                    'hasil'             => '-;-;-',
-                                    'status'            => '0',
-                                    'retry'             => 0,
-                                    'batch'             => 0
-                                ]);
-                        }
+                    $m_data_sampels->save();
+
+                    $l_hasil_analisis   = DB::table('hasil_analisas')
+                        ->where('jenis_sampels_id', '=', $m_data_sampels->jenis_sampels_id)
+                        ->orderByDesc('no_lab')->take(1)->get();
+
+                    $l_hasil_analisis   = json_decode(json_encode($l_hasil_analisis), true);
+                    
+                    $n                  = 0;
+
+                    $t                  = date('y', strtotime($m_data_sampels->tanggal_masuk));
+                    $index              = 0;
+
+                    
+                    foreach ($l_hasil_analisis as $value) {
+                        if (isset($value['no_lab'])) {
+                            $n = $value['no_lab'];
+                        }               
+                        else{
+                            $n = 0;
+                        }  
                     }
-                    $status_save = 1;
-                } catch (Exception $e) {
-                    $response->success = 0;
-                    $response->message = 'GAGAL MEMASUKAN DATA : ' . $e->getMessage();
-                }
-                if ($status_save == 1) {
+                       
+                    
+                    
                     try {
-                        DB::table('detail_trackings')->insert([
-                            'aktivitas_waktu'           => date('Y-m-d H:i', strtotime('now')),
-                            'data_sampels_id'           => $m_data_sampels->id,
-                            'aktivitas_id'              => 1,
-                            'lab_akuns_id'              => 1
-                        ]);
-                        $response->success = 1;
-                        $response->message = 'BERHASIL MEMASUKAN DATA KUPA BARU';
+                        $no_batch = 0;
+                        for ($i = $n; $i < $n + array_sum($batch); $i++) {
+                            $n_b = 0;
+                            if ($i < $arr_batch[$no_batch] + $n or $i > $arr_batch[$no_batch] and $no_batch > count($arr_batch) - 1) {
+                                $n_b = $no_batch + 1;
+                            } else {
+                                $n_b = $no_batch + 2;
+                                $no_batch += 1;
+                            }
+                            DB::table('hasil_analisas')
+                            ->insert([
+                                'jenis_sampels_id'  => $m_data_sampels->jenis_sampels_id,
+                                'data_sampels_id'   => $m_data_sampels->id,
+                                'tahun'             => $t,
+                                'no_lab'            => $i + 1,
+                                'kode_contoh'       => '',
+                                'lab_akuns_id'      => '1',
+                                'parameters_id'     => $m_data_sampels->pakets_id_s,
+                                'hasil'             => '-;-;-',
+                                'status'            => '0',
+                                'log'               => '',
+                                'batch'             => $n_b,
+                                'verifikasi_hasil'  => 0
+                            ]);
+                        }
+                        $status_save = 1;
                     } catch (Exception $e) {
                         $response->success = 0;
                         $response->message = 'GAGAL MEMASUKAN DATA : ' . $e->getMessage();
                     }
+                    if ($status_save == 1) {
+                        try {
+                            DB::table('detail_trackings')->insert([
+                                'aktivitas_waktu'           => date('Y-m-d H:i', strtotime('now')),
+                                'data_sampels_id'           => $m_data_sampels->id,
+                                'aktivitas_id'              => 1,
+                                'lab_akuns_id'              => 1
+                            ]);
+                            $response->success = 1;
+                            $response->message = 'BERHASIL MEMASUKAN DATA KUPA BARU';
+                        } catch (Exception $e) {
+                            $response->success = 0;
+                            $response->message = 'GAGAL MEMASUKAN DATA : ' . $e->getMessage();
+                        }
+                    }
+
+                
+                } catch (Exception $e) {
+                    $response->success = 0;
+                    $response->message = $e->getMessage().' SALAH SATU';
                 }
-
-/* 
-                if (empty($l_hasil_analisis)) {
-                    $n = $m_data_sampels->jumlah_sampel;
-                    for ($i = 1; $i <= $n; $i++) {
-                        try {
-                            DB::table('hasil_analisas')
-                                ->insert([
-                                    'jenis_sampels_id'  => $m_data_sampels->jenis_sampels_id,
-                                    'data_sampels_id'   => $m_data_sampels->id,
-                                    'tahun'             => $t,
-                                    'no_lab'            => $i,
-                                    'kode_contoh'       => '',
-                                    'parameters_id_s'   => $m_data_sampels->pakets_id_s,
-                                    'hasil'             => '-;-;-',
-                                    'status'            => '0',
-                                    'retry'             => 0
-                                ]);
-                            $status_save = 1;
-                        } catch (Exception $e) {
-                            $response->success = 0;
-                            $response->message = 'GAGAL MEMASUKAN DATA : ' . $e->getMessage();
-                        }
-                    }
-
-                    if ($status_save == 1) {
-                        try {
-                            DB::table('detail_trackings')->insert([
-                                'aktivitas_waktu'           => date('Y-m-d H:i', strtotime('now')),
-                                'data_sampels_id'           => $m_data_sampels->id,
-                                'aktivitas_id'              => 1,
-                                'lab_akuns_id'              => 1
-                            ]);
-                            $response->success = 1;
-                            $response->message = 'BERHASIL MEMASUKAN DATA KUPA BARU';
-                        } catch (Exception $e) {
-                            $response->success = 0;
-                            $response->message = 'GAGAL MEMASUKAN DATA : ' . $e->getMessage();
-                        }
-                    }
-                } else {
-                    foreach ($l_hasil_analisis as $value) {
-                        $n  = $m_data_sampels->jumlah_sampel + (int)$value['no_lab'];
-                        $index  = (int)$value['no_lab'] + 1;
-                    }
-                    for ($i = $index; $i <= $n; $i++) {
-                        try {
-                            DB::table('hasil_analisas')
-                                ->insert([
-                                    'jenis_sampels_id'  => $m_data_sampels->jenis_sampels_id,
-                                    'data_sampels_id'   => $m_data_sampels->id,
-                                    'tahun'             => $t,
-                                    'no_lab'            => $i,
-                                    'kode_contoh'       => '',
-                                    'parameters_id_s'   => $m_data_sampels->pakets_id_s,
-                                    'hasil'             => '-;-;-',
-                                    'status'            => '0',
-                                    'retry'             => 0
-                                ]);
-                            $status_save = 1;
-                        } catch (Exception $e) {
-                            $response->success = 0;
-                            $response->message = 'GAGAL MEMASUKAN DATA : ' . $e->getMessage();
-                        }
-                    }
-                    if ($status_save == 1) {
-                        try {
-                            DB::table('detail_trackings')->insert([
-                                'aktivitas_waktu'           => date('Y-m-d H:i', strtotime('now')),
-                                'data_sampels_id'           => $m_data_sampels->id,
-                                'aktivitas_id'              => 1,
-                                'lab_akuns_id'              => 1
-                            ]);
-                            $response->success = 1;
-                            $response->message = 'BERHASIL MEMASUKAN DATA KUPA BARU';
-                        } catch (Exception $e) {
-                            $response->success = 0;
-                            $response->message = 'GAGAL MEMASUKAN DATA : ' . $e->getMessage();
-                        }
-                    }
-                } */
-            } catch (Exception $e) {
-                $response->success = 0;
-                $response->message = $e->getMessage();
             }
+            
         }
         return json_encode($response);
     }
     #13. INSERT DATA SAMPELS
+#11 - 14 DATA SAMPELS
 
-    #14. DELETE DATA SAMPELS
-    /**
-     * @OA\Get(
-     *      path="/deletedatasampels/{id}",
-     *      operationId="getProjectsList",
-     *      tags={"14. Delete Data Sampels"},
-     *      summary="Menghapus Data Kupa",
-     *      description="Menghapus Data Kupa",
-     *      @OA\Parameter(
-     *          name="id",
-     *          description="ID KUPA",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="integer",
-     *          )
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="successful operation"
-     *       ),
-     *       @OA\Response(response=400, description="Bad request"),
-     *       security={
-     *           {"api_key_security_example": {}}
-     *       }
-     *     )
-     *
-     * Returns list of projects
-     */
-    public static function DeleteDataSampels(Request $request, $id = null)
-    {
-        $id_s       = '';
-        $response   = new usr();
-        if (!isset($request->id) and !isset($id)) {
-            $response->success = 0;
-            $response->message = 'ID KUPA YANG INGIN DIHAPUS KOSONG';
-        } elseif (isset($request->id)) {
-            $id_s   = $request->id;
-        } elseif (isset($id)) {
-            $id_s   = $id;
-        }
-        $status_hasil_analisa = 0;
-        try {
-            DB::table('hasil_analisas')
-                ->where('data_sampels_id', '=', (int)$id_s)
-                ->delete();
-            $status_hasil_analisa = 1;
-        } catch (Exception $e) {
-            $response->success = 0;
-            $response->message = 'GAGAL HAPUS DATA TABEL HASIL ANALIS DENGAN ID KUPA : ' . $id_s . ', PESAN KESALAHAN : ' . $e->getMessage();
-        }
-
-        $status_detail_trackings = 0;
-        if ($status_hasil_analisa == 1) {
-            try {
-                DB::table('detail_trackings')
-                    ->where('data_sampels_id', '=', (int)$id_s)
-                    ->delete();
-                $status_detail_trackings = 1;
-            } catch (Exception $e) {
-                $response->success = 0;
-                $response->message = 'GAGAL HAPUS DATA TABEL DETAIL TRACKINGS DENGAN ID KUPA : ' . $id_s . ', PESAN KESALAHAN : ' . $e->getMessage();
-            }
-        }
-
-        if ($status_detail_trackings == 1) {
-            try {
-                DB::table('data_sampels')
-                    ->where('id', '=', (int)$id_s)
-                    ->delete();
-
-                $response->success = 1;
-                $response->message = 'BERHASIL MENGHAPUS KUPA DENGAN ID: ' . $id_s;
-            } catch (Exception $e) {
-                $response->success = 0;
-                $response->message = 'HAPUS DATA DENGAN ID : ' . $id_s . ', PESAN KESALAHAN : ' . $e->getMessage();
-            }
-        }
-        die(json_encode($response));
-    }
-    #14. DELETE DATA SAMPELS
-    #11 - 14 DATA SAMPELS
-
-    #15 - 16 HASIL ANALISA
+#15 - 16 HASIL ANALISA
     #15. GET HASIL ANALISA
     /**
      * @OA\Get(
@@ -2271,9 +2164,9 @@ class ApiController extends Controller
         return json_encode($response);
     }
     #16. UPDATE HASIL ANALISA
-    #16 - 17 HASIL ANALISA
+#16 - 17 HASIL ANALISA
 
-    #17 - 21 PELANGGANS
+#17 - 21 PELANGGANS
     #17. GET PELANGGANS
     /**
      * @OA\Get(
@@ -2300,28 +2193,24 @@ class ApiController extends Controller
         $pelanggans     = DB::table('pelanggans')
             ->get();
         $pelanggans     = json_decode(json_encode($pelanggans), true);
-        $s_id           = '';
-        $s_email              = '';
-        $s_password       = '';
-        $s_nama         = '';
-        $s_perusahaan         = '';
-        $s_nomor_telepon  = '';
-        $s_alamat       = '';
-        $s_tanggal_registrasi = '';
-
-        if (empty($pelanggans)) {
+        $s_id           = ''; $s_email              = ''; $s_password       = ''; 
+        $s_nama         = ''; $s_perusahaan         = ''; $s_nomor_telepon  = ''; 
+        $s_npwp         = ''; $s_alamat             = ''; $s_tanggal_registrasi = ''; 
+        
+        if(empty($pelanggans)){
             $response->success = 0;
             $response->message = 'LIST DATA PELANGGAN BELUM TERISI PADA DATABASE';
         } else {
             try {
                 foreach ($pelanggans as $value) {
-                    $s_id                   .= $value['id'] . '-';
-                    $s_email                .= $value['email'] . '-';
-                    $s_password             .= $value['password'] . '-';
-                    $s_nama                 .= $value['nama'] . '-';
-                    $s_perusahaan           .= $value['perusahaan'] . '-';
-                    $s_nomor_telepon        .= $value['nomor_telepon'] . '-';
-                    $s_alamat               .= $value['alamat'] . '-';
+                    $s_id                   .= $value['id'].'-'; 
+                    $s_email                .= $value['email'].'-'; 
+                    $s_password             .= $value['password'].'-'; 
+                    $s_nama                 .= $value['nama'].'-'; 
+                    $s_perusahaan           .= $value['perusahaan'].'-'; 
+                    $s_nomor_telepon        .= $value['nomor_telepon'].'-'; 
+                    $s_alamat               .= $value['alamat'].'-'; 
+                    $s_npwp                 .= $value['npwp'].';'; 
                     $tgl                     = strtotime($value['tanggal_registrasi']);
                     $f_tgl                   = date('d/m/Y', $tgl);
                     $s_tanggal_registrasi   .= $f_tgl . '-';
@@ -2330,8 +2219,9 @@ class ApiController extends Controller
                 $response->email                = substr($s_email, 0, -1);
                 $response->password             = substr($s_password, 0, -1);
                 $response->nama                 = substr($s_nama, 0, -1);
-                $response->perusahaan           = substr($s_perusahaan, 0, -1);
-                $response->nomor_telepon        = substr($s_nomor_telepon, 0, -1);
+                $response->perusahaan           = substr($s_perusahaan, 0, -1);    
+                $response->nomor_telepon        = substr($s_nomor_telepon, 0, -1);  
+                $response->npwp                 = substr($s_npwp, 0, -1);      
                 $response->alamat               = substr($s_alamat, 0, -1);
                 $response->tanggal_registrasi   = substr($s_tanggal_registrasi, 0, -1);
                 $response->success              = 1;
@@ -2348,7 +2238,7 @@ class ApiController extends Controller
     #18. INSERT PELANGGANS
     /**
      * @OA\Post(
-     *      path="/insertpelanggans/{email}/{password}/{nama}/{perusahaan}/{nomor_telepon}/{alamat}/{tanggal_registrasi}",
+     *      path="/insertpelanggans/{email}/{password}/{nama}/{perusahaan}/{nomor_telepon}/{npwp}/{alamat}",
      *      operationId="getProjectsList",
      *      tags={"18. Insert Pelanggan"},
      *      summary="Mendaftarkan Data Pelanggan Baru Ke Database Pelanggan",
@@ -2399,8 +2289,8 @@ class ApiController extends Controller
      *          )
      *      ),
      *      @OA\Parameter(
-     *          name="alamat",
-     *          description="ALAMAT",
+     *          name="npwp",
+     *          description="NPWP",
      *          required=true,
      *          in="path",
      *          @OA\Schema(
@@ -2408,8 +2298,8 @@ class ApiController extends Controller
      *          )
      *      ),
      *      @OA\Parameter(
-     *          name="tanggal_registrasi",
-     *          description="TANGGAL REGISTRASI",
+     *          name="alamat",
+     *          description="ALAMAT",
      *          required=true,
      *          in="path",
      *          @OA\Schema(
@@ -2428,69 +2318,70 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    public static function InsertPelanggans(
-        Request $request,
-        $email = null,
-        $password = null,
-        $nama = null,
-        $perusahaan = null,
-        $nomor_telepon = null,
-        $alamat = null,
-        $tanggal_registrasi = null
-    ) {
+    public static function InsertPelanggans(Request $request, $email = null,
+    $password = null, $nama = null, $perusahaan = null,
+    $nomor_telepon = null, $npwp = null, $alamat = null)
+    {
         $response = new usr();
-        $s_email                    = '';
-        $s_password       = '';
-        $s_nama     = '';
-        $s_perusahaan               = '';
-        $s_nomor_telepon  = '';
-        $s_alamat   = '';
-        $s_tanggal_registrasi       = '';
-
-        if (
-            (!isset($request->email) or !isset($request->password) or !isset($request->nama) or !isset($request->perusahaan) or !isset($request->nomor_telepon) or !isset($request->alamat) or !isset($request->tanggal_registrasi))
-            and
-            (empty($email) or empty($password) or empty($nama) or empty($perusahaan) or empty($nomor_telepon) or empty($alamat) or empty($tanggal_registrasi))
-        ) {
+        $s_email                    = ''; $s_password           = ''; $s_nama     = '';
+        $s_perusahaan               = ''; $s_nomor_telepon      = ''; $s_npwp     = ''; 
+        $s_alamat                   = ''; $s_tanggal_registrasi = '';
+        
+        if(
+            (!isset($request->email) OR !isset($request->password) OR !isset($request->nama) OR !isset($request->perusahaan) OR !isset($request->nomor_telepon)  OR !isset($request->npwp) OR !isset($request->alamat)) 
+            AND
+            (empty($email) OR empty($password) OR empty($nama) OR empty($perusahaan) OR empty($nomor_telepon) OR empty($npwp) OR empty($alamat))
+        ){
             $response->success = 0;
             $response->message = 'DATA PELANGGAN KOSONG';
-        } elseif (
-            isset($request->email) or isset($request->password) or isset($request->nama) or isset($request->perusahaan) or isset($request->nomor_telepon) or isset($request->alamat) or isset($request->tanggal_registrasi)
-        ) {
-            $s_email                = $request->email;
-            $s_password             = $request->password;
+        }
+        elseif(
+            isset($request->email) OR isset($request->password) OR isset($request->nama) OR isset($request->perusahaan) OR isset($request->nomor_telepon) OR isset($request->alamat)
+        ){
+            $s_email                = $request->email; 
+            $s_password             = $request->password; 
             $s_nama                 = $request->nama;
-            $s_perusahaan           = $request->perusahaan;
-            $s_nomor_telepon        = $request->nomor_telepon;
+            $s_perusahaan           = $request->perusahaan; 
+            $s_nomor_telepon        = $request->nomor_telepon; 
+            $s_npwp                 = $request->npwp; 
             $s_alamat               = $request->alamat;
 
-            $tgl                    = strtotime($request->tanggal_registrasi);
             $f_tgl                  = date('Y-m-d');
             $s_tanggal_registrasi   = $f_tgl;
-        } elseif (
-            !empty($email) or !empty($password) or !empty($nama) or !empty($perusahaan) or !empty($nomor_telepon) or !empty($alamat) or !empty($tanggal_registrasi)
-        ) {
-            $s_email                = $email;
-            $s_password             = $password;
+        }
+        elseif(
+            !empty($email) OR !empty($password) OR !empty($nama) OR !empty($perusahaan) OR !empty($nomor_telepon) OR !empty($npwp) OR !empty($alamat)
+        ){
+            $s_email                = $email; 
+            $s_password             = $password; 
             $s_nama                 = $nama;
-            $s_perusahaan           = $perusahaan;
-            $s_nomor_telepon        = $nomor_telepon;
+            $s_perusahaan           = $perusahaan; 
+            $s_nomor_telepon        = $nomor_telepon; 
+            $s_npwp                 = $npwp; 
             $s_alamat               = $alamat;
 
-            $tgl                    = strtotime($tanggal_registrasi);
             $f_tgl                  = date('Y-m-d');
             $s_tanggal_registrasi   = $f_tgl;
         }
 
-        $arr_pelanggan = array(
+        $arr_pelanggan = [
             'email'                 => $s_email,
             'password'              => $s_password,
             'nama'                  => $s_nama,
             'perusahaan'            => $s_perusahaan,
             'nomor_telepon'         => $s_nomor_telepon,
+            'npwp'                  => $s_npwp,
             'alamat'                => $s_alamat,
-            'tanggal_registrasi'    => $s_tanggal_registrasi
-        );
+            'tanggal_registrasi'    => $s_tanggal_registrasi 
+        ];
+        /* echo 'email '.$s_email.'<br>';
+        echo 'password '.$s_password.'<br>';
+        echo 'nama' .$s_nama.'<br>';
+        echo 'perusahaan '.$s_perusahaan.'<br>';
+        echo 'nomor_telepon '.$s_nomor_telepon.'<br>';
+        echo 'npwp '.$s_npwp.'<br>';
+        echo 'alamat '.$s_alamat.'<br>';
+        echo 'tanggal_registrasi '.$s_tanggal_registrasi; */
 
         $rules   = [
             'email'                 => 'required|email',
@@ -2498,6 +2389,7 @@ class ApiController extends Controller
             'nama'                  => 'required|string|min:3|max:50',
             'perusahaan'            => 'required|string|min:3|max:30',
             'nomor_telepon'         => 'required|string|min:8|max:12',
+            'npwp'                  => 'required|string|min:20|max:25',
             'alamat'                => 'required|string|min:3|max:250',
             'tanggal_registrasi'    => 'required|date|after:yesterday'
         ];
@@ -2515,6 +2407,9 @@ class ApiController extends Controller
             'nomor_telepon.required'        => 'NOMOR TELEPON WAJIB DIISI',
             'nomor_telepon.min'             => 'MINIMAL PENGISIAN NOMOR TELEPON ADALAH 8 KARAKTER',
             'nomor_telepon.max'             => 'MAXSIMAL PENGISIAN NOMOR TELEPON ADALAH 12 KARAKTER',
+            'npwp.required'                 => 'NPWP WAJIB DIISI',
+            'npwp.min'                      => 'MINIMAL PENGISIAN NPWP ADALAH 20 KARAKTER',
+            'npwp.max'                      => 'MINIMAL PENGISIAN NPWP ADALAH 25 KARAKTER',
             'alamat.required'               => 'ALAMAT WAJIB DIISI',
             'alamat.min'                    => 'MINIMAL PENGISIAN ALAMAT ADALAH 3 KARAKTER',
             'alamat.max'                    => 'MINIMAL PENGISIAN ALAMAT ADALAH 250 KARAKTER',
@@ -2530,15 +2425,17 @@ class ApiController extends Controller
         } else {
             try {
                 DB::table('pelanggans')
-                    ->insert([
-                        'email'                 => $arr_pelanggan['email'],
-                        'password'              => $arr_pelanggan['password'],
-                        'nama'                  => $arr_pelanggan['nama'],
-                        'perusahaan'            => $arr_pelanggan['perusahaan'],
-                        'nomor_telepon'         => $arr_pelanggan['nomor_telepon'],
-                        'alamat'                => $arr_pelanggan['alamat'],
-                        'tanggal_registrasi'    => $arr_pelanggan['tanggal_registrasi']
-                    ]);
+                ->insert([
+                    'email'                 => $arr_pelanggan['email'],
+                    'password'              => $arr_pelanggan['password'],
+                    'nama'                  => $arr_pelanggan['nama'],
+                    'perusahaan'            => $arr_pelanggan['perusahaan'],
+                    'nomor_telepon'         => $arr_pelanggan['nomor_telepon'],
+                    'npwp'                  => $arr_pelanggan['npwp'],
+                    'kuesioner'             => '',
+                    'alamat'                => $arr_pelanggan['alamat'],
+                    'tanggal_registrasi'    => $arr_pelanggan['tanggal_registrasi']
+                ]);
                 $response->success = 1;
                 $response->message = 'BERHASIL MELAKUKAN INSERT DATA PELANGGAN';
             } catch (Exception $e) {
@@ -2553,7 +2450,7 @@ class ApiController extends Controller
     #19. UPDATE PELANGGANS  
     /**
      * @OA\Post(
-     *      path="/updatepelanggans/{id}/{email}/{password}/{nama}/{perusahaan}/{nomor_telepon}/{alamat}/{tanggal_registrasi}",
+     *      path="/updatepelanggans/{id}/{email}/{password}/{nama}/{perusahaan}/{nomor_telepon}/{npwp}/{alamat}",
      *      operationId="getProjectsList",
      *      tags={"19. Update Pelanggan"},
      *      summary="Melakukan Update Data Pelanggan Berdasarkan Parameter Yang Dikirimkan",
@@ -2613,8 +2510,8 @@ class ApiController extends Controller
      *          )
      *      ),
      *      @OA\Parameter(
-     *          name="alamat",
-     *          description="ALAMAT",
+     *          name="npwp",
+     *          description="NPWP",
      *          required=true,
      *          in="path",
      *          @OA\Schema(
@@ -2622,8 +2519,8 @@ class ApiController extends Controller
      *          )
      *      ),
      *      @OA\Parameter(
-     *          name="tanggal_registrasi",
-     *          description="TANGGAL REGISTRASI",
+     *          name="alamat",
+     *          description="ALAMAT",
      *          required=true,
      *          in="path",
      *          @OA\Schema(
@@ -2641,64 +2538,50 @@ class ApiController extends Controller
      *     )
      *
      * Returns list of projects
-     */
-    public static function UpdatePelanggans(
-        Request $request,
-        $id = null,
-        $email = null,
-        $password = null,
-        $nama = null,
-        $perusahaan = null,
-        $nomor_telepon = null,
-        $alamat = null,
-        $tanggal_registrasi = null
-    ) {
+     * @todo TAMBAH PARAMETER NPWP
+     */  
+    public static function UpdatePelanggans(Request $request, $id = null, $email = null,
+    $password = null, $nama = null, $perusahaan = null,
+    $nomor_telepon = null, $npwp = null, $alamat = null){
         $response       = new usr();
 
-        $s_id           = '';
-        $s_email                    = '';
-        $s_password       = '';
-        $s_nama         = '';
-        $s_perusahaan               = '';
-        $s_nomor_telepon  = '';
-        $s_alamat       = '';
-        $s_tanggal_registrasi       = '';
+        $s_id           = ''; $s_email        = ''; $s_password       = ''; 
+        $s_nama         = ''; $s_perusahaan   = ''; $s_nomor_telepon  = ''; 
+        $s_npwp         = ''; $s_alamat       = ''; 
 
-        if (
-            (!isset($request->id) or !isset($request->email) or !isset($request->password) or !isset($request->nama) or !isset($request->perusahaan) or !isset($request->nomor_telepon) or !isset($request->alamat) or !isset($request->tanggal_registrasi))
-            and
-            (empty($id) or empty($email) or empty($password) or empty($nama) or empty($perusahaan) or empty($nomor_telepon) or empty($alamat) or empty($tanggal_registrasi))
-        ) {
+        $status = '';
+
+        if(
+            (!isset($request->id) OR !isset($request->email) OR !isset($request->password) OR !isset($request->nama) OR !isset($request->perusahaan) OR !isset($request->nomor_telepon) OR !isset($request->npwp) OR !isset($request->alamat)) 
+            AND
+            (empty($id) OR empty($email) OR empty($password) OR empty($nama) OR empty($perusahaan) OR empty($nomor_telepon) OR empty($npwp) OR empty($alamat))
+        ){
             $response->success = 0;
             $response->message = 'DATA UNTUK MELAKUKAN UPDATE DATA PELANGGAN TIDAK BOLEH KOSONG';
-        } elseif (
-            isset($request->id) or isset($request->email) or isset($request->password) or isset($request->nama) or isset($request->perusahaan) or isset($request->nomor_telepon) or isset($request->alamat) or isset($request->tanggal_registrasi)
-        ) {
-            $s_id                   = $request->id;
-            $s_email                = $request->email;
-            $s_password             = $request->password;
-            $s_nama                 = $request->nama;
-            $s_perusahaan           = $request->perusahaan;
-            $s_nomor_telepon        = $request->nomor_telepon;
+        }
+        elseif(
+            isset($request->id) OR isset($request->email) OR isset($request->password) OR isset($request->nama) OR isset($request->perusahaan) OR isset($request->nomor_telepon) OR isset($request->npwp) OR isset($request->alamat) 
+        ){
+            $s_id                   = $request->id; 
+            $s_email                = $request->email; 
+            $s_password             = $request->password; 
+            $s_nama                 = $request->nama; 
+            $s_perusahaan           = $request->perusahaan; 
+            $s_nomor_telepon        = $request->nomor_telepon; 
+            $s_npwp                 = $request->npwp;
             $s_alamat               = $request->alamat;
-
-            $tgl                    = strtotime($request->tanggal_registrasi);
-            $f_tgl                  = date('d-m-y', $tgl);
-            $s_tanggal_registrasi   = $f_tgl;
-        } elseif (
-            !empty($id) or !empty($email) or !empty($password) or !empty($nama) or !empty($perusahaan) or !empty($nomor_telepon) or !empty($alamat) or !empty($tanggal_registrasi)
-        ) {
-            $s_id                   = $id;
-            $s_email                = $email;
-            $s_password             = $password;
-            $s_nama                 = $nama;
-            $s_perusahaan           = $perusahaan;
-            $s_nomor_telepon        = $nomor_telepon;
+        }
+        elseif(
+            !empty($id) OR !empty($email) OR !empty($password) OR !empty($nama) OR !empty($perusahaan) OR !empty($nomor_telepon) OR !empty($alamat)
+        ){
+            $s_id                   = $id; 
+            $s_email                = $email; 
+            $s_password             = $password; 
+            $s_nama                 = $nama; 
+            $s_perusahaan           = $perusahaan; 
+            $s_nomor_telepon        = $nomor_telepon; 
+            $s_npwp                 = $npwp;
             $s_alamat               = $alamat;
-
-            $tgl                    = strtotime($tanggal_registrasi);
-            $f_tgl                  = date('d-m-y', $tgl);
-            $s_tanggal_registrasi   = $f_tgl;
         }
 
         $f_pelanggans   = DB::table('pelanggans')
@@ -2711,16 +2594,24 @@ class ApiController extends Controller
             $response->message = 'PELANGGAN DENGAN ID : ' . $s_id . ' TIDAK DITEMUKAN';
         }
 
-        $arr_pelanggan  = array(
+        $arr_pelanggan  = [
             'id'                    => $s_id,
             'email'                 => $s_email,
             'password'              => $s_password,
             'nama'                  => $s_nama,
             'perusahaan'            => $s_perusahaan,
             'nomor_telepon'         => $s_nomor_telepon,
-            'alamat'                => $s_alamat,
-            'tanggal_registrasi'    => $s_tanggal_registrasi
-        );
+            'npwp'                  => $s_npwp,
+            'alamat'                => $s_alamat
+        ];
+
+       /*  echo 'email '.$s_email.'<br>';
+        echo 'password '.$s_password.'<br>';
+        echo 'nama' .$s_nama.'<br>';
+        echo 'perusahaan '.$s_perusahaan.'<br>';
+        echo 'nomor_telepon '.$s_nomor_telepon.'<br>';
+        echo 'npwp '.$s_npwp.'<br>';
+        echo 'alamat '.$s_alamat.'<br>'; */
 
         $rules   = [
             'id'                    => 'required|exists:pelanggans,id',
@@ -2729,8 +2620,8 @@ class ApiController extends Controller
             'nama'                  => 'required|string|min:3|max:50',
             'perusahaan'            => 'required|string|min:3|max:30',
             'nomor_telepon'         => 'required|string|min:8|max:12',
+            'npwp'                  => 'required|string|min:20|max:25',
             'alamat'                => 'required|string|min:3|max:250',
-            'tanggal_registrasi'    => 'required|date|after:yesterday'
         ];
         $messages = [
             'id.required'                   => 'ID PELANGGAN WAJIB DIISI',
@@ -2748,11 +2639,12 @@ class ApiController extends Controller
             'nomor_telepon.required'        => 'NOMOR TELEPON WAJIB DIISI',
             'nomor_telepon.min'             => 'MINIMAL PENGISIAN NOMOR TELEPON ADALAH 8 KARAKTER',
             'nomor_telepon.max'             => 'MAXSIMAL PENGISIAN NOMOR TELEPON ADALAH 12 KARAKTER',
+            'npwp.required'                 => 'NPWP WAJIB DIISI',
+            'npwp.min'                      => 'MINIMAL PENGISIAN NPWP ADALAH 20 KARAKTER',
+            'npwp.max'                      => 'MINIMAL PENGISIAN NPWP ADALAH 25 KARAKTER',
             'alamat.required'               => 'ALAMAT WAJIB DIISI',
             'alamat.min'                    => 'MINIMAL PENGISIAN ALAMAT ADALAH 3 KARAKTER',
             'alamat.max'                    => 'MINIMAL PENGISIAN ALAMAT ADALAH 250 KARAKTER',
-            'tanggal_registrasi.required'   => 'TANGGAL WAJIB DIISI',
-            'tanggal_registrasi.after'      => 'MINIMAL PENGISISAN TANGGAL ADALAH HARI INI'
         ];
 
         $validator = Validator::make($arr_pelanggan, $rules, $messages);
@@ -2763,16 +2655,16 @@ class ApiController extends Controller
         } else {
             try {
                 DB::table('pelanggans')
-                    ->where('id', '=', $arr_pelanggan['id'])
-                    ->update([
-                        'email'                 => $arr_pelanggan['email'],
-                        'password'              => $arr_pelanggan['password'],
-                        'nama'                  => $arr_pelanggan['nama'],
-                        'perusahaan'            => $arr_pelanggan['perusahaan'],
-                        'nomor_telepon'         => $arr_pelanggan['nomor_telepon'],
-                        'alamat'                => $arr_pelanggan['alamat'],
-                        'tanggal_registrasi'    => $arr_pelanggan['tanggal_registrasi']
-                    ]);
+                ->where('id', '=', $arr_pelanggan['id'])
+                ->update([
+                    'email'                 => $arr_pelanggan['email'],
+                    'password'              => $arr_pelanggan['password'],
+                    'nama'                  => $arr_pelanggan['nama'],
+                    'perusahaan'            => $arr_pelanggan['perusahaan'],
+                    'nomor_telepon'         => $arr_pelanggan['nomor_telepon'],
+                    'npwp'                  => $arr_pelanggan['npwp'],
+                    'alamat'                => $arr_pelanggan['alamat']
+                ]);
                 $response->success = 1;
                 $response->message = 'PERUBAHAN DATA PELANGGAN DENGAN ID: ' . $arr_pelanggan['id'] . ', BERHASIL DILAKUKAN.';
             } catch (Exception $e) {
@@ -2949,9 +2841,9 @@ class ApiController extends Controller
         die(json_encode($response));
     }
     #21. LOGIN PELANGGANS
-    #17 - 21 PELANGGANS
+#17 - 21 PELANGGANS
 
-    #22 AKTIVITAS
+#22 AKTIVITAS
     #22. GET AKTIVITAS
     /**
      * @OA\Get(
@@ -3115,9 +3007,9 @@ class ApiController extends Controller
         }
         return json_encode($response);
     }
-    #22 AKTIVITAS
+#22 AKTIVITAS
 
-    #23 - 27 LAB AKUN
+#23 - 27 LAB AKUN
     #23. GET LAB AKUNS
     /**
      * @OA\Get(
@@ -3791,9 +3683,9 @@ class ApiController extends Controller
         return json_encode($response);
     }
     #27. DELETE LAB AKUNS
-    #23 - 27 LAB AKUN
+#23 - 27 LAB AKUN
 
-    #28 - 31 PAKETS
+#28 - 31 PAKETS
     #28. GET PAKET
     /**
      * @OA\Get(
@@ -3817,12 +3709,9 @@ class ApiController extends Controller
     public static function GetPakets()
     {
         $response       = new usr();
-        $s_id       = '';
-        $s_jenis_sampels_id   = '';
-        $s_jenis_sampel = '';
-        $s_paket    = '';
-        $s_parameters_id_s    = '';
-        $s_harga   = '';
+        $s_id       = ''; $s_jenis_sampels_id   = ''; $s_jenis_sampel = ''; 
+        $s_paket    = ''; $s_parameters_id_s    = ''; $s_metodes_id_s = ''; 
+        $s_harga    = '';
 
         $get_pakets     = DB::table('pakets')
             ->join('jenis_sampels', 'pakets.jenis_sampels_id', '=', 'jenis_sampels.id')
@@ -3836,18 +3725,20 @@ class ApiController extends Controller
         } else {
             try {
                 foreach ($get_pakets as $value) {
-                    $s_id                   .= $value['id'] . '-';
-                    $s_jenis_sampels_id     .= $value['jenis_sampels_id'] . '-';
-                    $s_jenis_sampel         .= $value['jenis_sampel'] . '-';
-                    $s_paket                .= $value['paket'] . '-';
-                    $s_parameters_id_s      .= $value['parameters_id_s'] . ';';
-                    $s_harga                .= $value['harga'] . '-';
+                    $s_id                   .= $value['id'].'-'; 
+                    $s_jenis_sampels_id     .= $value['jenis_sampels_id'].'-'; 
+                    $s_jenis_sampel         .= $value['jenis_sampel'].'-'; 
+                    $s_paket                .= $value['paket'].'-'; 
+                    $s_parameters_id_s      .= $value['parameters_id_s'].';'; 
+                    $s_metodes_id_s         .= $value['metodes_id_s'].';'; 
+                    $s_harga                .= $value['harga'].'-';
                 }
                 $response->id               = substr($s_id, 0, -1);
                 $response->jenis_sampels_id = substr($s_jenis_sampels_id, 0, -1);
                 $response->jenis_sampel     = substr($s_jenis_sampel, 0, -1);
                 $response->paket            = substr($s_paket, 0, -1);
                 $response->parameters_id_s  = substr($s_parameters_id_s, 0, -1);
+                $response->metodes_id_s     = substr($s_metodes_id_s, 0, -1);
                 $response->harga            = substr($s_harga, 0, -1);
                 $response->success          = 1;
                 $response->message          = 'BERIKUT LIST DATA PAKET';
@@ -3864,7 +3755,7 @@ class ApiController extends Controller
     #29. INSERT PAKETS
     /**
      * @OA\Post(
-     *      path="/insertpakets/{jenis_sampels_id}/{paket}/{parameters_id_s}/{harga}",
+     *      path="/insertpakets/{jenis_sampels_id}/{paket}/{parameters_id_s}/{metodes_id_s}/{harga}",
      *      operationId="getProjectsList",
      *      tags={"29. Insert Pakets"},
      *      summary="Mendapatkan List Jenis Sampel",
@@ -3897,6 +3788,15 @@ class ApiController extends Controller
      *          )
      *      ),
      *      @OA\Parameter(
+     *          name="metodes_id_s",
+     *          description="METODES ID",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
      *          name="harga",
      *          description="HARGA PAKETS",
      *          required=true,
@@ -3917,30 +3817,32 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    public static function InsertPakets(Request $request, $jenis_sampels_id = null, $paket = null, $parameters_id_s = null, $harga = null)
+    public static function InsertPakets(Request $request, $metodes_id_s = null, $jenis_sampels_id = null, $paket = null, $parameters_id_s = null, $harga = null)
     {
         $insert = '';
         $response = new usr();
 
-        $s_jenis_sampels_id = '';
-        $s_paket = '';
-        $s_parameters_id_s = '';
-        $s_harga = 0;
-        if ((isset($jenis_sampels_id) and !isset($paket) and !isset($parameters_id_s) and !isset($harga)) and
-            (!isset($request->jenis_sampels_id) and !isset($request->paket) and !isset($request->parameters_id_s) and !isset($request->harga))
-        ) {
+        $s_jenis_sampels_id = ''; $s_paket = ''; $s_parameters_id_s = ''; $s_metodes_id_s = ''; $s_harga = 0;
+        if  ((isset($jenis_sampels_id) AND !isset($paket) AND !isset($parameters_id_s) AND !isset($harga)) AND
+             (!isset($request->jenis_sampels_id) AND !isset($request->paket) AND !isset($request->parameters_id_s) AND !isset($request->harga)))   
+        {
             $response->success      = 0;
             $response->message      = 'DATA SWAGGER ATAU REQUEST KOSONG';
         }
-        if (isset($jenis_sampels_id) or isset($paket) or isset($parameters_id_s) or isset($harga)) {
+        if(isset($jenis_sampels_id) or isset($paket) or isset($parameters_id_s) or isset($harga) or isset($metodes_id_s))
+        {
             $s_jenis_sampels_id     = $jenis_sampels_id;
             $s_paket                = $paket;
             $s_parameters_id_s      = $parameters_id_s;
+            $s_metodes_id_s         = $metodes_id_s;
             $s_harga                = $harga;
-        } elseif (isset($request->jenis_sampels_id)  or isset($request->paket)  or isset($request->parameters_id_s)  or isset($request->harga)) {
+        }
+        elseif(isset($request->metodes_id_s) or isset($request->jenis_sampels_id)  or isset($request->paket) or isset($request->parameters_id_s)  or isset($request->harga))   
+        {
             $s_jenis_sampels_id     = $request->jenis_sampels_id;
             $s_paket                = $request->paket;
             $s_parameters_id_s      = $request->parameters_id_s;
+            $s_metodes_id_s         = $request->metodes_id_s;
             $s_harga                = $request->harga;
         }
 
@@ -3948,6 +3850,7 @@ class ApiController extends Controller
             'jenis_sampels_id'  => 'required|exists:jenis_sampels,id',
             'paket'             => 'required|string|min:1',
             'parameters_id_s'   => 'required|string|min:1',
+            'metodes_id_s'      => 'required|string|min:1',
             'harga'             => 'required|numeric|min:10000'
         ];
 
@@ -3958,6 +3861,8 @@ class ApiController extends Controller
             'paket.min'                     => 'Paket Wajib Diisi Minimal 1 Huruf',
             'parameters_id_s.required'      => 'Parameters ID Wajib Diisi',
             'parameters_id_s.min'           => 'Parameters ID Wajib Diisi Minimal 1 Huruf',
+            'metodes_id_s.required'         => 'Metode Wajib Diisi',
+            'metodes_id_s.min'              => 'Metode Wajib Diisi Minimal 1 Huruf',
             'harga.required'                => 'Harga Wajib Diisi',
             'harga.numeric'                 => 'Harga Wajib Diisi Dengan Angka',
             'harga.min'                     => 'Harga Minimal Adalah 10000'
@@ -3967,7 +3872,8 @@ class ApiController extends Controller
             'jenis_sampels_id'  => $s_jenis_sampels_id,
             'paket'             => $s_paket,
             'parameters_id_s'   => $s_parameters_id_s,
-            'harga'             => str_replace('.', '', $s_harga)
+            'metodes_id_s'      => $s_metodes_id_s,
+            'harga'             => str_replace('.', '',$s_harga)
         ];
 
         $validator = Validator::make($reqAll, $rules, $messages);
@@ -3978,12 +3884,13 @@ class ApiController extends Controller
         } else {
             try {
                 DB::table('pakets')
-                    ->insert([
-                        'jenis_sampels_id'  => $s_jenis_sampels_id,
-                        'paket'             => $s_paket,
-                        'parameters_id_s'   => $s_parameters_id_s,
-                        'harga'             => $s_harga
-                    ]);
+                ->insert([
+                    'jenis_sampels_id'  => $reqAll['jenis_sampels_id'],
+                    'paket'             => $reqAll['paket'],
+                    'parameters_id_s'   => $reqAll['parameters_id_s'],
+                    'metodes_id_s'      => $reqAll['metodes_id_s'],
+                    'harga'             => $reqAll['harga']
+                ]);
                 $response->success = 1;
                 $response->message = 'BERHASIL MEMASUKAN DATA PAKET BARU';
             } catch (Exception $e) {
@@ -3999,7 +3906,7 @@ class ApiController extends Controller
     #30. UPDATE PAKETS
     /**
      * @OA\Post(
-     *      path="/updatepakets/{id}/{jenis_sampels_id}/{paket}/{parameters_id_s}/{harga}",
+     *      path="/updatepakets/{id}/{jenis_sampels_id}/{paket}/{parameters_id_s}/{metodes_id_s}/{harga}",
      *      operationId="getProjectsList",
      *      tags={"30. Update Pakets"},
      *      summary="Melakukan Perubahan Data Paket Berdasarkan Parameter Yang Ada",
@@ -4041,6 +3948,15 @@ class ApiController extends Controller
      *          )
      *      ),
      *      @OA\Parameter(
+     *          name="metodes_id_s",
+     *          description="METODE ID",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string",
+     *          )
+     *      ),
+     *      @OA\Parameter(
      *          name="harga",
      *          description="HARGA PAKETS",
      *          required=true,
@@ -4061,33 +3977,33 @@ class ApiController extends Controller
      *
      * Returns list of projects
      */
-    public static function UpdatePakets(Request $request, $id = null, $jenis_sampels_id = null, $paket = null, $parameters_id_s = null, $harga = null)
+    public static function UpdatePakets(Request $request, $metodes_id_s = null, $id = null, $jenis_sampels_id = null, $paket = null, $parameters_id_s = null, $harga = null)
     {
         $update = '';
         $response = new usr();
 
-        $s_id = 0;
-        $s_jenis_sampels_id = '';
-        $s_paket = '';
-        $s_parameters_id_s = '';
-        $s_harga = 0;
-        if (
-            (!isset($id) or !isset($jenis_sampels_id) or !isset($paket) or !isset($parameters_id_s) or !isset($harga)) and
-            (!isset($request->id) or !isset($request->jenis_sampels_id) or !isset($request->paket) or !isset($request->parameters_id_s) or !isset($request->harga))
-        ) {
+        $s_id = 0; $s_jenis_sampels_id = ''; $s_paket = ''; $s_metodes_id_s = ''; $s_parameters_id_s = ''; $s_harga = 0;
+        if  (
+                (!isset($id) or !isset($jenis_sampels_id) or !isset($paket) or !isset($parameters_id_s) or !isset($harga)) AND
+                (!isset($request->id) or !isset($request->jenis_sampels_id) or !isset($request->paket) or !isset($request->parameters_id_s) or !isset($request->harga))
+            )   
+        {
             $response->message      = 'DATA SWAGGER ATAU REQUEST KOSONG';
         }
-        if (isset($id) or isset($jenis_sampels_id) or isset($paket) or isset($parameters_id_s) or isset($harga)) {
+        if(isset($metodes_id_s) or isset($id) or isset($jenis_sampels_id) or isset($paket) or isset($parameters_id_s) or isset($harga))
+        {
             $s_id                   = $id;
             $s_jenis_sampels_id     = $jenis_sampels_id;
             $s_paket                = $paket;
             $s_parameters_id_s      = $parameters_id_s;
+            $s_metodes_id_s         = $metodes_id_s;
             $s_harga                = $harga;
         } elseif (isset($request->id)  or isset($request->jenis_sampels_id)  or isset($request->paket)  or isset($request->parameters_id_s)  or isset($request->harga)) {
             $s_id                   = $request->id;
             $s_jenis_sampels_id     = $request->jenis_sampels_id;
             $s_paket                = $request->paket;
             $s_parameters_id_s      = $request->parameters_id_s;
+            $s_metodes_id_s         = $request->metodes_id_s;
             $s_harga                = $request->harga;
         }
 
@@ -4108,13 +4024,14 @@ class ApiController extends Controller
         } else {
             try {
                 DB::table('pakets')
-                    ->where('id', '=', $s_id)
-                    ->update([
-                        'jenis_sampels_id'  => $s_jenis_sampels_id,
-                        'paket'             => $s_paket,
-                        'parameters_id_s'   => $s_parameters_id_s,
-                        'harga'             => $s_harga
-                    ]);
+                ->where('id', '=', $s_id)
+                ->update([
+                    'jenis_sampels_id'  => $s_jenis_sampels_id,
+                    'paket'             => $s_paket,
+                    'parameters_id_s'   => $s_parameters_id_s,
+                    'metodes_id_s'      => $s_metodes_id_s,
+                    'harga'             => $s_harga
+                ]);
 
                 $response->success = 1;
                 $response->message = 'BERHASIL MELAKUKAN UPDATE DATA';
@@ -4196,10 +4113,10 @@ class ApiController extends Controller
         return json_encode($response);
     }
     #31. DELETE PAKETS
-    #28 - 31 PAKETS
+#28 - 31 PAKETS
 
 
-    #32 - 36 GROUP AKTIFITAS
+#32 - 36 GROUP AKTIFITAS
     public static function GetGroupAktivitas()
     {
         $response           = new usr();
@@ -4221,6 +4138,7 @@ class ApiController extends Controller
 
                 $response->id       = $str_id;
                 $response->group    = $str_group;
+                
                 $response->success  = 1;
                 $response->message  = 'BERIKUT LIST DATA GROUP AKTIVITAS';
             } catch (Exception $e) {
@@ -4341,7 +4259,7 @@ class ApiController extends Controller
             'id'    => $id
         ];
         $rules      = [
-            'id'    => 'required|exists:group_aktivitas,1'
+            'id'    => 'required|exists:group_aktivitas,id'
         ];
         $messages   = [
             'id.required'   => 'ID GRUP AKTIVITAS WAJIB ADA',
@@ -4351,12 +4269,20 @@ class ApiController extends Controller
         if ($validator->fails()) {
             $response->success = 0;
             $response->message = $validator->errors()->first();
-        } else {
+        }
+        else{                
             try {
+                DB::table('group_aktivitas')
+                ->delete();
+                
+                $response->success = 1;
+                $response->message = 'DATA BERHASIL DIHAPUS';
             } catch (Exception $e) {
                 //throw $th;
             }
         }
+
+        return json_encode($response);
     }
-    #32 - 36 GROUP AKTIFITAS
+#32 - 36 GROUP AKTIFITAS
 }

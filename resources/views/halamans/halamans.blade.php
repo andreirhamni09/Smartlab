@@ -93,30 +93,32 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @if(!empty($halamans))
                                         <?php
-                                            $arr_id      = explode('-', $halamans['id']);
-                                            $arr_halaman = explode('-', $halamans['halaman']);
-                                            $arr_url     = explode('-', $halamans['url']);
-                                            $arr_simbol  = explode(';', $halamans['simbol']);
                                             $no_halaman  = 1;
                                         ?>
-                                        @for($i = 0; $i < count($arr_halaman); $i++)
-                                        <form action="{{ url('admin/updatehalamans') }}" method="post">
-                                            {{ csrf_field() }} 
+                                            @for($i = 0; $i < count($halamans['id']); $i++)
+                                            <form action="{{ url('admin/updatehalamans') }}" method="post">
+                                                {{ csrf_field() }} 
+                                                <tr>
+                                                    <input type="hidden" name="id" value="{{ $halamans['id'][$i] }}">
+                                                    <td>{{ $no_halaman }}</td>
+                                                    <td><input type="text" name="halaman" class="form-control" value="{{ $halamans['halaman'][$i] }}"></td>
+                                                    <td><input type="text" name="url" class="form-control" value="{{ $halamans['url'][$i] }}"></td>
+                                                    <td><input type="text" name="simbol" class="form-control" value="{{ $halamans['simbol'][$i] }}"></td>
+                                                    <td>
+                                                        <button type="submit" class="btn btn-success">UPDATE</button>
+                                                        <a href="deletehalamans/{{ $halamans['id'][$i] }}" class="btn btn-danger">DELETE</button>
+                                                    </td>
+                                                </tr>   
+                                            </form>
+                                            <?php $no_halaman++; ?>
+                                            @endfor
+                                        @else
                                             <tr>
-                                                <input type="hidden" name="id" value="{{ $arr_id[$i] }}">
-                                                <td>{{ $no_halaman }}</td>
-                                                <td><input type="text" name="halaman" class="form-control" value="{{ $arr_halaman[$i] }}"></td>
-                                                <td><input type="text" name="url" class="form-control" value="{{ $arr_url[$i] }}"></td>
-                                                <td><input type="text" name="simbol" class="form-control" value="{{ $arr_simbol[$i] }}"></td>
-                                                <td>
-                                                    <button type="submit" class="btn btn-success">UPDATE</button>
-                                                    <a href="deletehalamans/{{ $arr_id[$i] }}" class="btn btn-danger">DELETE</button>
-                                                </td>
-                                            </tr>   
-                                        </form>
-                                        <?php $no_halaman++; ?>
-                                        @endfor
+                                                <td colspan="5">BELUM ADA HALAMAN YANG DIINPUTKAN</td>
+                                            </tr>
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>

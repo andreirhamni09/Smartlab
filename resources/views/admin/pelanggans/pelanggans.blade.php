@@ -95,6 +95,12 @@
                                         </div>
                                         <div class="col-sm">
                                             <div class="form-group">
+                                                <label>NPWP</label>
+                                                <input type="text" name="npwp" class="form-control" placeholder="NPWP ...">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-group">
                                                 <label>Alamat</label>
                                                 <input type="text" name="alamat" class="form-control" placeholder="Alamat ...">
                                             </div>
@@ -102,7 +108,7 @@
                                         <div class="col-sm-1">
                                             <div class="form-group">
                                                 <label>Submit</label>
-                                                <input type="submit" class="form-control btn btn-primary" value="TAMBAHKAN">
+                                                <button type="submit" class="form-control btn btn-primary"><abbr title="TAMBAHKAN"><i class="fas fa-plus"></i></abbr></button>
                                             </div>
                                         </div>
                                     </div>
@@ -135,6 +141,7 @@
                                             <th class="biru" style="width: 15%;">NAMA</th>
                                             <th class="biru">PERUSAHAAN</th>
                                             <th class="biru" style="width: 12%;">NO. TELEPON</th>
+                                            <th class="biru" style="width: 15%;">NPWP</th>
                                             <th class="biru" style="width: 15%;">ALAMAT</th>
                                             <th class="biru">TANGGAL REGISTRASI</th>
                                             <th class="biru" style="width: 15%;">ACTION</th>
@@ -142,34 +149,26 @@
                                     </thead>
                                     <tbody>
                                         <!-- UPDATE DATA USER LAB -->
+                                        <?php
+                                            $no_pelanggan   = 1;
+                                        ?>
                                         @if(empty($pelanggans))
                                             <tr>
                                                 <td colspan="9">BELUM ADA PELANGGAN YANG DIINSERTKAN</td>
                                             </tr>
                                         @else
-                                            <?php
-                                                $arr_pelanggan_id                   = explode('-', $pelanggans['id']);
-                                                $arr_pelanggan_email                = explode('-', $pelanggans['email']);
-                                                $arr_pelanggan_password             = explode('-', $pelanggans['password']);
-                                                $arr_pelanggan_nama                 = explode('-', $pelanggans['nama']);
-                                                $arr_pelanggan_perusahaan           = explode('-', $pelanggans['perusahaan']);
-                                                $arr_pelanggan_nomor_telepon        = explode('-', $pelanggans['nomor_telepon']);
-                                                $arr_pelanggan_alamat               = explode('-', $pelanggans['alamat']);
-                                                $arr_pelanggan_tanggal_registrasi   = explode('-', $pelanggans['tanggal_registrasi']);
-                                                $no_pelanggan                       = 1;
-                                            ?>
-                                            @for($i = 0; $i < count($arr_pelanggan_id); $i++)
+                                            @for($i = 0; $i < count($pelanggans['id']); $i++)
                                                 <form action="{{ url('admin/updatepelanggans') }}" method="POST">
                                                 {{ csrf_field() }}
                                                     <tr>
-                                                        <input type="hidden" name="id" value="{{ $arr_pelanggan_id[$i] }}">
-                                                        <td>{{ $no_pelanggan }}</td>
-                                                        <td><input type="text" class="form-control" name="email" value="{{ $arr_pelanggan_email[$i] }}"></td>
+                                                        <input type="hidden" name="id" value="{{ $pelanggans['id'][$i] }}">
+                                                        <td>{{ $no_pelanggan }}</td>                                                        
+                                                        <td><input type="text" class="form-control" name="email" value="{{ $pelanggans['email'][$i] }}"></td>
                                                         <td>
                                                             <div class="row">
                                                                 <div class="col-md">
                                                                     <div class="form-group">
-                                                                        <input type="password" name="password" id="u_hidden_password_{{$no_pelanggan}}" class="form-control" value="{{ $arr_pelanggan_password[$i] }}">
+                                                                        <input type="password" name="password" id="u_hidden_password_{{$no_pelanggan}}" class="form-control" value="{{ $pelanggans['password'][$i] }}">
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-3">
@@ -177,35 +176,36 @@
                                                                         <button class="btn btn-secondary" id="lihat_{{ $no_pelanggan }}" type="button"><abbr title="Lihat Password"><i class="far fa-eye"></i></abbr></button>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                                    
+                                                            </div>                                                                    
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="nama" class="form-control" value="{{ $arr_pelanggan_nama[$i] }}">
+                                                            <input type="text" name="nama" class="form-control" value="{{ $pelanggans['nama'][$i] }}">
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="perusahaan" class="form-control" value="{{ $arr_pelanggan_perusahaan[$i] }}">
+                                                            <input type="text" name="perusahaan" class="form-control" value="{{ $pelanggans['perusahaan'][$i] }}">
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="nomor_telepon" class="form-control" value="{{ $arr_pelanggan_nomor_telepon[$i] }}">    
+                                                            <input type="text" name="nomor_telepon" class="form-control" value="{{ $pelanggans['nomor_telepon'][$i] }}">    
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="alamat" class="form-control" value="{{ $arr_pelanggan_alamat[$i] }}">
+                                                            <input type="text" name="npwp" class="form-control" value="{{ $pelanggans['npwp'][$i] }}">
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="alamat" class="form-control" value="{{ $pelanggans['alamat'][$i] }}">
                                                         </td>
                                                         <td>
                                                             <?php
-                                                                $tanggal        = strtotime(str_replace('/', '-', $arr_pelanggan_tanggal_registrasi[$i]));
-                                                                $f_tanggal      = date('Y-m-d', $tanggal);
+                                                                $tanggal        = strtotime(str_replace('/', '-', $pelanggans['tanggal_registrasi'][$i]));
+                                                                $f_tanggal      = date('d-M-Y', $tanggal);
                                                             ?>
                                                             {{ $f_tanggal }}
                                                         </td>
                                                         <td>
                                                             <button type="submit" class="btn btn-success">UPDATE</button>
-                                                            <a href="deletepelanggans/{{$arr_pelanggan_id[$i]}}" class="btn btn-danger">DELETE</a>
+                                                            <a href="deletepelanggans/{{$pelanggans['id'][$i]}}" class="btn btn-danger">DELETE</a>
                                                         </td>
                                                     </tr>
                                                 </form>
-
                                                 <?php
                                                   $no_pelanggan++;  
                                                 ?>
@@ -228,22 +228,24 @@
 
 <script src="{{ asset('public/js/js_tabel/jquery-3.5.1.js') }}"></script>
 <script> 
-    $(document).ready(function(){        
-        var no      = <?= $no_pelanggan ?>; 
-        for (let i = 1; i < no; i++) 
-        {                                                      
-            $('#lihat_'+i+'').click(function(){      
-                
-                var tipe = $('#u_hidden_password_'+i+'').attr('type');
-                if(tipe == 'password')
-                {
-                    $('#u_hidden_password_'+i+'').attr('type', 'text');
-                }
-                else{
-                    $('#u_hidden_password_'+i+'').attr('type', 'password');
-                }
-            });
-        }
+    $(document).ready(function(){   
+        if (typeof(<?= $no_pelanggan ?>) != "undefined" && <?= $no_pelanggan ?> !== null) {
+            var no      = <?= $no_pelanggan ?>; 
+            for (let i = 1; i < no; i++) 
+            {                                                      
+                $('#lihat_'+i+'').click(function(){      
+                    
+                    var tipe = $('#u_hidden_password_'+i+'').attr('type');
+                    if(tipe == 'password')
+                    {
+                        $('#u_hidden_password_'+i+'').attr('type', 'text');
+                    }
+                    else{
+                        $('#u_hidden_password_'+i+'').attr('type', 'password');
+                    }
+                });
+            }
+        }     
     });
 </script>
 

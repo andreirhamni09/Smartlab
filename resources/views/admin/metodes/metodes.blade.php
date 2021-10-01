@@ -47,11 +47,15 @@
                                         <div class="col-sm-6">                                            
                                             <div class="form-group">
                                                 <label>PARAMETER</label>
-                                                <select name="parameters_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH PARAMETERS --" style="width: 100%;">
-                                                    @foreach($parameters as $par)
-                                                        <option value="{{ $par['id'] }}">{{ strtoupper($par['nama_unsur']) }}</option>                                                        
-                                                    @endforeach
-                                                </select>
+                                                @if(!empty($parameters))
+                                                    <select name="parameters_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH PARAMETERS --" style="width: 100%;">
+                                                        @for($i = 0; $i < count($parameters['id']); $i++)
+                                                            <option value="{{ $parameters['id'][$i] }}">{{ $parameters['simbol'][$i] }}</option>
+                                                        @endfor
+                                                    </select>
+                                                @else
+                                                    <a href="{{ url('admin/parameters') }}" class="btn btn-primary form-control"><abbr title="TAMBAH PARAMATER"><i class="fas fa-plus"></i></abbr></a>
+                                                @endif
                                             </div>
                                         </div>
                                         <div class="col-sm-2">
@@ -95,37 +99,32 @@
                                                 <td colspan="5"><h4>BELUM ADA DATA YANG DIINPUTKAN</h4></td>
                                             </tr>
                                         @else
-                                            <?php
-                                                $arr_metodes_id       = explode('-', $metodes['id']);
-                                                $arr_metodes_met      = explode('-', $metodes['metode']);
-                                                $arr_metodes_par_id   = explode(';', $metodes['parameters_id_s']);
-                                                $no_metodes           = 1;
-                                            ?>
-                                            @for($i = 0; $i < count($arr_metodes_id); $i++)                                                
+                                            <?php $no_metodes = 1;?>
+                                            @for($i = 0; $i < count($metodes['id']); $i++)
                                                 <form action="{{ url('admin/updatemetodes')}}" method="post">
-                                                    {{ csrf_field() }}
-                                                    <input type="hidden" name="id" class="form-control" value="{{ $arr_metodes_id[$i] }}">
+                                                {{ csrf_field() }}
+                                                    <input type="hidden" name="id" class="form-control" value="{{ $metodes['id'][$i] }}">
                                                     <tr>
                                                         <td>{{ $no_metodes }}</td>
-                                                        <td><input name="metode" class="form-control" value="{{ $arr_metodes_met[$i] }}" placeholder="{{ $arr_metodes_met[$i] }}"></td>
+                                                        <td><input name="metode" class="form-control" value="{{ $metodes['metode'][$i] }}" placeholder="{{ $metodes['metode'][$i] }}"></td>
                                                         <td>
                                                             <select name="parameters_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH PARAMETERS --" style="width: 100%;">
-                                                            @foreach($parameters as $par)
-                                                                <?php if(in_array($par['id'], $metode_par[$i]['id'])):?>
-                                                                    <option value="{{ $par['id'] }}" selected>{{ strtoupper($par['nama_unsur']) }}</option>                                                           
-                                                                <?php else:?>
-                                                                    <option value="{{ $par['id'] }}">{{ strtoupper($par['nama_unsur']) }}</option>
-                                                                <?php endif;?>
-                                                            @endforeach
+                                                            @for($j = 0; $j < count($parameters['id']); $j++)
+                                                                @if(in_array($parameters['id'][$j], explode('-', $metodes['parameters_id_s'][$i])))
+                                                                    <option value="{{ $parameters['id'][$j] }}" selected>{{ $parameters['simbol'][$j] }}</option>
+                                                                @else
+                                                                    <option value="{{ $parameters['id'][$j] }}">{{ $parameters['simbol'][$j] }}</option>
+                                                                @endif
+                                                            @endfor
                                                             </select>
                                                         </td>
                                                         <td>
                                                             <button class="btn btn-success" type="submit" name="update">UPDATE</button>
-                                                            <a href="deletemetodes/{{$arr_metodes_id[$i]}}" value="add" class="btn btn-danger">DELETE</a>
+                                                            <a href="deletemetodes/{{$metodes['id'][$i]}}" value="add" class="btn btn-danger">DELETE</a>
                                                         </td>
                                                     </tr>
                                                 </form>
-                                            <?php $no_metodes++; ?>
+                                            <?php $no_metodes += 1;?>
                                             @endfor
                                         @endif
                                     </tbody>

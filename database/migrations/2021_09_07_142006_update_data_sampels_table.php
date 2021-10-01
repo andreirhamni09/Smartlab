@@ -16,7 +16,6 @@ class UpdateDataSampelsTable extends Migration
         Schema::table('data_sampels', function (Blueprint $table) {
             $table->foreign('jenis_sampels_id')->references('id')->on('jenis_sampels')->onUpdate('cascade');
             $table->foreign('pelanggans_id')->references('id')->on('pelanggans')->onUpdate('cascade');
-            $table->foreign('ketersedian_alats_id')->references('id')->on('ketersedian_alats')->onUpdate('cascade');
         });
     }
 
@@ -30,7 +29,6 @@ class UpdateDataSampelsTable extends Migration
         Schema::table('data_sampels', function (Blueprint $table) {
             $table->dropIfExists(['jenis_sampels_id']);
             $table->dropIfExists(['pelanggans_id']);
-            $table->dropIfExists(['ketersedian_alats_id']);
         });
     }
 }

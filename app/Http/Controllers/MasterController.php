@@ -10,14 +10,53 @@ use App\Controllers\ApiController;
 
 class MasterController extends Controller
 {
+#GENERAL FUNCTION
+    #HALAMAN
+    function GetHal(){
+        $gethalamans           = app('App\Http\Controllers\ApiController')->GetHalamans(); 
+        $gethalamans           = json_decode($gethalamans, true);
+        $halamans              = '';
+        if($gethalamans['success'] == '1')
+        {
+            $halamans = [
+                'id'          => explode('-', $gethalamans['id']),
+                'halaman'     => explode('-', $gethalamans['halaman']),
+                'url'         => explode('-', $gethalamans['url']),
+                'simbol'      => explode(';', $gethalamans['simbol'])
+            ];
+        }
+        else{
+            $halamans = array();
+        }
+        return $halamans;
+    }
+    #HALAMAN
+
+    #PARAMETER
+    function GetPar(){
+        $getparameters      = app('App\Http\Controllers\ApiController')->GetParameters(); 
+        $getparameters      = json_decode($getparameters, true); 
+        $parameters         = '';
+        if($getparameters['success'] == '1')
+        {
+            $parameters = [
+                'id'            => explode('-', $getparameters['id']),
+                'simbol'        => explode('-', $getparameters['simbol']),
+                'nama_unsur'    => explode('-', $getparameters['nama_unsur'])
+            ];
+        }else{
+            $parameters = array();
+        }
+        return $parameters;
+    }
+    #PARAMETER
+#GENERAL FUNCTION
+
 #1 - 4PARAMETERS -> PAGES
     public function Parameters()
     {
-        $parameters         = app('App\Http\Controllers\ApiController')->GetParameters();
-        $parameters         = json_decode($parameters, true);
-        
-        $halamans           = app('App\Http\Controllers\ApiController')->GetHalamans(); 
-        $halamans           = json_decode($halamans, true);
+        $parameters     = app('App\Http\Controllers\MasterController')->GetPar();
+        $halamans       = app('App\Http\Controllers\MasterController')->GetHal();
         return view('admin.parameters.parameters', ['parameters' => $parameters, 'halamans' => $halamans]);
     }
     public function InsertParameter(Request $request)
@@ -51,57 +90,25 @@ class MasterController extends Controller
     #GET AKSES LEVELS
     public static function AksesLevels()
     {
-        $akseslevels = app('App\Http\Controllers\ApiController')->GetAksesLevels();        
-        $akseslevels = json_decode($akseslevels, true);
-
-        $halamans           = app('App\Http\Controllers\ApiController')->GetHalamans(); 
-        $halamans           = json_decode($halamans, true);
-        $arr_halamans_id        = explode('-', $halamans['id']);
-        $arr_halamans_halaman   = explode('-', $halamans['halaman']);
-        $arr_halamans_all       = array();
-        for ($i = 0; $i < count($arr_halamans_id); $i++) { 
-            $data = [
-                'id'        => $arr_halamans_id[$i],
-                'halaman'   => $arr_halamans_halaman[$i],
+        $getakseslevels = app('App\Http\Controllers\ApiController')->GetAksesLevels();        
+        $getakseslevels = json_decode($getakseslevels, true);
+        $akseslevels    = '';
+        if($getakseslevels['success'] == '1')
+        {
+            $akseslevels = [
+                'id'            => explode('-', $getakseslevels['id']),
+                'jabatan'       => explode('-', $getakseslevels['jabatan']),
+                'halamans_id_s' => explode(';', $getakseslevels['halamans_id_s'])
             ];
-            array_push($arr_halamans_all, $data);
         }
-        $arr_akses_levels_halamans_id = explode(';', $akseslevels['halamans_id_s']);
-        $arr_akses_levels_hals_id     = array();
-        foreach ($arr_akses_levels_halamans_id as $value) {
-            $data = explode('-', $value);
-            array_push($arr_akses_levels_hals_id, $data);
+        else
+        {
+            $akseslevels = array();
         }
-        
-        $arr_akses_levels_hals = array();
-        for ($i = 0; $i < count($arr_akses_levels_hals_id); $i++) { 
-            $str_akses_levels_hals_id   = '';
-            $str_akses_levels_hals      = '';
-            for ($j = 0; $j < count($arr_akses_levels_hals_id[$i]); $j++) { 
-                for ($k = 0; $k < count($arr_halamans_all); $k++) { 
-                    if($arr_akses_levels_hals_id[$i][$j] == $arr_halamans_all[$k]['id']){
-                        $str_akses_levels_hals_id   .= $arr_halamans_all[$k]['id'].'-';
-                        $str_akses_levels_hals      .= $arr_halamans_all[$k]['halaman'].'-';
-                    }
-                }
-            }
-            $str_akses_levels_hals_id   = substr($str_akses_levels_hals_id, 0, -1);
-            $str_akses_levels_hals      = substr($str_akses_levels_hals, 0, -1);
-            
-            $arr_ = [
-                'id'        => explode('-',$str_akses_levels_hals_id),
-                'halaman'   => explode('-',$str_akses_levels_hals)
-            ];
 
-            array_push($arr_akses_levels_hals, $arr_);
-        }
-        print_r($arr_akses_levels_hals);
-
-        return view('admin.akseslevels.akseslevels', ['akseslevels_hal' => $arr_akses_levels_hals,
-                                                      'akseslevels' => $akseslevels, 
-                                                      'halamans' => $halamans,
-                                                      'arr_halamans' => $arr_halamans_all]);
-    
+        $halamans              = app('App\Http\Controllers\MasterController')->GetHal();
+        return view('admin.akseslevels.akseslevels', ['akseslevels' => $akseslevels, 
+                                                      'halamans' => $halamans]);
     }
 
     #INSERT AKSES LEVELS
@@ -138,10 +145,23 @@ class MasterController extends Controller
     {
         $getjenissampels    = app('App\Http\Controllers\ApiController')->GetJenisSampels(); 
         $getjenissampels    = json_decode($getjenissampels, true);
+        $jenissampels       = '';
+        if($getjenissampels['success'] == '1')
+        {
+            $jenissampels = [
+                'id'                => explode('-', $getjenissampels['id']),
+                'jenis_sampel'      => explode('-', $getjenissampels['jenis_sampel']),
+                'lambang_sampel'    => explode('-', $getjenissampels['lambang_sampel'])
+            ];
+        }
+        else
+        {
+            $jenissampels = array();
+        }
 
-        $halamans           = app('App\Http\Controllers\ApiController')->GetHalamans(); 
-        $halamans           = json_decode($halamans, true);
-        return view('admin.jenissampels.jenissampels', ['jenissampels' => $getjenissampels, 'halamans' => $halamans]);
+        $halamans           = app('App\Http\Controllers\MasterController')->GetHal();
+        return view('admin.jenissampels.jenissampels', ['jenissampels' => $jenissampels, 
+                                                        'halamans' => $halamans]);
     }
     public static function InsertJenisSampels(Request $request)
     {
@@ -166,61 +186,28 @@ class MasterController extends Controller
 #7 METODES -> PAGES
     public static function Metodes()
     {
-        $metodes = app('App\Http\Controllers\ApiController')->GetMetodes();    
-        $metodes = json_decode($metodes, true);
-
-        $halamans       = app('App\Http\Controllers\ApiController')->GetHalamans(); 
-        $halamans       = json_decode($halamans, true);
-        
-        #PARAMETERS
-        $parameters     = app('App\Http\Controllers\ApiController')->GetParameters();
-        $parameters     = json_decode($parameters, true);
-        $arr_parameters_id          = explode('-', $parameters['id']);
-        $arr_parameters_simbol      = explode('-', $parameters['simbol']);
-        $arr_parameters_nama_unsur  = explode('-', $parameters['nama_unsur']);
-
-        $arr_parameters_all    = array();
-        for ($i = 0; $i < count($arr_parameters_id) ; $i++) { 
-            $data = [
-                'id'            => $arr_parameters_id[$i],
-                'simbol'        => $arr_parameters_simbol[$i],        
-                'nama_unsur'    => $arr_parameters_nama_unsur[$i]            
+        $getmetodes        = app('App\Http\Controllers\ApiController')->GetMetodes();    
+        $getmetodes        = json_decode($getmetodes, true);
+        $metodes           = '';
+        if($getmetodes['success'] == '1')
+        {
+            $metodes = [
+                'id'                => explode('-', $getmetodes['id']),
+                'metode'            => explode('-', $getmetodes['metode']),
+                'parameters_id_s'   => explode(';', $getmetodes['parameters_id_s'])
             ];
-            array_push($arr_parameters_all, $data);
         }
-        $arr_metode_pars_id_s          = explode(';', $metodes['parameters_id_s']);
-        $arr_parameters_id_s        = array();
-        for ($i = 0; $i < count($arr_metode_pars_id_s) ; $i++) { 
-            $data = explode('-', $arr_metode_pars_id_s[$i]);
-            array_push($arr_parameters_id_s, $data);
-        }
-        $arr_metodes_par = array();
-
-        for ($i = 0; $i < count($arr_parameters_id_s) ; $i++) { 
-            $str_metode_par_id   = '';
-            $str_metode_par      = '';
-
-            for ($j = 0; $j < count($arr_parameters_id_s[$i]); $j++) { 
-                for ($k = 0; $k < count($arr_parameters_all); $k++) { 
-                    if($arr_parameters_id_s[$i][$j] == $arr_parameters_all[$k]['id']){
-                        $str_metode_par_id   .= $arr_parameters_all[$k]['id'].'-';
-                        $str_metode_par      .= $arr_parameters_all[$k]['nama_unsur'].'-';
-                    }
-                }
-            }
-            $str_metode_par_id   = substr($str_metode_par_id, 0, -1);
-            $str_metode_par      = substr($str_metode_par, 0, -1);
-
-            $arr_ = [
-                'id'            => explode('-', $str_metode_par_id),
-                'nama_unsur'    => explode('-', $str_metode_par)
-            ];
-
-            array_push($arr_metodes_par, $arr_);
-            
+        else
+        {
+            $metodes = array();
         }
 
-        return view('admin.metodes.metodes', ['metode_par' => $arr_metodes_par, 'metodes' => $metodes, 'halamans' => $halamans, 'parameters' => $arr_parameters_all]);
+        $halamans       = app('App\Http\Controllers\MasterController')->GetHal(); 
+        $parameters     = app('App\Http\Controllers\MasterController')->GetPar();
+
+        return view('admin.metodes.metodes', ['metodes' => $metodes, 
+                                              'halamans' => $halamans, 
+                                              'parameters' => $parameters]);
     }
     public static function InsertMetodes(Request $request)
     {
@@ -251,8 +238,7 @@ class MasterController extends Controller
 #8 HALAMANS -> PAGES
     #HALAMAN PAGES
     public static function Halamans(){
-        $halamans           = app('App\Http\Controllers\ApiController')->GetHalamans(); 
-        $halamans           = json_decode($halamans, true);
+        $halamans = app('App\Http\Controllers\MasterController')->GetHal();
         return view('halamans.halamans', ['halamans' => $halamans]);
     }
 
@@ -278,29 +264,174 @@ class MasterController extends Controller
     }
 #8 HALAMANS -> PAGES
 
+#9 DETAIL TRACKING -> PAGES
+#9 DETAIL TRACKING -> PAGES
+
+#11 14 DATA SAMPELS -> PAGES
+    #PAGES DATA SAMPELS
+    public static function DataSampels(){        
+        #JENIS SAMPELS
+        $getjenissampels   = app('App\Http\Controllers\ApiController')->GetJenisSampels(); 
+        $getjenissampels   = json_decode($getjenissampels, true);
+        $jenissampels      = '';
+        if($getjenissampels['success'] == '1'){
+            $jenissampels      = [
+                'id'                => explode('-', $getjenissampels['id']),
+                'jenis_sampel'      => explode('-', $getjenissampels['jenis_sampel']),
+                'lambang_sampel'    => explode('-', $getjenissampels['lambang_sampel'])
+            ];
+        }
+        else{
+            $jenissampels = array();
+        }
+
+        #PELANGGANS
+        $getpelanggans      = app('App\Http\Controllers\ApiController')->GetPelanggans(); 
+        $getpelanggans      = json_decode($getpelanggans, true);
+        $pelanggans         = '';
+        if($getpelanggans['success'] == '1'){
+            $pelanggans         = [
+                'id'            => explode('-', $getpelanggans['id']),
+                'nama'          => explode('-', $getpelanggans['nama']),
+                'perusahaan'    => explode('-', $getpelanggans['perusahaan'])
+            ]; 
+        }
+        else{
+            $pelanggans     = array();
+        }
+
+        $getpakets          = app('App\Http\Controllers\ApiController')->GetPakets(); 
+        $getpakets          = json_decode($getpakets, true);
+        $pakets             = '';
+        if($getpakets['success'] == '1'){
+            $pakets = [
+                'id'                => explode('-', $getpakets['id']),
+                'jenis_sampels_id'  => explode('-', $getpakets['jenis_sampels_id']),
+                'jenis_sampel'      => explode('-', $getpakets['jenis_sampel']),
+                'paket'             => explode('-', $getpakets['paket']),
+                'parameters_id_s'   => explode(';', $getpakets['parameters_id_s']),
+                'metodes_id_s'      => explode(';', $getpakets['metodes_id_s']),
+                'harga'             => explode('-', $getpakets['harga'])
+            ];
+        }
+        else{
+            $paket = array();
+        }
+
+        #HALAMANS
+        $halamans           = app('App\Http\Controllers\MasterController')->GetHal(); 
+
+        
+        $getdatasampels     = app('App\Http\Controllers\ApiController')->GetDataSampelsAll();
+        $getdatasampels     = json_decode($getdatasampels, true);
+        $datasampels        = '';
+        if($getdatasampels['success'] == '1')
+        {
+            $datasampels    = [
+                'id'                    => explode('-', $getdatasampels['id']),
+                'pakets_id_s'           => explode('-', $getdatasampels['pakets_id_s']),
+                'tanggal_masuk'         => explode('-', $getdatasampels['tanggal_masuk']),
+                'tanggal_selesai'       => explode('-', $getdatasampels['tanggal_selesai']),
+                'nomor_surat'           => explode('-', $getdatasampels['nomor_surat']),
+                'jumlah_sampel'         => explode('-', $getdatasampels['jumlah_sampel']),
+                'catatan_userlabs'      => explode('-', $getdatasampels['catatan_userlabs']),
+                'status'                => explode('-', $getdatasampels['status']),
+                'pelanggans_id'         => explode('-', $getdatasampels['pelanggans_id']),
+                'pelanggans'            => explode('-', $getdatasampels['pelanggans']),
+                'jenis_sampels_id'      => explode('-', $getdatasampels['jenis_sampels_id']),
+                'jenis_sampel'          => explode('-', $getdatasampels['jenis_sampel']),
+                'ketersediaan_alat'     => explode('-', $getdatasampels['ketersediaan_alat'])
+            ];
+        }
+        else{
+            $datasampels    = array();
+        }
+        return view('admin.sampel.data_sampel', ['datasampels'=> $datasampels,
+                                                 'jenissampels'=> $jenissampels,
+                                                 'pelanggans'=> $pelanggans,
+                                                 'pakets'=> $pakets,
+                                                 'halamans'=> $halamans,]);
+    }
+
+    #INSERT DATA SAMPELS
+    public static function InsertDataSampels(Request $request){
+        $batch = $request->batch_size;
+        if(substr($batch, 0, -1) == ',')
+        {   
+            $batch = substr($batch, 0, -1);
+        } 
+        $paket =  implode('-', $request->pakets_id_s);
+
+        $insertdatasampels = app('App\Http\Controllers\ApiController')->InsertDataSampels($request, 
+                                                                                          $request->jenis_sampels_id, 
+                                                                                          $request->pelanggans_id, 
+                                                                                          $paket, 
+                                                                                          $request->tanggal_masuk, 
+                                                                                          $request->tanggal_selesai, 
+                                                                                          $request->nomor_surat, 
+                                                                                          $request->jumlah_sampel, 
+                                                                                          $batch, 
+                                                                                          $request->ketersediaan_alat, 
+                                                                                          $request->catatan_userlabs);
+        
+        
+        $insertdatasampels = json_decode($insertdatasampels, true);   
+        return redirect()->back()->with('insert', $insertdatasampels['message']); 
+        
+    }
+
+#11 14 DATA SAMPELS -> PAGES
+
+#15 16 HASIL ANALISAS -> PAGES
+#15 16 HASIL ANALISAS -> PAGES
+
 #17 21 PELANGGANS -> PAGES
     #GET PELANGGANS
     public static function GetPelanggans(){
-        $getpelanggans = app('App\Http\Controllers\ApiController')->GetPelanggans();
-        $getpelanggans = json_decode($getpelanggans, true);   
+        $getpelanggans  = app('App\Http\Controllers\ApiController')->GetPelanggans();
+        $getpelanggans  = json_decode($getpelanggans, true);   
+        $pelanggans     = '';
+        if($getpelanggans['success'] == '1'){
+            $pelanggans = [
+                'id'                    => explode('-', $getpelanggans['id']),
+                'email'                 => explode('-', $getpelanggans['email']),
+                'password'              => explode('-', $getpelanggans['password']),
+                'nama'                  => explode('-', $getpelanggans['nama']),
+                'perusahaan'            => explode('-', $getpelanggans['perusahaan']),
+                'nomor_telepon'         => explode('-', $getpelanggans['nomor_telepon']),
+                'npwp'                  => explode(';', $getpelanggans['npwp']),
+                'alamat'                => explode('-', $getpelanggans['alamat']),
+                'tanggal_registrasi'    => explode('-', $getpelanggans['tanggal_registrasi'])
+            ];
+        }
+        else{
+            $pelanggans = array();
+        }
 
-        $halamans           = app('App\Http\Controllers\ApiController')->GetHalamans(); 
-        $halamans           = json_decode($halamans, true);
-        return view('admin.pelanggans.pelanggans', ['pelanggans' => $getpelanggans, 'halamans' => $halamans]);
+        $halamans = app('App\Http\Controllers\MasterController')->GetHal();
+        return view('admin.pelanggans.pelanggans', ['pelanggans'    => $pelanggans, 
+                                                    'halamans'      => $halamans]);
     }
 
     #INSERT PELANGGANS
     public static function InsertPelanggans(Request $request){
-        $insertpelanggans = app('App\Http\Controllers\ApiController')->InsertPelanggans($request, $request->email, $request->password, $request->nama, $request->perusahaan ,$request->nomor_telepon , $request->alamat , $request->tanggal_registrasi);
+        $insertpelanggans = app('App\Http\Controllers\ApiController')->InsertPelanggans($request, $request->email, $request->password, $request->nama, $request->perusahaan, $request->nomor_telepon, $request->npwp, $request->alamat);
         $insertpelanggans = json_decode($insertpelanggans, true);        
         return redirect()->back()->with('insert', $insertpelanggans['message']); 
+        
+        
+        // return app('App\Http\Controllers\ApiController')->InsertPelanggans($request, $request->email, $request->password, $request->nama, $request->perusahaan, $request->nomor_telepon, $request->npwp, $request->alamat);
+    
     }
 
     #UPDATE PELANGGANS
     public static function UpdatePelanggans(Request $request){
-        $updatepelanggans = app('App\Http\Controllers\ApiController')->UpdatePelanggans($request, $request->id, $request->email, $request->password, $request->nama, $request->perusahaan ,$request->nomor_telepon , $request->alamat , $request->tanggal_registrasi);
+        $updatepelanggans = app('App\Http\Controllers\ApiController')->UpdatePelanggans($request, $request->id, $request->email, $request->password, $request->nama, $request->perusahaan ,$request->nomor_telepon , $request->npwp, $request->alamat);
         $updatepelanggans = json_decode($updatepelanggans, true);        
         return redirect()->back()->with('update', $updatepelanggans['message']); 
+
+        //return app('App\Http\Controllers\ApiController')->UpdatePelanggans($request, $request->id, $request->email, $request->password, $request->nama, $request->perusahaan, $request->nomor_telepon, $request->npwp, $request->alamat);
+        
     }
 
     #DELETE PELANGGANS
@@ -322,8 +453,7 @@ class MasterController extends Controller
         $getaktivitas = app('App\Http\Controllers\ApiController')->GetAktivitas();
         $getaktivitas = json_decode($getaktivitas, true);      
 
-        $halamans           = app('App\Http\Controllers\ApiController')->GetHalamans(); 
-        $halamans           = json_decode($halamans, true);
+        $halamans =app('App\Http\Controllers\MasterController')->GetHal();
         return view('admin.aktivitas.aktivitas', ['aktivitas' => $getaktivitas, 'halamans' => $halamans]);
     }
 
@@ -358,63 +488,56 @@ class MasterController extends Controller
 #23 - 27 LAB AKUNS
     #GET LAB AKUNS
     public static function GetLabAkuns(){
-        $getlabakuns = app('App\Http\Controllers\ApiController')->GetAkunLabs();
-        $getlabakuns = json_decode($getlabakuns, true);   
-        
-        $getakseslevels = app('App\Http\Controllers\ApiController')->GetAksesLevels();
-        $getakseslevels = json_decode($getakseslevels, true);        
-
-        $metodes     = app('App\Http\Controllers\ApiController')->GetMetodes();
-        $metodes     = json_decode($metodes, true);
-        $arr_metodes_id     = explode('-', $metodes['id']);
-        $arr_metodes_metode = explode('-', $metodes['metode']);
-        $arr_metodes_all    = array();
-        for ($i = 0; $i < count($arr_metodes_id); $i++) { 
-            $data = [
-                'id'        => $arr_metodes_id[$i],
-                'metode'    => $arr_metodes_metode[$i]
+        $getlabakuns        = app('App\Http\Controllers\ApiController')->GetAkunLabs();
+        $getlabakuns        = json_decode($getlabakuns, true);
+        $labakuns           = '';
+        if($getlabakuns['success'] == 1){
+            $labakuns       = [
+                'id'                => explode('-', $getlabakuns['id']),
+                'metodes_id_s'      => explode(';', $getlabakuns['metodes_id_s']),
+                'akses_levels_id'   => explode('-', $getlabakuns['akses_levels_id']),
+                'akses_level'       => explode('-', $getlabakuns['akses_level']),
+                'nama'              => explode('-', $getlabakuns['nama']),
+                'email'             => explode('-', $getlabakuns['email']),
+                'password'          => explode('-', $getlabakuns['password']),
+                'jabatan'           => explode('-', $getlabakuns['jabatan']),
+                'status_akun'       => explode('-', $getlabakuns['status_akun'])
             ];
-            array_push($arr_metodes_all, $data);
         }
-        //print_r($arr_metodes_all);
-                
-        $arr_labakuns_mets_id_s       = explode(';', $getlabakuns['metodes_id_s']);
-        $arr_labakuns_metodes_id_s    = array();
-        for ($i=0; $i < count($arr_labakuns_mets_id_s); $i++) { 
-            $data = explode('-', $arr_labakuns_mets_id_s[$i]);
-            array_push($arr_labakuns_metodes_id_s, $data);
-        }       
-
-        $arr_labakuns_metode_all = array();
-        for ($i = 0; $i < count($arr_labakuns_metodes_id_s); $i++) { 
-            $str_labakuns_metodes_id = '';
-            $str_labakuns_metodes_met = '';
-            for ($j = 0; $j < count($arr_labakuns_metodes_id_s[$i]); $j++) { 
-                for ($k = 0; $k < count($arr_metodes_all); $k++) { 
-                    if($arr_labakuns_metodes_id_s[$i][$j] == $arr_metodes_all[$k]['id']){
-                        $str_labakuns_metodes_id    .= $arr_metodes_all[$k]['id'].'-';
-                        $str_labakuns_metodes_met   .= $arr_metodes_all[$k]['metode'].'-';
-                    }
-                }
-            }
-            $str_labakuns_metodes_id    = substr($str_labakuns_metodes_id, 0, -1);
-            $str_labakuns_metodes_met   = substr($str_labakuns_metodes_met, 0, -1);
-
-            $arr_ = [
-                'id'        => explode('-', $str_labakuns_metodes_id),
-                'metode'    => explode('-', $str_labakuns_metodes_met)
-            ];
-
-            array_push($arr_labakuns_metode_all, $arr_);
+        else{
+            $labakuns           = array();
         }
 
-        $halamans           = app('App\Http\Controllers\ApiController')->GetHalamans(); 
-        $halamans           = json_decode($halamans, true);
+        $getmetodes         = app('App\Http\Controllers\ApiController')->GetMetodes();
+        $getmetodes         = json_decode($getmetodes, true);
+        $metodes            = '';
+        if($getmetodes['success'] == '1'){
+            $metodes        = [
+                'id'        => explode('-', $getmetodes['id']),
+                'metode'    => explode('-', $getmetodes['metode'])
+            ];
+        }
+        else{
+            $metodes        = array();
+        }
+
+        $getakseslevels     = app('App\Http\Controllers\ApiController')->GetAksesLevels();
+        $getakseslevels     = json_decode($getakseslevels, true);
+        $akseslevels        = '';
+        if($getakseslevels['success'] == '1'){
+            $akseslevels    = [
+                'id'        => explode('-', $getakseslevels['id']),
+                'jabatan'   => explode('-', $getakseslevels['jabatan'])
+            ];
+        }
+        else{
+            $akseslevels = array();
+        }
+        $halamans           = app('App\Http\Controllers\MasterController')->GetHal(); 
         
-        return view('admin.labakuns.labakuns', ['labakuns_met'  => $arr_labakuns_metode_all, 
-                                                'metodes'       => $arr_metodes_all,
-                                                'labakuns'      => $getlabakuns, 
-                                                'akseslevels'   => $getakseslevels, 
+        return view('admin.labakuns.labakuns', ['labakuns'      => $labakuns, 
+                                                'metodes'       => $metodes,
+                                                'akseslevels'   => $akseslevels, 
                                                 'halamans'      => $halamans]);
     }
 
@@ -427,7 +550,15 @@ class MasterController extends Controller
     
     #UPDATE LAB AKUNS
     public static function UpdateLabAkuns(Request $request){
-        $updatelabakuns = app('App\Http\Controllers\ApiController')->UpdateLabAkuns($request, $request->id, $request->metodes_id_s, $request->akses_levels_id, $request->nama, $request->email, $request->password, $request->jabatan, $request->status_akun);
+        $updatelabakuns = app('App\Http\Controllers\ApiController')->UpdateLabAkuns($request, 
+                                                                                    $request->id, 
+                                                                                    $request->metodes_id_s, 
+                                                                                    $request->akses_levels_id, 
+                                                                                    $request->nama, 
+                                                                                    $request->email, 
+                                                                                    $request->password, 
+                                                                                    $request->jabatan, 
+                                                                                    $request->status_akun);
         $updatelabakuns = json_decode($updatelabakuns, true);        
         return redirect()->back()->with(['update' => $updatelabakuns['message']]);   
     }
@@ -449,85 +580,73 @@ class MasterController extends Controller
     #GET AKSES LEVELS
     public static function Pakets()
     {
-        $pakets         = app('App\Http\Controllers\ApiController')->GetPakets();        
-        $pakets         = json_decode($pakets, true);
-
-        #JENIS SAMPELS
-        $jenissampels                    = app('App\Http\Controllers\ApiController')->GetJenisSampels();
-        $jenissampels                    = json_decode($jenissampels, true);
-        $arr_jenissampels_id             = explode('-',$jenissampels['id']);
-        $arr_jenissampels_jenis_sampel   = explode('-',$jenissampels['jenis_sampel']);
-        $arr_jenissampels_lambang_sampel = explode('-',$jenissampels['lambang_sampel']);
+        $getpakets  = app('App\Http\Controllers\ApiController')->GetPakets();        
+        $getpakets  = json_decode($getpakets, true);
+        $pakets     = '';
+        if($getpakets['success'] == '1')
+        {
+            $pakets = [
+                'id'                => explode('-', $getpakets['id']),                   
+                'jenis_sampels_id'  => explode('-', $getpakets['jenis_sampels_id']), 
+                'jenis_sampel'      => explode('-', $getpakets['jenis_sampel']), 
+                'paket'             => explode('-', $getpakets['paket']), 
+                'parameters_id_s'   => explode(';', $getpakets['parameters_id_s']), 
+                'metodes_id_s'      => explode(';', $getpakets['metodes_id_s']), 
+                'harga'             => explode('-', $getpakets['harga'])     
+            ];
+        }
+        else
+        {   
+            $pakets = array();
+        }
         
-        $arr_jenissampels_all            = array();
-        for ($i = 0; $i < count($arr_jenissampels_id) ; $i++) { 
-            $data = [
-                'id'                => $arr_jenissampels_id[$i],
-                'jenis_sampel'      => $arr_jenissampels_jenis_sampel[$i],        
-                'lambang_sampel'    => $arr_jenissampels_lambang_sampel[$i]            
+        #JENIS SAMPELS
+        $getjenissampels                    = app('App\Http\Controllers\ApiController')->GetJenisSampels();
+        $getjenissampels                    = json_decode($getjenissampels, true);
+        $jenissampels                       = '';
+        if($getjenissampels['success'] == '1')
+        {
+            $jenissampels   = [
+                'id'                => explode('-', $getjenissampels['id']),
+                'jenis_sampel'      => explode('-', $getjenissampels['jenis_sampel']),
+                'lambang_sampel'    => explode('-', $getjenissampels['lambang_sampel']),
             ];
-            array_push($arr_jenissampels_all, $data);
+        }
+        else
+        {
+            $jenissampels = array();
         }
         #JENIS SAMPELS
 
         #PARAMETERS
-        $parameters                 = app('App\Http\Controllers\ApiController')->GetParameters();        
-        $parameters                 = json_decode($parameters, true);
-        $arr_parameters_id          = explode('-', $parameters['id']);
-        $arr_parameters_simbol      = explode('-', $parameters['simbol']);
-        $arr_parameters_nama_unsur  = explode('-', $parameters['nama_unsur']);
+        $parameters                 = app('App\Http\Controllers\MasterController')->GetPar();
 
-        $arr_parameters_all         = array();
-        for ($i = 0; $i < count($arr_parameters_id) ; $i++) { 
-            $data = [
-                'id'            => $arr_parameters_id[$i],
-                'simbol'        => $arr_parameters_simbol[$i],        
-                'nama_unsur'    => $arr_parameters_nama_unsur[$i]            
+        $getmetodes            = app('App\Http\Controllers\ApiController')->GetMetodes(); 
+        $getmetodes            = json_decode($getmetodes, true);
+        $metodes               = '';
+        if($getmetodes['success'] == '1')
+        {
+            $metodes    = [
+                'id'                => explode('-', $getmetodes['id']),
+                'metode'            => explode('-', $getmetodes['metode']),
+                'parameters_id_s'   => explode(';', $getmetodes['parameters_id_s'])
             ];
-            array_push($arr_parameters_all, $data);
         }
-        $arr_pkt_pars_id_s          = explode(';', $pakets['parameters_id_s']);
-        $arr_parameters_id_s        = array();
-        for ($i = 0; $i < count($arr_pkt_pars_id_s) ; $i++) { 
-            $data = explode('-', $arr_pkt_pars_id_s[$i]);
-            array_push($arr_parameters_id_s, $data);
+        else
+        {
+            $metodes    = array();
         }
 
-        $arr_paket_par = array();
-        for ($i = 0; $i < count($arr_parameters_id_s) ; $i++) { 
-            $str_paket_par_id   = '';
-            $str_paket_par      = '';
-
-            for ($j = 0; $j < count($arr_parameters_id_s[$i]); $j++) { 
-                for ($k = 0; $k < count($arr_parameters_all); $k++) { 
-                    if($arr_parameters_id_s[$i][$j] == $arr_parameters_all[$k]['id']){
-                        $str_paket_par_id   .= $arr_parameters_all[$k]['id'].'-';
-                        $str_paket_par      .= $arr_parameters_all[$k]['nama_unsur'].'-';
-                    }
-                }
-            }
-            $str_paket_par_id   = substr($str_paket_par_id, 0, -1);
-            $str_paket_par      = substr($str_paket_par, 0, -1);
-
-            $arr_ = [
-                'id'            => explode('-', $str_paket_par_id),
-                'nama_unsur'    => explode('-', $str_paket_par)
-            ];
-
-            array_push($arr_paket_par, $arr_);
-            
-        }
-        #PARAMETERS
-
-        $halamans           = app('App\Http\Controllers\ApiController')->GetHalamans(); 
-        $halamans           = json_decode($halamans, true);
-        return view('admin.pakets.pakets', ['pakets' => $pakets, 
-                                            'jenissampels' => $arr_jenissampels_all, 
-                                            'parameters' => $arr_parameters_all, 
-                                            'arr_paket_par' => $arr_paket_par,
-                                            'halamans' => $halamans]);
+        $halamans           = app('App\Http\Controllers\MasterController')->GetHal(); 
+        
+        return view('admin.pakets.pakets', ['pakets'        => $pakets, 
+                                            'parameters'    => $parameters, 
+                                            'halamans'      => $halamans,
+                                            'metodes'       => $metodes,
+                                            'jenissampels'  => $jenissampels]);
+    
+    
     }
-
     #INSERT AKSES LEVELS
     public static function InsertPakets(Request $request)
     {
@@ -538,16 +657,28 @@ class MasterController extends Controller
             $str_parameters_id_s .= $par.'-';
         }
         $str_parameters_id_s  = substr($str_parameters_id_s, 0, -1);
+        $str_metodes_id_s     = '';
+        if(empty($request->metodes_id_s))
+        {
+            $str_metodes_id_s     = '';
+        }
+        else{
+            foreach ($request->metodes_id_s as $met) {
+                $str_metodes_id_s .= $met.'-';
+            }
+            $str_metodes_id_s = substr($str_metodes_id_s, 0, -1);
+        }
         $str_harga            = str_replace('.', '',$request->harga);
 
         $arr_pakets     = [
             'jenis_sampels_id'      => $str_jenis_sampels_id,
             'paket'                 => $str_paket,
             'parameters_id_s'       => $str_parameters_id_s,
+            'metodes_id_s'          => $str_metodes_id_s,
             'harga'                 => $str_harga
         ];
 
-        $insertpakets = app('App\Http\Controllers\ApiController')->InsertPakets($request, $arr_pakets['jenis_sampels_id'], $arr_pakets['paket'], $arr_pakets['parameters_id_s'], $arr_pakets['harga']);      
+        $insertpakets = app('App\Http\Controllers\ApiController')->InsertPakets($request, $arr_pakets['metodes_id_s'], $arr_pakets['jenis_sampels_id'], $arr_pakets['paket'], $arr_pakets['parameters_id_s'], $arr_pakets['harga']);      
         $insertpakets = json_decode($insertpakets, true);
         return redirect()->back()->with('insert', $insertpakets['message']);  
     }
@@ -561,6 +692,17 @@ class MasterController extends Controller
         foreach($request->parameters_id_s as $par){
             $str_parameters_id_s .= $par.'-';
         }
+        $str_metodes_id_s     = '';
+        if(empty($request->metodes_id_s))
+        {
+            $str_metodes_id_s     = '';
+        }
+        else{
+            foreach ($request->metodes_id_s as $met) {
+                $str_metodes_id_s .= $met.'-';
+            }
+            $str_metodes_id_s = substr($str_metodes_id_s, 0, -1);
+        }
         $str_parameters_id_s  = substr($str_parameters_id_s, 0, -1);
         $str_harga            = str_replace('.', '',$request->harga);
 
@@ -569,15 +711,16 @@ class MasterController extends Controller
             'jenis_sampels_id'      => $str_jenis_sampels_id,
             'paket'                 => $str_paket,
             'parameters_id_s'       => $str_parameters_id_s,
+            'metodes_id_s'          => $str_metodes_id_s,
             'harga'                 => $str_harga
         ];
 
-        $updatepakets = app('App\Http\Controllers\ApiController')->UpdatePakets($request, $arr_pakets['id'], $arr_pakets['jenis_sampels_id'], $arr_pakets['paket'], $arr_pakets['parameters_id_s'], $arr_pakets['harga']);      
+        $updatepakets = app('App\Http\Controllers\ApiController')->UpdatePakets($request, $arr_pakets['metodes_id_s'], $arr_pakets['id'], $arr_pakets['jenis_sampels_id'], $arr_pakets['paket'], $arr_pakets['parameters_id_s'], $arr_pakets['harga']);      
         $updatepakets = json_decode($updatepakets, true);
         return redirect()->back()->with('update', $updatepakets['message']);  
     }
     #DELETE AKSES LEVELS
-    public static function DeletePakets(Request $request, $id = null)
+    public static function DeletePakets($id = null)
     { 
         if(isset($id)){
             $deletepakets = app('App\Http\Controllers\ApiController')->DeletePakets($id);      
@@ -589,4 +732,95 @@ class MasterController extends Controller
         }
     }
 #28 31 PAKETS
+
+#32 -35 GRUP AKTIVITAS
+    public static function GetGroupAktivitas(){
+        $groupaktivitas = app('App\Http\Controllers\ApiController')->GetGroupAktivitas();        
+        $groupaktivitas = json_decode($groupaktivitas, true);
+        
+
+        $halamans           = app('App\Http\Controllers\ApiController')->GetHalamans(); 
+        $halamans           = json_decode($halamans, true);
+
+        $arr_groupaktivitas = '';
+        if($groupaktivitas['success'] == 0)
+        {
+            $arr_groupaktivitas     = [];
+        }
+        else if($groupaktivitas['success'] == 1){
+            $arr_groupaktivitas  = [
+                'id'    => explode('-', $groupaktivitas['id']),
+                'group' => explode('-', $groupaktivitas['group'])
+            ];
+        }
+        return view('admin.groupaktivitas.groupaktivitas', ['arrgroupaktivitas' => $arr_groupaktivitas, 'groupaktivitas' => $groupaktivitas, 'halamans' => $halamans]);
+    }
+
+    public static function AjaxTest(){
+        $groupaktivitas = app('App\Http\Controllers\ApiController')->GetGroupAktivitas();        
+        $groupaktivitas = json_decode($groupaktivitas, true);
+        
+
+        $halamans           = app('App\Http\Controllers\ApiController')->GetHalamans(); 
+        $halamans           = json_decode($halamans, true);
+
+        $arr_groupaktivitas = '';
+        if($groupaktivitas['success'] == 0)
+        {
+            $arr_groupaktivitas     = [];
+        }
+        else if($groupaktivitas['success'] == 1){
+            $arr_groupaktivitas  = [
+                'id'    => explode('-', $groupaktivitas['id']),
+                'group' => explode('-', $groupaktivitas['group'])
+            ];
+        }
+        return view('admin.groupaktivitas.groupaktivitasajax', ['arrgroupaktivitas' => $arr_groupaktivitas, 'groupaktivitas' => $groupaktivitas, 'halamans' => $halamans]);
+    }
+
+    
+    public static function InsertGroupAktivitas(Request $request){
+        $insertgroupaktivitas = app('App\Http\Controllers\ApiController')->InsertGroupAktivitas($request, $request->group);        
+        $insertgroupaktivitas = json_decode($insertgroupaktivitas, true);
+
+        return redirect()->back()->with('insert' ,$insertgroupaktivitas['message']);
+    }
+    
+    public static function UpdateGroupAktivitas(Request $request){
+        $updategroupaktivitas = app('App\Http\Controllers\ApiController')->UpdateGroupAktivitas($request, $request->id, $request->group);        
+        $updategroupaktivitas = json_decode($updategroupaktivitas, true);
+
+        return redirect()->back()->with('update', $updategroupaktivitas['message']);
+    }
+
+    
+    public static function DeleteGroupAktivitas($id = null){
+        if(isset($id)){
+            $deletegroupaktivitas = app('App\Http\Controllers\ApiController')->DeleteGroupAktivitas($id);        
+            $deletegroupaktivitas = json_decode($deletegroupaktivitas, true);
+
+            return redirect()->back()->with('delete' , $deletegroupaktivitas['message']);
+        }
+        else{
+            return redirect()->back()->with('delete' , 'ID KOSONG');
+        }
+    }
+#32 -35 GRUP AKTIVITAS
+
+
+    public static function LatihanTabel(){
+
+        $l_hasil_analisis   = DB::table('hasil_analisas')
+            ->where('jenis_sampels_id', '=', 1)
+            ->orderByDesc('no_lab')->take(1)->get();
+
+        $l_hasil_analisis   = json_decode(json_encode($l_hasil_analisis), true);
+        
+        /* if (isset($l_hasil_analisis['no_lab'])) {
+            $n = $l_hasil_analisis['no_lab'];
+        }               
+        else{
+            $n = 0;
+        }   */ 
+    }
 }

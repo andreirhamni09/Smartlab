@@ -421,7 +421,7 @@
                 ]
             }
         },
-        "/insertdatasampels/{jenis_sampels_id}/{pelanggans_id}/{pakets_id_s}/{tanggal_masuk}/{tanggal_selesai}/{nomor_surat}/{jumlah_sampel}/{status}": {
+        "/insertdatasampels/{jenis_sampels_id}/{pelanggans_id}/{pakets_id_s}/{tanggal_masuk}/{tanggal_selesai}/{nomor_surat}/{jumlah_sampel}/{status}/{batch_size}/{ketersediaan_alat}/{catatan_userlabs}": {
             "post": {
                 "tags": [
                     "13. Insert Data Sampel"
@@ -510,39 +510,32 @@
                         "schema": {
                             "type": "string"
                         }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
                     },
-                    "400": {
-                        "description": "Bad request"
-                    }
-                },
-                "security": [
                     {
-                        "api_key_security_example": []
-                    }
-                ]
-            }
-        },
-        "/deletedatasampels/{id}": {
-            "get": {
-                "tags": [
-                    "14. Delete Data Sampels"
-                ],
-                "summary": "Menghapus Data Kupa",
-                "description": "Menghapus Data Kupa",
-                "operationId": "getProjectsList",
-                "parameters": [
-                    {
-                        "name": "id",
+                        "name": "batch_size",
                         "in": "path",
-                        "description": "ID KUPA",
+                        "description": "BATCH SIZE",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "ketersediaan_alat",
+                        "in": "path",
+                        "description": "KETERSEDIAN ALAT",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "catatan_userlabs",
+                        "in": "path",
+                        "description": "CATATAN USERLAB",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],
@@ -661,7 +654,7 @@
                 ]
             }
         },
-        "/insertpelanggans/{email}/{password}/{nama}/{perusahaan}/{nomor_telepon}/{alamat}/{tanggal_registrasi}": {
+        "/insertpelanggans/{email}/{password}/{nama}/{perusahaan}/{nomor_telepon}/{npwp}/{alamat}": {
             "post": {
                 "tags": [
                     "18. Insert Pelanggan"
@@ -716,18 +709,18 @@
                         }
                     },
                     {
-                        "name": "alamat",
+                        "name": "npwp",
                         "in": "path",
-                        "description": "ALAMAT",
+                        "description": "NPWP",
                         "required": true,
                         "schema": {
                             "type": "string"
                         }
                     },
                     {
-                        "name": "tanggal_registrasi",
+                        "name": "alamat",
                         "in": "path",
-                        "description": "TANGGAL REGISTRASI",
+                        "description": "ALAMAT",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -1260,7 +1253,7 @@
                 ]
             }
         },
-        "/insertpakets/{jenis_sampels_id}/{paket}/{parameters_id_s}/{harga}": {
+        "/insertpakets/{jenis_sampels_id}/{paket}/{parameters_id_s}/{metodes_id_s}/{harga}": {
             "post": {
                 "tags": [
                     "29. Insert Pakets"
@@ -1297,6 +1290,15 @@
                         }
                     },
                     {
+                        "name": "metodes_id_s",
+                        "in": "path",
+                        "description": "METODES ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "harga",
                         "in": "path",
                         "description": "HARGA PAKETS",
@@ -1321,7 +1323,7 @@
                 ]
             }
         },
-        "/updatepakets/{id}/{jenis_sampels_id}/{paket}/{parameters_id_s}/{harga}": {
+        "/updatepakets/{id}/{jenis_sampels_id}/{paket}/{parameters_id_s}/{metodes_id_s}/{harga}": {
             "post": {
                 "tags": [
                     "30. Update Pakets"
@@ -1361,6 +1363,15 @@
                         "name": "parameters_id_s",
                         "in": "path",
                         "description": "HARGA PAKETS",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "metodes_id_s",
+                        "in": "path",
+                        "description": "METODE ID",
                         "required": true,
                         "schema": {
                             "type": "string"

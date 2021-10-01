@@ -47,9 +47,10 @@ class Parameters extends Seeder
             array(
                 'simbol'                  => 'Fe',
                 'nama_unsur'              => 'beso'
-            ),array(
+            ),
+            array(
                 'simbol'                  => 'B',
-                'nama_unsur'              => 'born'
+                'nama_unsur'              => 'boron'
             )
         ));
     }

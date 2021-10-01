@@ -1,8 +1,4 @@
 @include('admin.layout.header')
-<?php
-    $arr_akseslevels_id      = explode('-', $akseslevels['id']);
-    $arr_akseslevels_jabatan = explode('-', $akseslevels['jabatan']); 
-?>
 <style>
     .hijau {
         background-color: #00621A;
@@ -44,23 +40,27 @@
                                         <div class="col-sm">
                                             <div class="form-group">
                                                 <label>Metode</label>
-                                                <select name="metodes_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH METODE --" style="width: 100%;">
-                                                @foreach($metodes as $met)
-                                                    <option value="{{ $met['id'] }}">{{ strtoupper($met['metode']) }}</option>
-                                                @endforeach
-                                                </select>
+                                                @if(empty($metodes))
+                                                    <a href="p{{ url('admin/metodes') }}" class="form-control btn btn-primary">INSERT METODE</a>
+                                                @else
+                                                    <select name="metodes_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH METODE --" style="width: 100%;">
+                                                        @for($i = 0; $i < count($metodes['id']); $i++)
+                                                            <option value="{{ $metodes['id'][$i] }}">{{ $metodes['metode'][$i] }}</option>
+                                                        @endfor
+                                                    </select>
+                                                @endif
                                             </div>
                                         </div>
                                         <div class="col-sm">
                                             <div class="form-group">
                                                 <label>Level Akses</label>                                                
                                                 @if(empty($akseslevels))
-                                                <a class="form-control btn btn-success" href="{{ url('admin/akseslevel') }}">Add Akses Level</a>                                                
+                                                    <a class="form-control btn btn-success" href="{{ url('admin/akseslevel') }}">Add Akses Level</a>                                                
                                                 @else 
                                                     <Select class="form-control" name="akses_levels_id">
                                                         <option selected disabled>--Pilih Level Akses--</option>
-                                                        @for($i = 0; $i < count($arr_akseslevels_id); $i++)
-                                                            <option value="{{$arr_akseslevels_id[$i]}}">{{ strtoupper($arr_akseslevels_jabatan[$i]) }}</option>
+                                                        @for($i = 0; $i < count($akseslevels['id']); $i++)
+                                                            <option value="{{ $akseslevels['id'][$i] }}">{{ strtoupper($akseslevels['jabatan'][$i]) }}</option>
                                                         @endfor
                                                     </Select>                                     
                                                 @endif
@@ -134,7 +134,7 @@
                                     <thead>
                                         <tr>
                                             <th class="hijau">NO</th>
-                                            <th class="biru" style="width: 17.5%;">METODE ID</th>
+                                            <th class="biru" style="width: 17.5%;">METODE</th>
                                             <th class="biru" style="width: 10%;">AKSES LEVEL</th>
                                             <th class="biru">NAMA</th>
                                             <th class="biru">EMAIL</th>
@@ -145,94 +145,85 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- UPDATE DATA USER LAB -->
                                         <?php $no = 1; ?>
                                         @if(empty($labakuns))
-                                        <tr>
-                                            <td colspan="8">BELUM ADA USERLAB YANG DIINPUTKAN</td>
-                                        </tr>
+                                            <tr>
+                                                <td colspan="8"><h3>BELUM ADA USERLAB YANG DIINPUTKAN</h3></td>
+                                            </tr>
                                         @else
-                                            <?php
-                                                $arr_labakuns_id                 = explode('-', $labakuns['id']);
-                                                $arr_labakuns_metodes_id_s       = explode(';', $labakuns['metodes_id_s']);
-                                                $arr_labakuns_akses_levels_id    = explode('-', $labakuns['akses_levels_id']);
-                                                $arr_labakuns_akses_level        = explode('-', $labakuns['akses_level']);
-                                                $arr_labakuns_nama               = explode('-', $labakuns['nama']);
-                                                $arr_labakuns_email              = explode('-', $labakuns['email']);
-                                                $arr_labakuns_password           = explode('-', $labakuns['password']);
-                                                $arr_labakuns_jabatan            = explode('-', $labakuns['jabatan']);
-                                                $arr_labakuns_status_akun        = explode('-', $labakuns['status_akun']);
-                                                $no_labakuns                     = 1;
-                                            ?>
-                                            @for($i = 0; $i < count($arr_labakuns_id); $i++)
+                                            @for($i = 0; $i < count($labakuns['id']); $i++)
                                             <form action="{{ url('admin/updatelabakuns') }}" method="post">
                                                 {{ csrf_field() }}
-                                                <input type="hidden" name="id" value="{{ $arr_labakuns_id[$i] }}">
                                                 <tr>
-                                                    <td>{{ $no_labakuns }} </td>
-                                                    <!-- METODES ID S -->
+                                                    <input type="hidden" name="id" value="{{ $labakuns['id'][$i] }}">
+                                                    <td>{{ $no }}</td>
                                                     <td>
-                                                    <select name="metodes_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH METODE --" style="width: 100%;">
-                                                    @foreach($metodes as $met)
-                                                        <?php if(in_array($met['id'], $labakuns_met[$i]['id'])):?>
-                                                            <option value="{{ $met['id'] }}" selected>{{ strtoupper($met['metode']) }}</option>
-                                                        <?php else:?>
-                                                            <option value="{{ $met['id'] }}">{{ strtoupper($met['metode']) }}</option>
-                                                        <?php endif;?>
-                                                    @endforeach
-                                                    </select>
-                                                    </td>
-                                                    <!-- METODES ID S -->
-                                                    <!-- AKSES LEVELS -->
-                                                    <td>
-                                                        <Select class="form-control" name="akses_levels_id">
-                                                            <option selected value="{{ $arr_labakuns_akses_levels_id[$i] }}">{{ strtoupper($arr_labakuns_akses_level[$i]) }} </option>
-                                                            @for($j = 0; $j < count($arr_akseslevels_id); $j++)
-                                                                <option value="{{ $arr_akseslevels_id[$j] }}">{{ strtoupper($arr_akseslevels_jabatan[$j]) }}</option>
+                                                        <select name="metodes_id_s[]" class="select2" multiple="multiple" data-placeholder="-- PILIH METODE --" style="width: 100%;">
+                                                            
+                                                            @for($j = 0; $j < count($metodes['id']); $j++)
+                                                                @if(in_array($metodes['id'][$j], explode('-', $labakuns['metodes_id_s'][$i])))
+                                                                    <option value="{{ $metodes['id'][$j] }}" selected>{{ $metodes['metode'][$j] }}</option>
+                                                                @else
+                                                                    <option value="{{ $metodes['id'][$j] }}">{{ $metodes['metode'][$j] }}</option>
+                                                                @endif
                                                             @endfor
-                                                        </Select>                                                          
+                                                        </select>
                                                     </td>
-                                                    <!-- AKSES LEVELS -->
-                                                    <td><input type="text" name="nama" class="form-control" value="{{ $arr_labakuns_nama[$i] }}"> </td>
-                                                    <td><input type="email" name="email" class="form-control" value="{{ $arr_labakuns_email[$i] }} "></td>
+                                                    <td>
+                                                        <select class="form-control" name="akses_levels_id">
+                                                            @for($j = 0; $j < count($akseslevels['id']); $j++)
+                                                                @if($labakuns['akses_levels_id'][$i] == $akseslevels['id'][$j])
+                                                                    <option selected value="{{ $akseslevels['id'][$j] }}">{{ strtoupper($akseslevels['jabatan'][$j]) }} </option>
+                                                                @else
+                                                                    <option value="{{ $akseslevels['id'][$j] }}">{{ strtoupper($akseslevels['jabatan'][$j]) }} </option>
+                                                                @endif
+                                                            @endfor
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="nama" class="form-control" value="{{ $labakuns['nama'][$i] }}">
+                                                    </td>
+                                                    <td>
+                                                        <input type="email" name="email" class="form-control" value="{{ $labakuns['email'][$i] }}">
+                                                    </td>
                                                     <td>
                                                         <div class="row">
                                                             <div class="col-md-9">
-                                                                <input type="password" name="password" id="u_hidden_password_{{$no_labakuns}}" class="form-control" value="{{ $arr_labakuns_password[$i] }}">
+                                                                <input type="password" name="password" id="u_hidden_password_{{ $no }}" class="form-control" value="{{ $labakuns['password'][$i] }}">
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <button class="btn btn-secondary" id="lihat_{{ $no_labakuns }}" type="button"><abbr title="Lihat Password"><i class="far fa-eye"></i></abbr></button>
+                                                                <button class="btn btn-secondary" id="lihat_{{ $no }}" type="button"><abbr title="Lihat Password"><i class="far fa-eye"></i></abbr></button>
                                                             </div>
                                                         </div>
-                                                    <td><input type="text" name="jabatan" class="form-control" value="{{ $arr_labakuns_jabatan[$i] }}"></td>
+                                                    </td>
                                                     <td>
-                                                        <Select class="form-control" name="status_akun">
+                                                        <input type="text" name="jabatan" class="form-control" value="{{ $labakuns['jabatan'][$i] }}">
+                                                    </td>                                                    
+                                                    <td>
+                                                        <select class="form-control" name="status_akun">
                                                             <?php
                                                                 $status = '';
-                                                                if($arr_labakuns_status_akun[$i] == 0){
+                                                                if($labakuns['status_akun'][$i] == 0){
                                                                     $status = 'NONAKTIF';
                                                                 }
-                                                                elseif($arr_labakuns_status_akun[$i] == 1){
+                                                                elseif($labakuns['status_akun'][$i] == 1){
                                                                     $status = 'AKTIF';
                                                                 }
                                                             ?>
-                                                            <option selected value="{{ $arr_labakuns_status_akun[$i] }}">{{ $status }}</option>
+                                                            <option selected value="{{ $labakuns['status_akun'][$i] }}">{{ $status }}</option>
                                                             <option value="1">AKTIF</option>
                                                             <option value="0">NONAKTIF</option>
-                                                        </Select>  
-                                                    </td>
+                                                        </select>  
+                                                    </td>                                                    
                                                     <td>
-                                                        <button type="submit" class="btn btn-success">UPDATE</button>
-                                                        <a href="deletelabakuns/{{$arr_labakuns_id[$i]}}" type="submit" class="btn btn-danger">DELETE</a>
+                                                        <button type="submit" class="btn btn-success"><abbr title="UPDATE"><i class="fas fa-redo"></i></abbr></button>
+                                                        <a href="deletelabakuns/{{ $labakuns['id'][$i] }}" class="btn btn-danger"><abbr title="UPDATE"><i class="fas fa-trash"></i></abbr></a>
                                                     </td>
                                                 </tr>
                                             </form>
-                                            <?php
-                                                $no_labakuns++;
-                                            ?>
+                                            <?php $no+=1; ?>
                                             @endfor
                                         @endif
-                                        <!-- UPDATE DATA USER LAB -->
                                     </tbody>
                                 </table>
                             </div>
@@ -250,7 +241,7 @@
 <script src="{{ asset('public/js/js_tabel/jquery-3.5.1.js') }}"></script>
 <script> 
     $(document).ready(function(){        
-        var no      = <?= $no_labakuns ?>; 
+        var no      = <?= $no ?>; 
 
         for (let i = 1; i < no; i++) 
         {                                                      
@@ -268,5 +259,4 @@
         }
     });
 </script>
-
 @include('admin.layout.footer')

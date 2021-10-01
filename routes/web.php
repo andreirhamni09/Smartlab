@@ -48,6 +48,12 @@ Route::prefix('admin')->group(function () {
     Route::get('/deletehalamans/{id?}', [MasterController::class, 'DeleteHalamans']);
 #8 HALAMANS
 
+#11 - 14 DATA SAMPEL
+    Route::get('/datasampels', [MasterController::class, 'DataSampels']);
+    Route::post('/insertdatasampels', [MasterController::class, 'InsertDataSampels']);
+#11 - 14 DATA SAMPEL
+
+
 #17 - 21 PELANGGAN
     Route::get('/pelanggans', [MasterController::class, 'GetPelanggans']);
     Route::post('/insertpelanggans', [MasterController::class, 'InsertPelanggans']);
@@ -77,11 +83,27 @@ Route::prefix('admin')->group(function () {
     Route::get('/deletepakets/{id?}', [MasterController::class, 'DeletePakets']);
 #28 - 31 PAKETS
 
+#32 - 35 GRUP AKTIVITAS
+    #GET GRUP AKTIVITAS
+    Route::get('groupaktivitas', [MasterController::class, 'GetGroupAktivitas']);
+    
+    #GET GRUP AKTIVITAS
+    Route::post('insertgroupaktivitas', [MasterController::class, 'InsertGroupAktivitas']);
+    
+    #GET GRUP AKTIVITAS
+    Route::post('updategroupaktivitas', [MasterController::class, 'UpdateGroupAktivitas']);
+    
+    #GET GRUP AKTIVITAS
+    Route::get('deletegroupaktivitas/{id?}', [MasterController::class, 'DeleteGroupAktivitas']);
+
+    Route::get('ajaxtest', [MasterController::class, 'AjaxTest']);
+#32 - 35 GRUP AKTIVITAS
+
     Route::get('/login', [MasterController::class, 'Login']);
     Route::get('/register', [MasterController::class, 'Register']);
 
     #INPUTSAMPEL
-    Route::get('/inputsampel', [MasterController::class, 'InputSampel']);   
+    Route::get('/inputsampel', [MasterController::class, 'DataSampels']);   
     Route::match(['get', 'post'], '/crud_inputsampel', [MasterController::class, 'CrudInputSampel']);
     #INPUTSAMPEL
 
@@ -99,4 +121,6 @@ Route::prefix('admin')->group(function () {
     #DEKRIP TES
     Route::get('/dekrip', [MasterController::class, 'Dekrip']);
     #DEKRIP
+
+    Route::get('/latihantabel', [MasterController::class, 'LatihanTabel']);
 });

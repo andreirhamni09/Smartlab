@@ -83,25 +83,33 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
-
-                        <?php
-                            $arr_halaman = explode('-', $halamans['halaman']);
-                            $arr_url     = explode('-', $halamans['url']);
-                            $arr_simbol  = explode(';', $halamans['simbol']);
+                        <?php if(!empty($halamans)):?>
+                            
+                            <?php
                             $no_halaman  = 1;
-                        ?>
+                            ?>
 
-                        @for($i = 0; $i < count($arr_halaman); $i++)
-                        <!-- USER LAB -->
-                        <li class="nav-item">                            
-                            <a href="{{ url($arr_url[$i]) }}" class="nav-link">
-                                <i class="{{ $arr_simbol[$i] }}"></i>
-                                <p>
-                                    {{ $arr_halaman[$i] }}
-                                </p>
-                            </a>
-                        </li> 
-                        @endfor
+                            <?php for ($i = 0; $i < count($halamans['id']); $i++):?>
+                            <!-- USER LAB -->
+                            <li class="nav-item">                            
+                                <a href="{{ url($halamans['url'][$i]) }}" class="nav-link">
+                                    <i class="{{ $halamans['simbol'][$i] }}"></i>
+                                    <p>
+                                        <?= $halamans['halaman'][$i] ?>
+                                    </p>
+                                </a>
+                            </li> 
+                            <?php endfor;?>
+                        <?php else:?>
+                            <li class="nav-item">                            
+                                <a href="{{ url('admin/halamans') }}" class="nav-link">
+                                    <i class="nav-icon fas fa-arrow-down"></i>
+                                    <p>
+                                        INSERT HALAMAN
+                                    </p>
+                                </a>
+                            </li> 
+                        <?php endif;?>
                         <!-- USER LAB -->
 
                         <!-- LOGOUT -->
@@ -116,6 +124,7 @@
                         <!-- LOGOUT -->
 
                     </ul>
+                    
                 </nav>
             </div>
         </aside>

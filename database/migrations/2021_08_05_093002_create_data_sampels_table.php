@@ -22,11 +22,10 @@ class CreateDataSampelsTable extends Migration
             $table->tinyInteger('tanggal_selesai');
             $table->string('nomor_surat');
             $table->integer('jumlah_sampel');
-            $table->unsignedSmallInteger('ketersedian_alats_id');
+            $table->enum('ketersedian_alats_id', [true, false]);
             $table->text('catatan_userlabs');
             $table->text('catatan_pelanggans');
             $table->string('status');
-            $table->string('verifikasi_sampel');
         });
     }
 

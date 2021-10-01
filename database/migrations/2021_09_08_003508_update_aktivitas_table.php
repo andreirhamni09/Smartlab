@@ -14,7 +14,7 @@ class UpdateAktivitasTable extends Migration
     public function up()
     {
         Schema::table('aktivitas', function (Blueprint $table) {
-            $table->foreign('groups_id')->references('id')->on('group_aktivitas')->onUpdate('cascade');
+            $table->foreign('groups_id')->references('id')->on('group_aktivitas');
         });
     }
 
@@ -26,7 +26,7 @@ class UpdateAktivitasTable extends Migration
     public function down()
     {
         Schema::table('aktivitas', function (Blueprint $table) {
-            $table->dropIfExists(['groups_id']);    
+            $table->dropIfExists(['groups_id']);
         });
     }
 }

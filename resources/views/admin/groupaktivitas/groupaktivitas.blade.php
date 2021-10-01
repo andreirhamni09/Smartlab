@@ -34,17 +34,17 @@
                         </div>
 
                         <div class="card-body table-responsive">
-                            <div style="width:70%; margin-left: auto; margin-right:auto;">
-                                <form action="{{ url('admin/insertjenissampels') }}" method="POST">
+                            <div style="width:30%; margin-left: auto; margin-right:auto;">
+                                <form action="{{ url('admin/insertgroupaktivitas') }}" method="POST">
                                     {{ csrf_field() }}
                                     <div class="row">
                                         <div class="col-sm">
                                             <div class="form-group">
                                                 <label>NAMA GRUP AKTIVITAS</label>
-                                                <input type="text" name="group" class="form-control" placeholder="Jenis Sampel ..." autofocus>
+                                                <input type="text" name="group" class="form-control" placeholder="Nama Grup Aktivitas ..." autofocus>
                                             </div>
                                         </div>
-                                        <div class="col-sm-2">
+                                        <div class="col-sm-5">
                                             <div class="form-group">
                                                 <label>Submit</label>
                                                 <button name="action" value="add" class="form-control btn btn-primary">TAMBAHKAN</button>
@@ -69,51 +69,36 @@
                         </div>            
                         
                         <div class="card-body table-responsive">
-                            <div style="width:70%; margin-left: auto; margin-right: auto;">
+                            <div style="width:50%; margin-left: auto; margin-right: auto;">
                                 <table class="table table-bordered table-hover text-center">
                                     <thead>
                                         <tr>
                                             <th class="hijau" style="width:10%;">NO</th>
-                                            <th class="biru" style="width: 25%;">JENIS SAMPEL</th>
-                                            <th class="biru" style="width: 30%;">LAMBANG SAMPEL</th>
+                                            <th class="biru" style="width: 25%;">NAMA GROUP AKTIVITAS</th>
                                             <th class="biru" style="width: 30%;">ACTION</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if(empty($jenissampels))
+                                        @if($groupaktivitas['success'] == 0)
                                             <tr>
                                                 <td colspan="5"><h4>BELUM ADA DATA YANG DIINPUTKAN</h4></td>
                                             </tr>
                                         @else
-                                            <?php
-                                                $arr_jenissampels_id            = explode('-', $jenissampels['id']);
-                                                $arr_jenissampels_jen           = explode('-', $jenissampels['jenis_sampel']);
-                                                $arr_jenissampels_lambang       = explode('-', $jenissampels['lambang_sampel']);
-                                                $no_jenissampels              = 1;
-                                            ?>            
-                                            @for($i = 0; $i < count($arr_jenissampels_id); $i++)                                  
-                                                <form action="{{ url('admin/updatejenissampels')}}" method="post" >
-                                                    {{ csrf_field() }}    
-                                                    <input type="hidden" name="uid" value="{{ $arr_jenissampels_id[$i] }}">        
+                                            <?php $no = 1;?>
+                                            @for($i = 0; $i < count($arrgroupaktivitas['id']); $i++)
+                                                <form action="{{ url('admin/updategroupaktivitas') }}" method="post">
+                                                    {{ csrf_field() }}
+                                                    <input type="hidden" name="id" value="{{ $arrgroupaktivitas['id'][$i] }}">
                                                     <tr>
+                                                        <td>{{ $no }}</td>
+                                                        <td><input type="text" name="group" class="form-control" value="{{ $arrgroupaktivitas['group'][$i] }}"></td>
                                                         <td>
-                                                            {{ $no_jenissampels }}
+                                                            <button class="btn btn-success" type="submit">UPDATE</button>
+                                                            <a class="btn btn-danger" href="deletegroupaktivitas/{{ $arrgroupaktivitas['id'][$i] }}">DELETE</a>
                                                         </td>
-                                                        <td>
-                                                            <input type="text" class="form-control"  name="ujenissampels" value="{{ $arr_jenissampels_jen[$i] }}">
-                                                        </td>
-                                                        <td>
-                                                            <input type="text" class="form-control" name="ulambangsampels" value="{{ $arr_jenissampels_lambang[$i] }}" >
-                                                        </td>
-                                                        <td>
-                                                            <button type="submit" class="btn btn-success" name="update">UPDATE</button>
-                                                            <a href="deletejenissampels/{{$arr_jenissampels_id[$i]}}" class="btn btn-danger">DELETE</a>
-                                                        </td>
-                                                    </tr>                               
+                                                    </tr>
                                                 </form>
-                                                <?php 
-                                                    $no_jenissampels++;
-                                                ?>
+                                            <?php $no+=1;?>
                                             @endfor
                                         @endif
                                     </tbody>
@@ -133,8 +118,7 @@
 <script src="https://cdn.rawgit.com/igorescobar/jQuery-Mask-Plugin/1ef022ab/dist/jquery.mask.min.js"></script>
 
 <script type="text/javascript">
-	$(document).ready(function(){
-	    $( '#rupiah' ).mask('0.000.000.000', {reverse: true});
-	    $( '.harga' ).mask('0.000.000.000', {reverse: true});
-	})
+    $(function(){
+        
+    });
 </script>

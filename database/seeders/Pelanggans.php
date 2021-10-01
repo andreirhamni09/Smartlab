@@ -22,6 +22,8 @@ class Pelanggans extends Seeder
                 'perusahaan'            => 'RND',
                 'nomor_telepon'         => '088288102811',
                 'alamat'                => 'RND',
+                'npwp'                  => '93.057.498.0-000.000',
+                'kuesioner'             => '',
                 'tanggal_registrasi'    => '2021-07-21'
             )
         )); 

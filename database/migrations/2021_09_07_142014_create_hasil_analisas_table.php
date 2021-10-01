@@ -14,7 +14,7 @@ class CreateHasilAnalisasTable extends Migration
     public function up()
     {
         Schema::create('hasil_analisas', function (Blueprint $table) {
-            $table->unsignedInteger('id');
+            $table->increments('id');
             $table->unsignedTinyInteger('jenis_sampels_id');
             $table->smallInteger('data_sampels_id');
             $table->string('tahun', 2);
@@ -25,7 +25,7 @@ class CreateHasilAnalisasTable extends Migration
             $table->text('hasil');
             $table->enum('status', ['0', '1']);
             $table->text('log');
-            $table->tinyIncrements('batch');
+            $table->tinyInteger('batch');
             $table->integer('verifikasi_hasil');
         });
     }

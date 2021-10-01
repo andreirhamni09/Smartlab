@@ -23,6 +23,9 @@ class DataSampel extends Seeder
                 'tanggal_selesai'       => '10',
                 'nomor_surat'           => '1010',
                 'jumlah_sampel'         => '100',
+                'ketersedian_alats_id'  => 1,
+                'catatan_userlabs'      => '',
+                'catatan_pelanggans'    => '',
                 'status'                => '0'
             )
         )); 
