@@ -1,13 +1,4 @@
 @include('admin.layout.header')
-
-@if(count($parameter) == 0)
-@else
-    @foreach($parameter as $parameters)
-        <?php
-            $arr_parameter[$parameters->id] = $parameters->parameter;
-        ?>
-    @endforeach
-@endif
 <div class="content-wrapper">
     <section class="content-header">
         <div class="content-fluid">
@@ -42,87 +33,50 @@
                                             <th class="biru" style="width: 15%;">NAMA PELANGGAN</th>
                                             <th class="hijau">PERUSAHAAN</th>
                                             <th class="biru">JENIS SAMPEL</th>
-                                            <th class="hijau">PARAMETER</th>
+                                            <th class="hijau">PAKET</th>
                                             <th class="biru">JUMLAH SAMPEL</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if(count($data_sampel) == 0)
+                                        @if(empty($datasampels))
                                             <tr>
-                                                <td colspan="11">DATA SAMPEL BELUM ADA YANG DIINPUTKAN</td>
+                                                <td colspan="9">DATA TIDAK DITEMUKAN</td>
                                             </tr>
                                         @else
-                                            @foreach($data_sampel as $data_sampels)                                            
-                                            <tr>
-                                                <!-- NOMOR SURAT -->
-                                                <td>{{ $data_sampels->nomor_surat }}</td>
-                                                <!-- NOMOR SURAT -->
+                                            @for($i = 0; $i < count($datasampels['id']); $i++)
+                                                <tr>
+                                                    <td>{{ $datasampels['nomor_surat'][$i] }}</td>
+                                                    <td><a href="{{ url('admin/tracking/'.$datasampels['id'][$i]) }}" class="btn btn-success">TRACKING</a></td>
+                                                    <td>{{ $datasampels['tanggal_masuk'][$i] }}</td>
+                                                    <?php
+                                                        $tanggal_masuk      = strtotime(str_replace('/', '-', $datasampels['tanggal_masuk'][$i]));
+                                                        $v_tanggal_masuk    = date('d-m-Y H:i', $tanggal_masuk); 
+                                                        
+                                                        $t_selesai          = $datasampels['tanggal_selesai'][$i].' days';
 
-                                                <!-- TERKINI -->
-                                                <td>
-                                                    <a class="btn btn-primary" href="{{ url('admin/tracking/'.$data_sampels->id.'') }}">TRACKING</a>
-                                                </td>
-                                                <!-- TERKINI -->
-                                                
-                                                <!-- TANGGAL MASUK -->
-                                                <?php
-                                                    $tanggal_masuk      = strtotime($data_sampels->tanggal_masuk);
-                                                    $v_tanggal_masuk    = date('d-m-Y H:i', $tanggal_masuk); 
-                                                    
-                                                    $t_selesai          = $data_sampels->tanggal_selesai.' days';
-
-                                                    $date=date_create($v_tanggal_masuk);
-                                                    date_add($date, date_interval_create_from_date_string($t_selesai));
-                                                    $selesai = date_format($date, "d-m-Y");
-                                                ?>
-                                                <td>{{ $v_tanggal_masuk }}</td>
-                                                <!-- TANGGAL MASUK -->
-
-
-                                                <!-- TARGET SELESAI -->
-                                                <td>{{ $data_sampels->tanggal_selesai }} Hari / {{ $selesai }}</td>
-                                                <!-- TARGET SELESAI -->
-
-                                                <!-- NAMA PELANGGAN -->
-                                                <td>{{ $data_sampels->pelanggan_nama }}</td>
-                                                <!-- NAMA PELANGGAN -->
-
-                                                <!-- PERUSAHAAAN -->
-                                                <td>{{ $data_sampels->pelanggan_perusahaan }}</td>
-                                                <!-- PERUSAHAAN -->
-
-                                                <!-- JENIS SAMPEL -->
-                                                <td>{{ strtoupper($data_sampels->jenis_sampel) }}</td>
-                                                <!-- JENIS SAMPEL -->
-
-                                                <!-- PARAMETER -->
-                                                <?php 
-                                                    $d_paramater    = explode('-', $data_sampels->id_parameter);
-                                                    $s_parameter    = ''; 
-                                                    $j_parameter    = count($d_paramater) - 1;
-                                                ?>
-                                                <td>
-                                                    @if(count($d_paramater) == 0)
-                                                    @else
-                                                        @for($i = 0; $i < count($d_paramater); $i++)
-                                                            @if($i == $j_parameter)
-                                                                {{ $arr_parameter[$d_paramater[$i]] }}
-                                                            @else
-                                                                {{ $arr_parameter[$d_paramater[$i]] }},
+                                                        $date=date_create($v_tanggal_masuk);
+                                                        date_add($date, date_interval_create_from_date_string($t_selesai));
+                                                        $selesai = date_format($date, "d-m-Y");
+                                                    ?>
+                                                    <td>{{ $selesai }} ({{ $datasampels['tanggal_selesai'][$i] }} Hari)</td>
+                                                    @if(in_array($datasampels['pelanggans_id'][$i], $pelanggans['id']))
+                                                        <td>{{ $pelanggans['nama'][array_search($datasampels['pelanggans_id'][$i], $pelanggans['id'])] }}</td>
+                                                        <td>{{ $pelanggans['perusahaan'][array_search($datasampels['pelanggans_id'][$i], $pelanggans['id'])] }}</td>
+                                                    @endif
+                                                    <td>{{ strtoupper($datasampels['jenis_sampel'][$i]) }}</td>
+                                                    <td>
+                                                    <?php $sampelPakets = '';?>
+                                                        @for($j = 0; $j < count($pakets['id']); $j++)
+                                                            @if(in_array($pakets['id'][$j], explode('-', $datasampels['pakets_id_s'][$i])))
+                                                                <?php $sampelPakets .= $pakets['paket'][$j].'-'; ?>
                                                             @endif
                                                         @endfor
-                                                    @endif
-                                                </td>
-                                                <!-- PARAMETER -->
-
-                                                <!-- JUMLAH SAMPEL -->
-                                                <td>{{ $data_sampels->jumlah_sampel }}</td>
-                                                <!-- JUMLAH SAMPEL -->
-
-                                                <!-- NOMOR SURAT -->
-                                                <!-- NOMOR SURAT -->
-                                            </tr>
-                                            @endforeach
+                                                        <?php $sampelPakets = substr($sampelPakets, 0,-1);?>
+                                                        {{ $sampelPakets }}
+                                                    </td>
+                                                    <td>{{ $datasampels['jumlah_sampel'][$i] }} </td>
+                                                </tr>
+                                            @endfor
                                         @endif
                                     </tbody>
                                 </table>
@@ -160,7 +114,6 @@
                                 <table id="hasil_analisis" style="width:110%;" class="table table-bordered table-hover text-center">
                                     <form action="{{ url('admin/crud_hasilanalisis') }}" method="post">
                                         {{ csrf_field() }}
-                                        <input type="hidden" name="id_kupa" value="{{ $kupa }}">
                                         <thead>
                                             <tr>
                                                 <th colspan="4" class="hijau">IDENTITAS</th>
@@ -186,34 +139,6 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($hasil_analisis as $d_hasil_analisis)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $d_hasil_analisis->tahun }}{{$d_hasil_analisis->simbol}}.{{$d_hasil_analisis->no_lab}} </td>
-                                                <td><input type="text" name="kode_contoh[]" class="form-control" value="{{ $d_hasil_analisis->kode_contoh }}"></td>
-                                                <td>{{$d_hasil_analisis->id_kupa}}</td>
-                                                <td>{{$d_hasil_analisis->N}}</td>
-                                                <td>{{$d_hasil_analisis->P}}</td>
-                                                <td>{{$d_hasil_analisis->K}}</td>
-                                                <td>{{$d_hasil_analisis->Mg}}</td>
-                                                <td>{{$d_hasil_analisis->Ca}}</td>
-                                                <td>{{$d_hasil_analisis->B}}</td>
-                                                <td>{{$d_hasil_analisis->Cu}}</td>
-                                                <td>{{$d_hasil_analisis->Zn}}</td>
-                                                <td>{{$d_hasil_analisis->Fe}}</td>
-                                                <td>{{$d_hasil_analisis->Mn}}</td>
-                                                <td>
-                                                    @if($d_hasil_analisis->status == 0)
-                                                        DRAFT
-                                                    @elseif($d_hasil_analisis->status == 1)
-                                                        FINAL
-                                                    @else
-                                                        DATA ERROR
-                                                    @endif
-                                                </td>
-                                                <td>{{ $d_hasil_analisis->retry }}</td>
-                                            </tr>
-                                            @endforeach
                                         </tbody>
                                 </table>
                             </div>

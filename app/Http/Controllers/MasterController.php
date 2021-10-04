@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\AksesLevel;
 
 use App\Controllers\ApiController;
+use App\Models\HasilAnalisa;
 
 class MasterController extends Controller
 {
@@ -315,7 +316,7 @@ class MasterController extends Controller
             ];
         }
         else{
-            $paket = array();
+            $pakets = array();
         }
 
         #HALAMANS
@@ -329,7 +330,7 @@ class MasterController extends Controller
         {
             $datasampels    = [
                 'id'                    => explode('-', $getdatasampels['id']),
-                'pakets_id_s'           => explode('-', $getdatasampels['pakets_id_s']),
+                'pakets_id_s'           => explode(';', $getdatasampels['pakets_id_s']),
                 'tanggal_masuk'         => explode('-', $getdatasampels['tanggal_masuk']),
                 'tanggal_selesai'       => explode('-', $getdatasampels['tanggal_selesai']),
                 'nomor_surat'           => explode('-', $getdatasampels['nomor_surat']),
@@ -383,6 +384,93 @@ class MasterController extends Controller
 #11 14 DATA SAMPELS -> PAGES
 
 #15 16 HASIL ANALISAS -> PAGES
+    public static function HasilAnalisis(Request $request, $id = null)
+    {  
+        #JENIS SAMPELS
+        $getjenissampels   = app('App\Http\Controllers\ApiController')->GetJenisSampels(); 
+        $getjenissampels   = json_decode($getjenissampels, true);
+        $jenissampels      = '';
+        if($getjenissampels['success'] == '1'){
+            $jenissampels      = [
+                'id'                => explode('-', $getjenissampels['id']),
+                'jenis_sampel'      => explode('-', $getjenissampels['jenis_sampel']),
+                'lambang_sampel'    => explode('-', $getjenissampels['lambang_sampel'])
+            ];
+        }
+        else{
+            $jenissampels = array();
+        }
+
+        #PELANGGANS
+        $getpelanggans      = app('App\Http\Controllers\ApiController')->GetPelanggans(); 
+        $getpelanggans      = json_decode($getpelanggans, true);
+        $pelanggans         = '';
+        if($getpelanggans['success'] == '1'){
+            $pelanggans         = [
+                'id'            => explode('-', $getpelanggans['id']),
+                'nama'          => explode('-', $getpelanggans['nama']),
+                'perusahaan'    => explode('-', $getpelanggans['perusahaan'])
+            ]; 
+        }
+        else{
+            $pelanggans     = array();
+        }
+
+        $getpakets          = app('App\Http\Controllers\ApiController')->GetPakets(); 
+        $getpakets          = json_decode($getpakets, true);
+        $pakets             = '';
+        if($getpakets['success'] == '1'){
+            $pakets = [
+                'id'                => explode('-', $getpakets['id']),
+                'jenis_sampels_id'  => explode('-', $getpakets['jenis_sampels_id']),
+                'jenis_sampel'      => explode('-', $getpakets['jenis_sampel']),
+                'paket'             => explode('-', $getpakets['paket']),
+                'parameters_id_s'   => explode(';', $getpakets['parameters_id_s']),
+                'metodes_id_s'      => explode(';', $getpakets['metodes_id_s']),
+                'harga'             => explode('-', $getpakets['harga'])
+            ];
+        }
+        else{
+            $pakets = array();
+        }
+
+        #HALAMANS
+        $halamans           = app('App\Http\Controllers\MasterController')->GetHal(); 
+
+        
+        $getdatasampels     = app('App\Http\Controllers\ApiController')->GetDataSampelsById($request, $id);
+        $getdatasampels     = json_decode($getdatasampels, true);
+        $datasampels        = '';
+        if($getdatasampels['success'] == '1')
+        {
+            $datasampels    = [
+                'id'                    => explode('-', $getdatasampels['id']),
+                'pakets_id_s'           => explode(';', $getdatasampels['pakets_id_s']),
+                'tanggal_masuk'         => explode('-', $getdatasampels['tanggal_masuk']),
+                'tanggal_selesai'       => explode('-', $getdatasampels['tanggal_selesai']),
+                'nomor_surat'           => explode('-', $getdatasampels['nomor_surat']),
+                'jumlah_sampel'         => explode('-', $getdatasampels['jumlah_sampel']),
+                'catatan_userlabs'      => explode('-', $getdatasampels['catatan_userlabs']),
+                'status'                => explode('-', $getdatasampels['status']),
+                'pelanggans_id'         => explode('-', $getdatasampels['pelanggans_id']),
+                'pelanggans'            => explode('-', $getdatasampels['pelanggans']),
+                'jenis_sampels_id'      => explode('-', $getdatasampels['jenis_sampels_id']),
+                'jenis_sampel'          => explode('-', $getdatasampels['jenis_sampel']),
+                'simbol'                => explode('-', $getdatasampels['simbol']),
+                'ketersediaan_alat'     => explode('-', $getdatasampels['ketersediaan_alat'])
+            ];
+        }
+        else{
+            $datasampels    = array();
+        }
+        return view('admin.sampel.hasil_analisis',  [
+                'datasampels'   => $datasampels,
+                'jenissampels'  => $jenissampels,
+                'pelanggans'    => $pelanggans,
+                'pakets'        => $pakets,
+                'halamans'      => $halamans
+        ]);
+    }
 #15 16 HASIL ANALISAS -> PAGES
 
 #17 21 PELANGGANS -> PAGES
@@ -850,4 +938,60 @@ class MasterController extends Controller
             $n = 0;
         }   */ 
     }
+
+
+
+#PELANGGAN
+    public static function LoginPelanggan(Request $request)
+    {
+        $email      = $request->email;
+        $password   = $request->password;
+        
+        $loginpelanggan = app('App\Http\Controllers\ApiController')->LoginPelanggans($request, $email, $password);        
+        $loginpelanggan = json_decode($loginpelanggan, true);
+
+        if($loginpelanggan['success'] == 1)
+        {
+            $pelanggans = [
+                'id'    => $loginpelanggan['id'],
+                'email'    => $loginpelanggan['email'],
+                'nama'    => $loginpelanggan['nama'],
+                'perusahaan'    => $loginpelanggan['perusahaan'],
+                'nomor_telepon'    => $loginpelanggan['nomor_telepon']
+            ];
+            return redirect()->route('tracking', ['pelanggan' => $pelanggans]);
+        }
+        else
+        {
+            return redirect()->route('login', ['status' => $loginpelanggan['message']]);  
+        }
+    }
+
+    public static function TrackingPelanggan()
+    {
+        return view('tracking');
+    }
+
+    public static function CekResi(Request $request){
+        print_r($request->pelanggan);
+    }
+    public static function Dekrip(){
+        error_reporting(0);
+        $cipher = "aes-128-cbc"; 
+
+        //Generate a 256-bit encryption key 
+        $encryption_key = '1234567890123456'; 
+
+        //Data to encrypt 
+        $data = "12"; 
+        $encrypted_data = openssl_encrypt($data, $cipher, $encryption_key, 0, ''); 
+
+        echo "Encrypted Text: " . $encrypted_data.'<br>'; 
+
+        #DEKRIP DATA
+        $decrypted_data = openssl_decrypt($encrypted_data, $cipher, $encryption_key, 0, ''); 
+
+        echo "Decrypted Text: " . $decrypted_data.'<br>';
+    }
+#PELANGGAN
 }

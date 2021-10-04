@@ -1387,7 +1387,7 @@ class ApiController extends Controller
                 foreach ($getdatasampelsall as $value) {
                     #DATA SAMPELS
                     $s_id               .= $value['id'] . '-';
-                    $s_pakets_id_s      .= $value['jenis_sampels_id'] . '-';
+                    $s_pakets_id_s      .= $value['pakets_id_s'] . ';';
 
                     $date       = date_create($value['tanggal_masuk']);
                     $waktu      = date_format($date, 'H:i:s d-m-Y');
@@ -1482,73 +1482,83 @@ class ApiController extends Controller
             $id_s       = $id;
         }
 
-        $getdatasampelsbyid  = DB::table('data_sampels')
+        $response           = new usr();
+        $getdatasampelsall  = DB::table('data_sampels')
             ->join('pelanggans', 'data_sampels.pelanggans_id', '=', 'pelanggans.id')
             ->join('jenis_sampels', 'data_sampels.jenis_sampels_id', '=', 'jenis_sampels.id')
-            ->select('data_sampels.*', 'pelanggans.nama as pelanggan', 'jenis_sampels.jenis_sampel as jenis_sampel')
+            ->select('data_sampels.*', 'pelanggans.nama as pelanggan', 'jenis_sampels.jenis_sampel as jenis_sampel', 'jenis_sampels.lambang_sampel as simbol')
             ->where('data_sampels.id', '=', $id_s)
             ->get();
-        $getdatasampelsbyid      = json_decode(json_encode($getdatasampelsbyid), true);
+
+
+        $getdatasampelsall      = json_decode(json_encode($getdatasampelsall), true);
 
         #DATA SAMPELS
-        $s_id                   = '';
-        $s_pakets_id_s        = '';
-        $s_tanggal_masuk  = '';
-        $s_tanggal_selesai  = '';
-        $s_nomor_surat          = '';
-        $s_jumlah_sampel      = '';
-        $s_status         = '';
-
+        $s_id                   = ''; $s_pakets_id_s        = ''; $s_tanggal_masuk  = ''; $s_tanggal_selesai  = ''; 
+        $s_nomor_surat          = ''; $s_jumlah_sampel      = ''; $s_status         = '';
+        $s_catatan_userlabs     = '';
         #PELANGGANS
         $s_pelanggans_id        = '';
         $s_pelanggans_nama    = '';
 
         #JENIS SAMPELS
-        $s_jenis_sampels_id     = '';
-        $s_jenis_sampel       = '';
-
-        if (empty($getdatasampelsbyid)) {
+        $s_jenis_sampels_id     = ''; $s_jenis_sampel       = ''; 
+        $s_ketersediaan_alat    = ''; $s_simbol             = '';
+        if(empty($getdatasampelsall))
+        {
             $response->success = 0;
-            $response->message = 'DATA SAMPEL DENGAN :' . $id_s . ' TIDAK DITEMUKAN';
+            $response->message = 'DATA SAMPEL MASIH KOSONG';
         } else {
             try {
-                #DATA SAMPELS
-                $s_id               .= $getdatasampelsbyid['id'] . '-';
-                $s_pakets_id_s      .= $getdatasampelsbyid['jenis_sampels_id'] . '-';
+                foreach ($getdatasampelsall as $value) {
+                    #DATA SAMPELS
+                    $s_id               .= $value['id'] . '-';
+                    $s_pakets_id_s      .= $value['pakets_id_s'] . ';';
 
-                $date       = date_create($getdatasampelsbyid['tanggal_masuk']);
-                $waktu      = date_format($date, 'H:i:s d-m-Y');
+                    $date       = date_create($value['tanggal_masuk']);
+                    $waktu      = date_format($date, 'H:i:s d-m-Y');
 
-                $s_tanggal_masuk    .= str_replace('-', '/', $waktu) . '-';
-                $s_tanggal_selesai  .= $getdatasampelsbyid['tanggal_selesai'] . '-';
-                $s_nomor_surat      .= $getdatasampelsbyid['nomor_surat'] . '-';
-                $s_jumlah_sampel    .= $getdatasampelsbyid['jumlah_sampel'] . '-';
-                $s_status           .= $getdatasampelsbyid['status'] . '-';
+                    $s_tanggal_masuk    .= str_replace('-', '/', $waktu).'-'; 
+                    $s_tanggal_selesai  .= $value['tanggal_selesai'].'-'; 
+                    $s_nomor_surat      .= $value['nomor_surat'].'-'; 
+                    $s_jumlah_sampel    .= $value['jumlah_sampel'].'-';
+                    $s_catatan_userlabs .= $value['catatan_userlabs'].'-'; 
+                    $s_status           .= $value['status'].'-';
 
-                #PELANGGANS
-                $s_pelanggans_id    .= $getdatasampelsbyid['pelanggans_id'] . '-';
-                $s_pelanggans_nama  .= $getdatasampelsbyid['pelanggan'] . '-';
+                    #PELANGGANS
+                    $s_pelanggans_id    .= $value['pelanggans_id'] . '-';
+                    $s_pelanggans_nama  .= $value['pelanggan'] . '-';
 
-                #JENIS SAMPELS
-                $s_jenis_sampels_id .= $getdatasampelsbyid['jenis_sampels_id'] . '-';
-                $s_jenis_sampel     .= $getdatasampelsbyid['jenis_sampel'] . '-';
+                    #JENIS SAMPELS
+                    $s_jenis_sampels_id .= $value['jenis_sampels_id'].'-'; 
+                    $s_jenis_sampel     .= $value['jenis_sampel'].'-'; 
+                    $s_simbol           .= $value['simbol'].'-';
+
+                    $s_ketersediaan_alat .= $value['ketersedian_alats_id'].'-';
+                }
 
                 #DATA SAMPELS
                 $response->id               = substr($s_id, 0, -1);
-                $response->pakets_id_s      = substr($s_pakets_id_s, 0, -1);
-                $response->tanggal_masuk    = substr($s_tanggal_masuk, 0, -1);
-                $response->tanggal_selesai  = substr($s_tanggal_selesai, 0, -1);
-                $response->nomor_surat      = substr($s_nomor_surat, 0, -1);
-                $response->jumlah_sampel    = substr($s_jumlah_sampel, 0, -1);
+                $response->pakets_id_s      = substr($s_pakets_id_s, 0, -1); 
+                $response->tanggal_masuk    = substr($s_tanggal_masuk, 0, -1); 
+                $response->tanggal_selesai  = substr($s_tanggal_selesai, 0, -1); 
+                $response->nomor_surat      = substr($s_nomor_surat, 0, -1); 
+                $response->jumlah_sampel    = substr($s_jumlah_sampel, 0, -1); 
+                $response->catatan_userlabs = substr($s_catatan_userlabs, 0, -1); 
                 $response->status           = substr($s_status, 0, -1);
 
                 #PELANGGANS
-                $response->pelanggans_id    = substr($s_pelanggans_id, 0, -1);
-                $response->pelanggans_nama  = substr($s_pelanggans_nama, 0, -1);
+                $response->pelanggans_id    = substr($s_pelanggans_id, 0, -1); 
+                $response->pelanggans       = substr($s_pelanggans_nama, 0, -1);
 
                 #JENIS SAMPELS
-                $response->jenis_sampels_id = substr($s_jenis_sampels_id, 0, -1);
-                $response->jenis_sampel     = substr($s_jenis_sampel, 0, -1);
+                $response->jenis_sampels_id     = substr($s_jenis_sampels_id, 0, -1); 
+                $response->jenis_sampel         = substr($s_jenis_sampel, 0, -1);
+                $response->simbol               = substr($s_simbol, 0, -1);
+                $response->ketersediaan_alat    = substr($s_ketersediaan_alat, 0, -1);
+                $response->success = 1;
+                $response->message = 'BERIKUT LIST DATA SAMPELS';
+
             } catch (Exception $e) {
                 $response->success = 0;
                 $response->message = $e->getMessage();
@@ -1863,8 +1873,6 @@ class ApiController extends Controller
                     $n                  = 0;
 
                     $t                  = date('y', strtotime($m_data_sampels->tanggal_masuk));
-                    $index              = 0;
-
                     
                     foreach ($l_hasil_analisis as $value) {
                         if (isset($value['no_lab'])) {
@@ -1972,7 +1980,9 @@ class ApiController extends Controller
         $response   = new usr();
         if (isset($data_sampels_id)) {
             $hasilanalisa    = DB::table('hasil_analisas')
-                ->where('data_sampels_id', '=', $data_sampels_id)
+                ->join('jenis_sampels', 'jenis_sampels.id', '=', 'hasil_analisas.jenis_sampels_id')
+                ->select('hasil_analisas.*', 'jenis_sampels.lambang_sampel as simbol')
+                ->where('hasil_analisas.data_sampels_id', '=', $data_sampels_id)
                 ->get();
 
             $hasilanalisa           = json_decode(json_encode($hasilanalisa), true);
@@ -2838,7 +2848,7 @@ class ApiController extends Controller
             $response->message = 'QUERY LOGIN SALAH, PESAN KESALAHAN (' . $e->getMessage() . ')';
         }
 
-        die(json_encode($response));
+        return json_encode($response);
     }
     #21. LOGIN PELANGGANS
 #17 - 21 PELANGGANS
@@ -2953,6 +2963,7 @@ class ApiController extends Controller
         $rules      = [
             'id'         => 'required|exists:aktivitas,id',
             'aktivitas'  => 'required|string|min:2|max:75',
+            'groups_id'            => 'required|exists:group_aktivitas,id'
         ];
         $messages   = [
             'id.required'          => 'AKTIVITAS ID WAJIB ADA',
@@ -2960,6 +2971,8 @@ class ApiController extends Controller
             'aktivitas.required'   => 'AKTIVITAS WAJIB DIISI',
             'aktivitas.min'        => 'AKTIVITAS WAJIB DIISI DENGAN HURUF MINIMAL 2 KARAKTER',
             'aktivitas.max'        => 'AKTIVITAS WAJIB DIISI DENGAN HURUF MAKSIMAL 75 KARAKTER',
+            'groups_id.required'               => 'GROUP WAJIB DIISI',
+            'groups_id.exists'                 => 'GROUP TIDAK DITEMUKAN',
         ];
         $validator = Validator::make($request->all(), $rules, $messages);
 
@@ -2971,7 +2984,8 @@ class ApiController extends Controller
                 DB::table('aktivitas')
                     ->where('id', '=', $request->id)
                     ->update([
-                        'aktivitas' => $request->aktivitas
+                        'aktivitas' => $request->aktivitas,
+                        'groups_id' => $request->groups_id
                     ]);
                 $response->success = 1;
                 $response->message = 'AKTIVITAS BERHASIL DIUPDATE';

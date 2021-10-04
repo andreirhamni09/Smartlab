@@ -194,7 +194,17 @@
                                             <tr>
                                                 <td>{{ $no_ }}</td>
                                                 <td>{{ $datasampels['tanggal_masuk'][$i] }}</td>
-                                                <td>{{ $datasampels['tanggal_selesai'][$i] }}</td>
+                                                <?php
+                                                    $tanggal_masuk      = strtotime(str_replace('/', '-', $datasampels['tanggal_masuk'][$i]));
+                                                    $v_tanggal_masuk    = date('d-m-Y H:i', $tanggal_masuk); 
+                                                    
+                                                    $t_selesai          = $datasampels['tanggal_selesai'][$i].' days';
+
+                                                    $date=date_create($v_tanggal_masuk);
+                                                    date_add($date, date_interval_create_from_date_string($t_selesai));
+                                                    $selesai = date_format($date, "d-m-Y");
+                                                ?>
+                                                <td>{{ $selesai }} ({{ $datasampels['tanggal_selesai'][$i] }} Hari)</td>
                                                 @if(in_array($datasampels['pelanggans_id'][$i], $pelanggans['id']))
                                                     <td>{{ $pelanggans['nama'][array_search($datasampels['pelanggans_id'][$i], $pelanggans['id'])] }}</td>
                                                     <td>{{ $pelanggans['perusahaan'][array_search($datasampels['pelanggans_id'][$i], $pelanggans['id'])] }}</td>
@@ -202,10 +212,26 @@
                                                 @if(in_array($datasampels['jenis_sampels_id'][$i], $jenissampels['id']))
                                                     <td>{{ strtoupper($jenissampels['jenis_sampel'][array_search($datasampels['jenis_sampels_id'][$i], $jenissampels['id'])]) }}</td>
                                                 @endif
-                                                <td></td>
+                                                <td>
+                                                    <?php $sampelPakets = '';?>
+                                                    @for($j = 0; $j < count($pakets['id']); $j++)
+                                                        @if(in_array($pakets['id'][$j], explode('-', $datasampels['pakets_id_s'][$i])))
+                                                            <?php $sampelPakets .= $pakets['paket'][$j].'-'; ?>
+                                                        @endif
+                                                    @endfor
+                                                    <?php $sampelPakets = substr($sampelPakets, 0,-1);?>
+                                                    {{ $sampelPakets }}
+                                                </td>
                                                 <td>{{ strtoupper($datasampels['jenis_sampel'][$i]) }}</td>
                                                 <td>{{ strtoupper($datasampels['nomor_surat'][$i]) }}</td>
-                                                
+                                                @if($datasampels['ketersediaan_alat'][$i] == true)
+                                                <td>TERSEDIA</td>
+                                                @else
+                                                <td>RUSAK</td>
+                                                @endif
+                                                <td>{{ strtoupper($datasampels['catatan_userlabs'][$i]) }}</td>                                               
+                                                <td>{{$datasampels['status'][$i] }}</td>                                           
+                                                <td><a href="hasilanalisis/{{ $datasampels['id'][$i] }}" class="btn btn-primary">HASIL ANALISA</a></td> 
                                             </tr>
                                         <?php $no_+=1; ?>
                                         @endfor

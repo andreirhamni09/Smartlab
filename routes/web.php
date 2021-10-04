@@ -5,8 +5,13 @@ use App\Http\Controllers\MasterController;
 
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('login');
+})->name('login');
+Route::post('/login_p', [MasterController::class, 'LoginPelanggan']);
+Route::get('/tracking', [MasterController::class, 'TrackingPelanggan'])
+->name('tracking');
+Route::get('/cekresi', [MasterController::class, 'CekResi']);
+
 
 Route::prefix('admin')->group(function () {
     Route::get('/', function () {
@@ -124,3 +129,7 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/latihantabel', [MasterController::class, 'LatihanTabel']);
 });
+
+
+
+Route::get('/dekrip', [MasterController::class, 'Dekrip']);
