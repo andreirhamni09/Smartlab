@@ -973,7 +973,41 @@ class MasterController extends Controller
     }
 
     public static function CekResi(Request $request){
-        print_r($request->pelanggan);
+        $pelanggans     = [
+            'id'    => $request->id,
+            'email'    => $request->email,
+            'nama'    => $request->nama,
+            'perusahaan'    => $request->perusahaan
+        ];
+        $data           = $request->resi;
+        $cipher         = "aes-128-cbc"; 
+        $encryption_key = '1234567890123456'; 
+
+        $decrypted_data = openssl_decrypt($data, 
+                                          $cipher, 
+                                          $encryption_key, 
+                                          0, 
+                                          ''); 
+        $gettrackings   = app('App\Http\Controllers\ApiController')->GetDetailTrackings($decrypted_data);        
+        $gettrackings   = json_decode($gettrackings, true);
+        $trackings      = array();
+        if($gettrackings['success'] == 1)
+        {
+            $trackings = [
+                'aktivitas_waktu'    => explode('-', $gettrackings['aktivitas_waktu']),
+                'lab_akuns_nama'     => explode('-', $gettrackings['lab_akuns_nama']),
+                'group'              => explode('-', $gettrackings['group'])
+            ];
+        }
+        else
+        {
+            $trackings = array();
+        }
+
+        return redirect()->route('tracking', [
+            'pelanggan' => $pelanggans,
+            'tracking'  => $trackings
+        ]);
     }
     public static function Dekrip(){
         error_reporting(0);
@@ -989,7 +1023,11 @@ class MasterController extends Controller
         echo "Encrypted Text: " . $encrypted_data.'<br>'; 
 
         #DEKRIP DATA
-        $decrypted_data = openssl_decrypt($encrypted_data, $cipher, $encryption_key, 0, ''); 
+        $decrypted_data = openssl_decrypt($encrypted_data, 
+                                          $cipher, 
+                                          $encryption_key, 
+                                          0, 
+                                          ''); 
 
         echo "Decrypted Text: " . $decrypted_data.'<br>';
     }

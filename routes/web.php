@@ -10,7 +10,8 @@ Route::get('/', function () {
 Route::post('/login_p', [MasterController::class, 'LoginPelanggan']);
 Route::get('/tracking', [MasterController::class, 'TrackingPelanggan'])
 ->name('tracking');
-Route::get('/cekresi', [MasterController::class, 'CekResi']);
+
+Route::post('/cekresi', [MasterController::class, 'CekResi']);
 
 
 Route::prefix('admin')->group(function () {

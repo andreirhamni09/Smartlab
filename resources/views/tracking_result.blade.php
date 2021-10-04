@@ -20,7 +20,7 @@
                             <h3 class="text-success"><strong>TRACKING SAMPEL</strong></h3>
                         </div>
                         <div class="card-body table-responsive">
-                            <form action="" method="post">
+                            <form action="{{ url('/cekresi') }}" method="post">
                             {{ csrf_field() }}
                                 <div class="row">
                                     <div class="col-sm-10">

@@ -1156,11 +1156,13 @@ class ApiController extends Controller
         $s_aktivitas        = '';
         $s_lab_akuns_id     = '';
         $s_lab_akuns_nama   = '';
+        $s_group            = '';
 
         $getdetailtrackings = DB::table('detail_trackings')
             ->join('aktivitas', 'detail_trackings.aktivitas_id', '=', 'aktivitas.id')
             ->join('lab_akuns', 'detail_trackings.lab_akuns_id', '=', 'lab_akuns.id')
-            ->select('detail_trackings.*', 'aktivitas.aktivitas as aktivitas', 'lab_akuns.nama as nama')
+            ->join('group_aktivitas', 'group_aktivitas.id', '=', 'aktivitas.groups_id')
+            ->select('detail_trackings.*', 'aktivitas.aktivitas as aktivitas', 'lab_akuns.nama as nama', 'group_aktivitas.group as group')
             ->where('detail_trackings.data_sampels_id', '=', $data_sampels_id)
             ->get();
 
@@ -1178,6 +1180,7 @@ class ApiController extends Controller
                     $s_aktivitas        .= $value['aktivitas'] . '-';
                     $s_lab_akuns_id     .= $value['lab_akuns_id'] . '-';
                     $s_lab_akuns_nama   .= $value['nama'] . '-';
+                    $s_group            .= $value['group'].'-';
                 }
 
 
@@ -1191,6 +1194,7 @@ class ApiController extends Controller
                 $response->aktivitas        = substr($s_aktivitas, 0, -1);
                 $response->lab_akuns_id     = substr($s_lab_akuns_id, 0, -1);
                 $response->lab_akuns_nama   = substr($s_lab_akuns_nama, 0, -1);
+                $response->group            = substr($s_group, 0, -1);
                 $response->success = 1;
                 $response->message = 'TERAKHIR UPDATE ' . $waktu;
             }
@@ -1198,7 +1202,7 @@ class ApiController extends Controller
             $response->success = 1;
             $response->message = $e->getMessage();
         }
-        die(json_encode($response));
+        return json_encode($response);
     }
     #9. GET DETAIL TRACKING
 
@@ -4308,5 +4312,6 @@ class ApiController extends Controller
 
         return json_encode($response);
     }
+    
 #32 - 36 GROUP AKTIFITAS
 }

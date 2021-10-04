@@ -742,7 +742,7 @@
                 ]
             }
         },
-        "/updatepelanggans/{id}/{email}/{password}/{nama}/{perusahaan}/{nomor_telepon}/{alamat}/{tanggal_registrasi}": {
+        "/updatepelanggans/{id}/{email}/{password}/{nama}/{perusahaan}/{nomor_telepon}/{npwp}/{alamat}": {
             "post": {
                 "tags": [
                     "19. Update Pelanggan"
@@ -806,18 +806,18 @@
                         }
                     },
                     {
-                        "name": "alamat",
+                        "name": "npwp",
                         "in": "path",
-                        "description": "ALAMAT",
+                        "description": "NPWP",
                         "required": true,
                         "schema": {
                             "type": "string"
                         }
                     },
                     {
-                        "name": "tanggal_registrasi",
+                        "name": "alamat",
                         "in": "path",
-                        "description": "TANGGAL REGISTRASI",
+                        "description": "ALAMAT",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -1432,164 +1432,6 @@
                 "security": [
                     {
                         "api_key_security_example": []
-                    }
-                ]
-            }
-        },
-        "/getgroupaktivitas": {
-            "get": {
-                "tags": [
-                    "32. Get Grup Aktivitas"
-                ],
-                "summary": "Get Grup Aktivitas",
-                "description": "Get Grup Aktivitas",
-                "operationId": "getProjectById",
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "404": {
-                        "description": "Resource Not Found"
-                    }
-                },
-                "security": [
-                    {
-                        "oauth2_security_example": [
-                            "write:projects",
-                            "read:projects"
-                        ]
-                    }
-                ]
-            }
-        },
-        "/insertgroupaktivitas/{group}": {
-            "post": {
-                "tags": [
-                    "33. Insert Grup Aktivitas"
-                ],
-                "summary": "Insert Grup Aktivitas",
-                "description": "Returns project data",
-                "operationId": "getProjectById",
-                "parameters": [
-                    {
-                        "name": "group",
-                        "in": "path",
-                        "description": "Group Aktivitas",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "404": {
-                        "description": "Resource Not Found"
-                    }
-                },
-                "security": [
-                    {
-                        "oauth2_security_example": [
-                            "write:projects",
-                            "read:projects"
-                        ]
-                    }
-                ]
-            }
-        },
-        "/updategroupaktivitas/{id}/{group}": {
-            "post": {
-                "tags": [
-                    "33. Update Grup Aktivitas"
-                ],
-                "summary": "Update Grup Aktivitas",
-                "description": "Returns project data",
-                "operationId": "getProjectById",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Id Group Aktivitas",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "group",
-                        "in": "path",
-                        "description": "Group Aktivitas",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "404": {
-                        "description": "Resource Not Found"
-                    }
-                },
-                "security": [
-                    {
-                        "oauth2_security_example": [
-                            "write:projects",
-                            "read:projects"
-                        ]
-                    }
-                ]
-            }
-        },
-        "/deletegroupaktivitas/{id}": {
-            "get": {
-                "tags": [
-                    "35. Delete Grup Aktivitas"
-                ],
-                "summary": "Delete Grup Aktivitas",
-                "description": "Returns project data",
-                "operationId": "getProjectById",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Id Group Aktivitas",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "404": {
-                        "description": "Resource Not Found"
-                    }
-                },
-                "security": [
-                    {
-                        "oauth2_security_example": [
-                            "write:projects",
-                            "read:projects"
-                        ]
                     }
                 ]
             }
