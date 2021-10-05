@@ -1199,7 +1199,7 @@ class ApiController extends Controller
                 $response->message = 'TERAKHIR UPDATE ' . $waktu;
             }
         } catch (Exception $e) {
-            $response->success = 1;
+            $response->success = 0;
             $response->message = $e->getMessage();
         }
         return json_encode($response);
@@ -1928,8 +1928,9 @@ class ApiController extends Controller
                                 'aktivitas_id'              => 1,
                                 'lab_akuns_id'              => 1
                             ]);
-                            $response->success = 1;
-                            $response->message = 'BERHASIL MEMASUKAN DATA KUPA BARU';
+                            $response->sampels_id   = $m_data_sampels->id;
+                            $response->success      = 1;
+                            $response->message      = 'BERHASIL MEMASUKAN DATA KUPA BARU';
                         } catch (Exception $e) {
                             $response->success = 0;
                             $response->message = 'GAGAL MEMASUKAN DATA : ' . $e->getMessage();
@@ -2793,63 +2794,60 @@ class ApiController extends Controller
      */
     public static function LoginPelanggans(Request $request, $email = null, $password = null)
     {
-        $response = new usr();
-        $s_id           = '';
-        $s_email                    = '';
-        $s_password       = '';
-        $s_nama         = '';
-        $s_perusahaan               = '';
-        $s_nomor_telepon  = '';
-        $s_alamat       = '';
-        $s_tanggal_registrasi       = '';
-        if (
-            (!isset($request->email) or !isset($request->password)) and
-            (empty($email) or empty($password))
-        ) {
+        $response               = new usr();
+        $s_id                   = '';
+        $s_email                = '';
+        $s_password             = '';
+        $s_nama                 = '';
+        $s_perusahaan           = '';
+        $s_nomor_telepon        = '';
+        $s_alamat               = '';
+        $s_tanggal_registrasi   = '';
+        if (isset($email) and isset($password)) {
+            $s_email      = $email;
+            $s_password   = $password;
+        } elseif (!empty($request->email) and !empty($request->password)) {
+            $s_email      = $request->email;
+            $s_password   = $request->password;
+        } elseif (!isset($email) || !isset($password) || empty($request->email) || empty($request->password)) {
             $response->success = 0;
-            $response->message = 'EMAIL DAN PASSWORD WAJIB DIISI';
-        } elseif (
-            isset($request->email) or isset($request->password)
-        ) {
-            $s_email        = $request->email;
-            $s_password     = $request->password;
-        } elseif (
-            !empty($email) or !empty($password)
-        ) {
-            $s_email        = $email;
-            $s_password     = $password;
+            $response->message = "Kolom tidak boleh kosong";
         }
 
-        try {
-            $l_pelanggans   = DB::table('pelanggans')
-                ->where('email', '=', $s_email)
-                ->where('password', '=', $s_password)
-                ->first();
-            $l_pelanggans   = json_decode(json_encode($l_pelanggans), true);
-            if (empty($l_pelanggans)) {
-                $response->success = 0;
-                $response->message = 'GAGAL LOGIN DATA TIDAK DITEMUKAN';
-            } else {
-                try {
-                    $response->id                   = $l_pelanggans['id'];
-                    $response->email                = $l_pelanggans['email'];
-                    $response->password             = $l_pelanggans['password'];
-                    $response->nama                 = $l_pelanggans['nama'];
-                    $response->perusahaan           = $l_pelanggans['perusahaan'];
-                    $response->nomor_telepon        = $l_pelanggans['nomor_telepon'];
-                    $response->alamat               = $l_pelanggans['alamat'];
-                    $response->tanggal_registrasi   = $l_pelanggans['tanggal_registrasi'];
+        $userPelanggan = DB::table('pelanggans')
+                    ->where('email', '=', $s_email)
+                    ->first();
+        $userPelanggan   = json_decode(json_encode($userPelanggan), true);
 
-                    $response->success              = 1;
-                    $response->message              = 'BERHASIL MELAKUKAN LOGIN';
-                } catch (Exception $e) {
-                    $response->success              = 0;
-                    $response->message              = 'GAGAL MELAKUKAN LOGIN, PESAN KESALAHAN (' . $e->getMessage() . ')';
-                }
+
+        try {
+            if ($userPelanggan == []) {
+                $response->success      = 0;
+                $response->message      = "USER TIDAK DITEMUKAN";
+                return json_encode($response);
+            } elseif ($userPelanggan['password'] != $s_password) {
+                $response->success      = 0;
+                $response->message      = "INVALID PASSWORD";
+                return json_encode($response);
+            }
+            else{
+                $response->id                   = $userPelanggan['id'];
+                $response->email                = $userPelanggan['email'];
+                $response->password             = $userPelanggan['password'];
+                $response->nama                 = $userPelanggan['nama'];
+                $response->perusahaan           = $userPelanggan['perusahaan'];
+                $response->nomor_telepon        = $userPelanggan['nomor_telepon'];
+                $response->alamat               = $userPelanggan['alamat'];
+                $response->tanggal_registrasi   = $userPelanggan['tanggal_registrasi'];
+
+                $response->success              = 1;
+                $response->message              = 'BERHASIL MELAKUKAN LOGIN';
+                return json_encode($response);
             }
         } catch (Exception $e) {
             $response->success = 0;
             $response->message = 'QUERY LOGIN SALAH, PESAN KESALAHAN (' . $e->getMessage() . ')';
+            return json_encode($response);
         }
 
         return json_encode($response);
@@ -3167,7 +3165,6 @@ class ApiController extends Controller
         } elseif (!isset($email) || !isset($password) || empty($request->email) || empty($request->password)) {
             $response->success = 0;
             $response->message = "Kolom tidak boleh kosong";
-            die(json_encode($response));
         }
 
         $userLabLogin   = DB::table('lab_akuns')
@@ -4312,6 +4309,46 @@ class ApiController extends Controller
 
         return json_encode($response);
     }
-    
 #32 - 36 GROUP AKTIFITAS
+    public static function Enkripsi($sampels_id){
+        $data           = $sampels_id;
+        $cipher         = "aes-128-cbc"; 
+        $encryption_key = '%smartlabcbi2021'; 
+
+        $decrypted_data = openssl_decrypt($data, 
+                                          $cipher, 
+                                          $encryption_key, 
+                                          0, 
+                                          ''); 
+        return $decrypted_data;
+    }
+
+    public static function CekResi($user_id, $sampels_id)
+    {
+        $response   = new usr();
+
+        $decrypted_data = app('App\Http\Controllers\ApiController')->Enkripsi($sampels_id);   
+    
+        $cekuser    = DB::table('data_sampels')
+        ->where('data_sampels.pelanggans_id', '=', $user_id)
+        ->where('data_sampels.id', '=', $decrypted_data)
+        ->get();
+        $cekuser  = json_decode(json_encode($cekuser), true);
+
+        if(!empty($cekuser)){
+            $gettrackings   = app('App\Http\Controllers\ApiController')->GetDetailTrackings($decrypted_data);        
+            $gettrackings   = json_decode($gettrackings, true);
+
+            $response->aktivitas_waktu = $gettrackings['aktivitas_waktu'];
+            $response->lab_akuns_nama = $gettrackings['lab_akuns_nama'];
+            $response->group = $gettrackings['group'];
+            $response->success  = 1;
+            $response->message  = 'DATA DITEMUKAN';
+        }
+        else{
+            $response->success = 0;
+            $response->message = 'DATA DENGAN RESI YANG ANDA MINTA TIDAK DAPAT DIAKSES';
+        }
+        return json_encode($response);
+    }
 }

@@ -930,13 +930,6 @@ class MasterController extends Controller
             ->orderByDesc('no_lab')->take(1)->get();
 
         $l_hasil_analisis   = json_decode(json_encode($l_hasil_analisis), true);
-        
-        /* if (isset($l_hasil_analisis['no_lab'])) {
-            $n = $l_hasil_analisis['no_lab'];
-        }               
-        else{
-            $n = 0;
-        }   */ 
     }
 
 
@@ -953,11 +946,7 @@ class MasterController extends Controller
         if($loginpelanggan['success'] == 1)
         {
             $pelanggans = [
-                'id'    => $loginpelanggan['id'],
-                'email'    => $loginpelanggan['email'],
-                'nama'    => $loginpelanggan['nama'],
-                'perusahaan'    => $loginpelanggan['perusahaan'],
-                'nomor_telepon'    => $loginpelanggan['nomor_telepon']
+                'id'    => $loginpelanggan['id']
             ];
             return redirect()->route('tracking', ['pelanggan' => $pelanggans]);
         }
@@ -973,40 +962,34 @@ class MasterController extends Controller
     }
 
     public static function CekResi(Request $request){
-        $pelanggans     = [
-            'id'    => $request->id,
-            'email'    => $request->email,
-            'nama'    => $request->nama,
-            'perusahaan'    => $request->perusahaan
-        ];
-        $data           = $request->resi;
-        $cipher         = "aes-128-cbc"; 
-        $encryption_key = '1234567890123456'; 
+        $resi       = $request->resi;
+        $user_id    = $request->id;
 
-        $decrypted_data = openssl_decrypt($data, 
-                                          $cipher, 
-                                          $encryption_key, 
-                                          0, 
-                                          ''); 
-        $gettrackings   = app('App\Http\Controllers\ApiController')->GetDetailTrackings($decrypted_data);        
-        $gettrackings   = json_decode($gettrackings, true);
-        $trackings      = array();
-        if($gettrackings['success'] == 1)
-        {
-            $trackings = [
-                'aktivitas_waktu'    => explode('-', $gettrackings['aktivitas_waktu']),
-                'lab_akuns_nama'     => explode('-', $gettrackings['lab_akuns_nama']),
-                'group'              => explode('-', $gettrackings['group'])
+        $pelanggans = [
+            'id'    => $user_id 
+        ];
+
+        $cekresi    = app('App\Http\Controllers\ApiController')->CekResi($user_id, $resi);        
+        $cekresi    = json_decode($cekresi, true);
+        $resi       = array();
+        if($cekresi['success'] == 1){
+            $resi   = [
+                'aktivitas_waktu'   => explode('-', $cekresi['aktivitas_waktu']),
+                'lab_akuns_nama'    => explode('-', $cekresi['lab_akuns_nama']),
+                'group'             => explode('-', $cekresi['group']),
+                'success'           => $cekresi['success'],
+                'message'           => $cekresi['message']
             ];
         }
-        else
-        {
-            $trackings = array();
+        else{
+            $resi   = [
+                'success'           => $cekresi['success'],
+                'message'           => $cekresi['message']
+            ];
         }
-
         return redirect()->route('tracking', [
             'pelanggan' => $pelanggans,
-            'tracking'  => $trackings
+            'tracking'  => $resi
         ]);
     }
     public static function Dekrip(){
@@ -1014,7 +997,7 @@ class MasterController extends Controller
         $cipher = "aes-128-cbc"; 
 
         //Generate a 256-bit encryption key 
-        $encryption_key = '1234567890123456'; 
+        $encryption_key = '%smartlabcbi2021'; 
 
         //Data to encrypt 
         $data = "12"; 
@@ -1031,5 +1014,13 @@ class MasterController extends Controller
 
         echo "Decrypted Text: " . $decrypted_data.'<br>';
     }
+
+    
+    public static function Logout(){
+        return redirect()->route('login', [
+            'status' => 'TELAH LOGOUT'
+        ]);
+    }
+
 #PELANGGAN
 }

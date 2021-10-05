@@ -10,7 +10,7 @@
             </div>
         </div>
     </section>
-    @if(isset($_GET['pelanggan']))
+    @if(isset($_GET['pelanggan']) OR !empty($_GET['pelanggan']) )
         <section class="content">
             <div class="container-fluid">
                 <div class="row">
@@ -23,9 +23,6 @@
                                 <form action="{{ url('/cekresi') }}" style="width: 70%; margin-left: auto; margin-right: auto;" method="post">
                                 {{ csrf_field() }}
                                     <input type="hidden" name="id" value="{{ $_GET['pelanggan']['id'] }}">
-                                    <input type="hidden" name="email" value="{{ $_GET['pelanggan']['email'] }}">
-                                    <input type="hidden" name="nama" value="{{ $_GET['pelanggan']['nama'] }}">
-                                    <input type="hidden" name="perusahaan" value="{{ $_GET['pelanggan']['perusahaan'] }}">
                                     <div class="row">
                                         <div class="col-sm-11">
                                             <div class="form-group">
@@ -52,29 +49,40 @@
                         <div class="card card-primary card-outline">
                             <div class="card-header">
                                 <h3 class="text-success"><strong>TRACKING RESULT</strong></h3>
-                            </div>
+                            </div>                            
+                            @if(isset($_GET['tracking']))
+
                             <div class="card-body table-responsive">
                                  <table id="data_sampels" class="table table-bordered table-hover text-center" style="width: 70%; margin-left:auto; margin-right:auto;">
                                     <thead>
                                         <tr>
-                                            <th class="hijau">WAKTU</th>
+                                            <th class="hijau">NO</th>
+                                            <th class="biru">WAKTU</th>
                                             <th class="biru">AKTIVITAS</th>
-                                            <th class="biru">PETUGAS</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if(isset($_GET['tracking']))
+                                        @if($_GET['tracking']['success'] == 1)
+                                            <?php $nomor = 1; ?>
+                                            @for($i = 0; $i < count($_GET['tracking']['aktivitas_waktu']); $i++)
                                             <tr>
-                                                <td colspan="3">DATA DITEMUKAN</td>
+                                                <td>{{ $nomor }}</td>
+                                                <?php
+                                                    $time = date('H:i d-m-Y', strtotime($_GET['tracking']['aktivitas_waktu'][$i])); 
+                                                ?>
+                                                <td>{{ $time }}</td>
+                                                <td>{{ $_GET['tracking']['group'][$i] }}</td>
                                             </tr>
+                                            @endfor
                                         @else
                                             <tr>
-                                                <td colspan="3">SILAHKAN MASUKAN RESI</td>
+                                                <td colspan="3">{{ $_GET['tracking']['message'] }}</td>
                                             </tr>
                                         @endif
                                     </tbody>
                                 </table>
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>

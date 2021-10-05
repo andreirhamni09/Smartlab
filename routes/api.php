@@ -110,7 +110,7 @@ Route::prefix('admin')->group(function () {
     Route::post('deletepelanggans/{id?}', [ApiController::class, 'DeletePelanggans']);
 
     #21. LOGIN PELANGGANS
-    Route::post('loginpelanggans/{email}/{password}', [ApiController::class, 'LoginPelanggans']);
+    Route::post('loginpelanggans/{email?}/{password?}', [ApiController::class, 'LoginPelanggans']);
 #17 - 21 PELANGGANS
 
 #22 AKTIVITAS

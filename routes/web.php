@@ -11,6 +11,8 @@ Route::post('/login_p', [MasterController::class, 'LoginPelanggan']);
 Route::get('/tracking', [MasterController::class, 'TrackingPelanggan'])
 ->name('tracking');
 
+Route::get('/logout', [MasterController::class, 'Logout']);
+
 Route::post('/cekresi', [MasterController::class, 'CekResi']);
 
 

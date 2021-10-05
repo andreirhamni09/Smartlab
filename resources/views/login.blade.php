@@ -68,6 +68,22 @@
     <script src="{{ asset('public/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('public/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('public/js/adminlte.min.js') }}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 </body>
 
 </html>
+<script>
+  jQuery(document).ready(function($) {
+
+    if (window.history && window.history.pushState) {
+
+      window.history.pushState('forward', null, './#forward');
+
+      $(window).on('popstate', function() {
+        window.location.href = "{{ URL::to('tracking')}} ";
+      });
+
+    }
+  });
+</script>
