@@ -9,6 +9,13 @@ use App\Models\AksesLevel;
 use App\Controllers\ApiController;
 use App\Models\HasilAnalisa;
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+require 'vendor/autoload.php';
+
+
 class MasterController extends Controller
 {
 #GENERAL FUNCTION
@@ -304,7 +311,7 @@ class MasterController extends Controller
         $getpakets          = app('App\Http\Controllers\ApiController')->GetPakets(); 
         $getpakets          = json_decode($getpakets, true);
         $pakets             = '';
-        if($getpakets['success'] == '1'){
+        if($getpakets['success'] == 1){
             $pakets = [
                 'id'                => explode('-', $getpakets['id']),
                 'jenis_sampels_id'  => explode('-', $getpakets['jenis_sampels_id']),
@@ -354,8 +361,20 @@ class MasterController extends Controller
                                                  'halamans'=> $halamans,]);
     }
 
+    public static function Enkripsi($sampels_id){
+        error_reporting(0);
+        $cipher = "aes-128-cbc"; 
+
+        //Generate a 256-bit encryption key 
+        $encryption_key = '%smartlabcbi2021'; 
+        
+        $encrypted_data = openssl_encrypt($sampels_id, $cipher, $encryption_key, 0, '');
+        
+        return urlencode($encrypted_data);
+    }
+
     #INSERT DATA SAMPELS
-    public static function InsertDataSampels(Request $request){
+    public static function InsertDataSampels(Request $request){  
         $batch = $request->batch_size;
         if(substr($batch, 0, -1) == ',')
         {   
@@ -376,8 +395,54 @@ class MasterController extends Controller
                                                                                           $request->catatan_userlabs);
         
         
-        $insertdatasampels = json_decode($insertdatasampels, true);   
-        return redirect()->back()->with('insert', $insertdatasampels['message']); 
+        $insertdatasampels = json_decode($insertdatasampels, true);
+        
+        if($insertdatasampels['success'] == 1)
+        {    
+            $getpelanggans  = DB::table('pelanggans')
+                              ->where('pelanggans.id', '=', $insertdatasampels['pelanggans_id'])
+                              ->first();
+            $getpelanggans  = json_decode(json_encode($getpelanggans), true);
+            $email          = $getpelanggans['email'];
+            $sampels_id     = app('App\Http\Controllers\MasterController')->Enkripsi($insertdatasampels['sampels_id']);
+            $mail           = new PHPMailer(true);
+            try {
+                //Server settings
+                $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+                $mail->isSMTP();                                            //Send using SMTP
+                $mail->Host       = 'slab.srs-ssms.com';                     //Set the SMTP server to send through
+                $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+                $mail->Username   = 'lab-email@slab.srs-ssms.com';                     //SMTP username
+                $mail->Password   = 'sidewinderzone';                               //SMTP password
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+                $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+            
+                //Recipients
+                $mail->setFrom('lab-email@slab.srs-ssms.com', 'Tracking Sampel');
+                $mail->addAddress($email);     //Add a recipient
+                $mail->addReplyTo('lab-email@slab.srs-ssms.com');
+                
+                $link = 'https://slab.srs-ssms.com/tracking?resi='.$sampels_id.'';
+                //Content
+                $mail->isHTML(true);                                  //Set email format to HTML
+                $mail->Subject = 'Tracking Sampel';
+                $mail->Body    = '<a href='.$link.'>'.$link.'</a>';
+                $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+            
+                if(!$mail->send()){
+                    return redirect()->back()->with('insert', $mail->ErrorInfo);              
+                }
+                else{
+                    return redirect()->back()->with('insert', 'BERHASIL MENGIRIMKAN INFORMASI RESI');  
+                }
+            } catch (Exception $e) {
+                $pesankesalahan = 'KONFIGURASI KIRIM EMAIL GAGAL, PESAN KESALAHAN :'.$mail->ErrorInfo;
+                return redirect()->back()->with('insert', $pesankesalahan);
+            }
+        }  
+        else{
+            return redirect()->back()->with('insert', $insertdatasampels['message']);
+        } 
         
     }
 
@@ -936,10 +1001,19 @@ class MasterController extends Controller
 
 #PELANGGAN
     public static function LoginPelanggan(Request $request)
-    {
+    {        
         $email      = $request->email;
         $password   = $request->password;
         
+        $resi       = '';
+        if(isset($request->resi))
+        {
+            $resi       = $request->resi;
+        }
+        else{
+            $resi       = '';
+        }
+
         $loginpelanggan = app('App\Http\Controllers\ApiController')->LoginPelanggans($request, $email, $password);        
         $loginpelanggan = json_decode($loginpelanggan, true);
 
@@ -948,7 +1022,7 @@ class MasterController extends Controller
             $pelanggans = [
                 'id'    => $loginpelanggan['id']
             ];
-            return redirect()->route('tracking', ['pelanggan' => $pelanggans]);
+            return redirect()->route('tracking', ['pelanggan' => $pelanggans])->with('resi', $resi);
         }
         else
         {
@@ -962,7 +1036,7 @@ class MasterController extends Controller
     }
 
     public static function CekResi(Request $request){
-        $resi       = $request->resi;
+        $resi       = urldecode($request->resi);
         $user_id    = $request->id;
 
         $pelanggans = [
@@ -992,31 +1066,25 @@ class MasterController extends Controller
             'tracking'  => $resi
         ]);
     }
-    public static function Dekrip(){
+    public static function Dekrip($sampels_id){
         error_reporting(0);
         $cipher = "aes-128-cbc"; 
 
         //Generate a 256-bit encryption key 
         $encryption_key = '%smartlabcbi2021'; 
-
-        //Data to encrypt 
-        $data = "12"; 
-        $encrypted_data = openssl_encrypt($data, $cipher, $encryption_key, 0, ''); 
-
-        echo "Encrypted Text: " . $encrypted_data.'<br>'; 
-
-        #DEKRIP DATA
-        $decrypted_data = openssl_decrypt($encrypted_data, 
+        $decrypted_data = openssl_decrypt($sampels_id, 
                                           $cipher, 
                                           $encryption_key, 
                                           0, 
                                           ''); 
 
-        echo "Decrypted Text: " . $decrypted_data.'<br>';
+        return $decrypted_data;
     }
 
     
     public static function Logout(){
+        session_start();
+        session_destroy();
         return redirect()->route('login', [
             'status' => 'TELAH LOGOUT'
         ]);

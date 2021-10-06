@@ -32,6 +32,9 @@
                 </div>
                 <form action="{{ url('/login_p') }}" method="post">
                 {{ csrf_field() }}
+                    @if(isset($_GET['resi']))
+                    <input type="hidden" name="resi" value="{{ urlencode($_GET['resi']) }}">
+                    @endif
                     <div class="input-group mb-3">
                         <input type="text" class="form-control" name="email" placeholder="E-mail">
                         <div class="input-group-append">
@@ -75,15 +78,11 @@
 </html>
 <script>
   jQuery(document).ready(function($) {
-
     if (window.history && window.history.pushState) {
-
-      window.history.pushState('forward', null, './#forward');
-
+      window.history.pushState('forward', null, './');
       $(window).on('popstate', function() {
         window.location.href = "{{ URL::to('tracking')}} ";
       });
-
     }
   });
 </script>

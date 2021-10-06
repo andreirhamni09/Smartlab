@@ -189,6 +189,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @if(!empty($datasampels))
                                         <?php $no_ = 1; ?>
                                         @for($i = 0; $i < count($datasampels['id']); $i++)
                                             <tr>
@@ -235,6 +236,11 @@
                                             </tr>
                                         <?php $no_+=1; ?>
                                         @endfor
+                                        @else
+                                            <tr>
+                                                <td colspan="13">BELUM ADA DATA YANG DIANALISA</td>
+                                            </tr>
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>

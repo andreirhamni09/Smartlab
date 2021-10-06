@@ -1,4 +1,9 @@
 @include('layout.header')
+<?php
+    if(session('resi')){
+        $_SESSION['resi'] = session('resi');
+    }
+?>
 <div class="content-wrapper">
     <section class="content-header">
         <div class="content-fluid">
@@ -27,7 +32,11 @@
                                         <div class="col-sm-11">
                                             <div class="form-group">
                                                 <label for="">RESI</label>
-                                                <input type="text" name="resi" class="form-control">
+                                                @if(isset($_SESSION['resi']))
+                                                    <input value="{{ $_SESSION['resi'] }}" type="text" name="resi" class="form-control">
+                                                @else
+                                                    <input type="text" name="resi" class="form-control">
+                                                @endif
                                             </div>
                                         </div>
                                         <div class="col-sm-1">
@@ -91,10 +100,17 @@
 
 
     @else
-        @php
-            header("Location: " . URL::to('/?status=Lakukan Login Terlebih Dahulu'), true, 302);
-            exit();
-        @endphp
+        @if(isset($_GET['resi']))
+            @php
+                header("Location: " . URL::to('/?resi='.$_GET['resi'].'&status=Lakukan Login Terlebih Dahulu'), true, 302);
+                exit();
+            @endphp
+        @else
+            @php
+                header("Location: " . URL::to('/?status=Lakukan Login Terlebih Dahulu'), true, 302);
+                exit();
+            @endphp
+        @endif
     @endif
 </div>
 @include('layout.footer')

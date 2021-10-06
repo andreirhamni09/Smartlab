@@ -1752,7 +1752,7 @@ class ApiController extends Controller
         ) {
             $s_jenis_sampels_id     = $request->jenis_sampels_id;
             $s_pelanggans_id        = $request->pelanggans_id;
-            $s_pakets_id_s          = $request->pakets_id_s;
+            $s_pakets_id_s          = implode('-', $request->pakets_id_s);
             $s_tanggal_masuk        = $request->tanggal_masuk;
             $s_tanggal_selesai      = $request->tanggal_selesai;
             $s_nomor_surat          = $request->nomor_surat;
@@ -1837,7 +1837,7 @@ class ApiController extends Controller
         $status_save = 0;
         if ($validator->fails()) {
             $response->success = 0;
-            $response->message = $validator->errors()->first();
+            $response->message = $validator->errors()->first().'1';
         } else {
             $m_data_sampels->jenis_sampels_id       = $s_jenis_sampels_id;
             $m_data_sampels->pelanggans_id          = $s_pelanggans_id;
@@ -1928,9 +1928,10 @@ class ApiController extends Controller
                                 'aktivitas_id'              => 1,
                                 'lab_akuns_id'              => 1
                             ]);
-                            $response->sampels_id   = $m_data_sampels->id;
-                            $response->success      = 1;
-                            $response->message      = 'BERHASIL MEMASUKAN DATA KUPA BARU';
+                            $response->sampels_id       = $m_data_sampels->id;
+                            $response->pelanggans_id    = $m_data_sampels->pelanggans_id;
+                            $response->success          = 1;
+                            $response->message          = 'BERHASIL MEMASUKAN DATA KUPA BARU';
                         } catch (Exception $e) {
                             $response->success = 0;
                             $response->message = 'GAGAL MEMASUKAN DATA : ' . $e->getMessage();

@@ -8,7 +8,7 @@ Route::get('/', function () {
     return view('login');
 })->name('login');
 Route::post('/login_p', [MasterController::class, 'LoginPelanggan']);
-Route::get('/tracking', [MasterController::class, 'TrackingPelanggan'])
+Route::get('/tracking/{resi?}', [MasterController::class, 'TrackingPelanggan'])
 ->name('tracking');
 
 Route::get('/logout', [MasterController::class, 'Logout']);
