@@ -20,6 +20,12 @@ use App\Models\LabAkun;
 use Illuminate\Bus\Batch;
 use SebastianBergmann\Exporter\Exporter;
 
+
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
+
+date_default_timezone_set("Asia/Jakarta");
+
 class usr
 {
 }
@@ -631,6 +637,7 @@ class ApiController extends Controller
                 $response->jenis_sampel     = $str_jenisSampel;
                 $response->lambang_sampel   = $str_lambangSampel;
                 $response->success          = 1;
+                $response->message          = 'BERIKUT LIST DATA JENIS SAMPEL';
             }
         } catch (Exception $e) {
             $response->success      = 0;
@@ -1164,6 +1171,7 @@ class ApiController extends Controller
             ->join('group_aktivitas', 'group_aktivitas.id', '=', 'aktivitas.groups_id')
             ->select('detail_trackings.*', 'aktivitas.aktivitas as aktivitas', 'lab_akuns.nama as nama', 'group_aktivitas.group as group')
             ->where('detail_trackings.data_sampels_id', '=', $data_sampels_id)
+            ->orderByDesc('detail_trackings.aktivitas_waktu')
             ->get();
 
         $getdetailtrackings = json_decode(json_encode($getdetailtrackings), true);
@@ -1717,8 +1725,8 @@ class ApiController extends Controller
         $catatan_userlabs = null,
         $catatan_pelanggan = null
     ) {
-        $m_data_sampels = new DataSampel();
-        $response = new usr();
+        $m_data_sampels         = new DataSampel();
+        $response               = new usr();
         $s_jenis_sampels_id     = '';
         $s_pelanggans_id        = '';
         $s_pakets_id_s          = '';
@@ -1731,6 +1739,39 @@ class ApiController extends Controller
         $s_ketersediaan_alat    = '';
         $s_catatan_userlabs     = '';
         $s_catatan_pelanggan    = '';
+
+        $getpakets          = app('App\Http\Controllers\ApiController')->GetPakets(); 
+        $getpakets          = json_decode($getpakets, true);
+        $pakets             = '';
+        if($getpakets['success'] == 1){
+            $pakets = [
+                'id'                => explode('-', $getpakets['id']),
+                'jenis_sampels_id'  => explode('-', $getpakets['jenis_sampels_id']),
+                'jenis_sampel'      => explode('-', $getpakets['jenis_sampel']),
+                'paket'             => explode('-', $getpakets['paket']),
+                'parameters_id_s'   => explode(';', $getpakets['parameters_id_s']),
+                'metodes_id_s'      => explode(';', $getpakets['metodes_id_s']),
+                'harga'             => explode('-', $getpakets['harga'])
+            ];
+        }
+        else{
+            $pakets = array();
+        }
+
+        $s_parameters           = '';
+        $s_hasil                = '';
+        for ($i = 0; $i < count($pakets['id']); $i++) { 
+            if(in_array($pakets['id'][$i], $request->pakets_id_s)){
+                $s_parameters   .= $pakets['parameters_id_s'][$i].'-';        
+            }
+        }        
+        $s_parameters   = substr($s_parameters, 0, -1);
+
+        for($i = 0; $i < count(explode('-', $s_parameters)); $i++){
+            $s_hasil        .= '-;';
+        }
+
+        $s_hasil        = substr($s_hasil, 0, -1);
 
         if (
             (!isset($request->jenis_sampels_id) and !isset($request->pelanggans_id)     and !isset($request->pakets_id_s) and
@@ -1907,8 +1948,9 @@ class ApiController extends Controller
                                 'no_lab'            => $i + 1,
                                 'kode_contoh'       => '',
                                 'lab_akuns_id'      => '1',
-                                'parameters_id'     => $m_data_sampels->pakets_id_s,
-                                'hasil'             => '-;-;-',
+                                'parameters_id'     => $s_parameters,
+                                'hasil'             => $s_hasil,
+                                'hasil_verifikasi'  => $s_hasil,
                                 'status'            => '0',
                                 'log'               => '',
                                 'batch'             => $n_b,
@@ -1952,6 +1994,243 @@ class ApiController extends Controller
 #11 - 14 DATA SAMPELS
 
 #15 - 16 HASIL ANALISA
+   
+    public static function GetQrCode($sampels_id){
+        $response               = new usr();
+
+        $gethasilanalisas       = app('App\Http\Controllers\ApiController')->GetHasilAnalisas($sampels_id);
+        $gethasilanalisas       = json_decode($gethasilanalisas, true);
+        
+        $arr_batch              = explode('-', $gethasilanalisas['batch']);
+        $arr_tahun              = explode('-', $gethasilanalisas['tahun']);
+        $arr_data_sampels_id    = explode('-', $gethasilanalisas['data_sampels_id']);
+        $arr_no_lab             = explode('-', $gethasilanalisas['no_lab']);
+        $arr_simbol             = explode('-', $gethasilanalisas['simbol']);
+
+        $arr_batch_2            = explode('-', $gethasilanalisas['batch']);
+        $arr_batch_2            = array_unique($arr_batch_2);
+        $arr_batch_2            = array_values($arr_batch_2);
+
+        $data_sampels_id        = array();      
+        $no_lab                 = array();      
+        $no_lab2                = array();
+        $tahun                  = array();
+        $simbol                 = array();
+
+        for ($i = 0; $i < count($arr_batch_2); $i++) 
+        { 
+            #SAMPEL ID
+            $a_id = array();
+            $s_id = '';
+
+            #NO LAB
+            $a_no_lab = array();
+            $s_no_lab = '';
+
+            #TAHUN 
+            $a_tahun = array();
+            $s_tahun = '';
+
+            #SIMBOL
+            $a_simbol = array();
+            $s_simbol = '';
+
+            for ($j = 0; $j < count($arr_batch); $j++) 
+            { 
+                if($arr_batch[$j] == $arr_batch_2[$i]){
+                    $s_id       .= $arr_data_sampels_id[$j].'-';
+                    $s_no_lab   .= $arr_no_lab[$j].'-';
+                    $s_tahun    .= $arr_tahun[$j].'-';
+                    $s_simbol   .= $arr_simbol[$j].'-';
+                }
+            }
+            #SAMPEL ID
+            $s_id = substr($s_id, 0, -1);
+            array_push($a_id, explode('-', $s_id));
+            $data_sampels_id[$arr_batch_2[$i]] = $a_id;
+
+            #NO LAB
+            $s_no_lab = substr($s_no_lab, 0, -1);        
+            array_push($a_no_lab, explode('-', $s_no_lab));
+            $no_lab[$arr_batch_2[$i]] = $a_no_lab;
+            $no_lab2[$arr_batch_2[$i]] = $a_no_lab;
+
+            #TAHUN
+            $s_tahun = substr($s_tahun, 0, -1);        
+            array_push($a_tahun, explode('-', $s_tahun));
+            $tahun[$arr_batch_2[$i]] = $a_tahun;
+
+            #SIMBOL
+            $s_simbol = substr($s_simbol, 0, -1);        
+            array_push($a_simbol, explode('-', $s_simbol));
+            $simbol[$arr_batch_2[$i]] = $a_simbol;
+
+        }
+
+        $s_sampel_id    = '';
+        $s_no_lab_1     = '';
+        $s_no_lab_2     = '';
+        $s_batch        = '';
+
+        for ($i = 0; $i < count($arr_batch_2); $i++) 
+        {
+            $s_id   = '';
+            $s_nl_1 = ''; 
+            $s_nl_2 = ''; 
+            for ($j = 0; $j < count($data_sampels_id[$arr_batch_2[$i]]); $j++) { 
+                $s_id       = current($data_sampels_id[$arr_batch_2[$i]][$j]);
+                $s_nl_1     = current($no_lab[$arr_batch_2[$i]][$j]).':'.end($no_lab[$arr_batch_2[$i]][$j]);
+                $s_nl_2     = current($no_lab2[$arr_batch_2[$i]][$j]).current($simbol[$arr_batch_2[$i]][$j]).':'.end($no_lab2[$arr_batch_2[$i]][$j]).end($simbol[$arr_batch_2[$i]][$j]);
+            }
+            $s_sampel_id .= $s_id.'|';
+            $s_no_lab_1  .= $s_nl_1.'|';
+            $s_no_lab_2  .= $s_nl_2.'|';
+            $s_batch     .= $arr_batch_2[$i].'|';
+        }
+
+        $response->sampel_id = substr($s_sampel_id, 0, -1);
+        $response->no_lab_1  = substr($s_no_lab_1, 0, -1);
+        $response->no_lab_2  = substr($s_no_lab_2, 0, -1);
+        $response->batch     = substr($s_batch, 0, -1);
+
+        return json_encode($response);
+    }
+
+    public static function GetQrCodeBatch($sampels_id, $b_s){
+        $response               = new usr();
+
+        $gethasilanalisas       = app('App\Http\Controllers\ApiController')->GetHasilAnalisas($sampels_id);
+        $gethasilanalisas       = json_decode($gethasilanalisas, true);
+        
+        $arr_batch              = explode('-', $gethasilanalisas['batch']);
+        $arr_tahun              = explode('-', $gethasilanalisas['tahun']);
+        $arr_data_sampels_id    = explode('-', $gethasilanalisas['data_sampels_id']);
+        $arr_no_lab             = explode('-', $gethasilanalisas['no_lab']);
+        $arr_simbol             = explode('-', $gethasilanalisas['simbol']);
+
+        $arr_batch_2            = explode('-', $gethasilanalisas['batch']);
+        $arr_batch_2            = array_unique($arr_batch_2);
+        $arr_batch_2            = array_values($arr_batch_2);
+
+        $data_sampels_id        = array();      
+        $no_lab                 = array();      
+        $no_lab2                = array();
+        $tahun                  = array();
+        $simbol                 = array();
+
+        for ($i = 0; $i < count($arr_batch_2); $i++) 
+        { 
+            if($arr_batch_2[$i] == $b_s){
+                #SAMPEL ID
+                $a_id = array();
+                $s_id = '';
+
+                #NO LAB
+                $a_no_lab = array();
+                $s_no_lab = '';
+
+                #TAHUN 
+                $a_tahun = array();
+                $s_tahun = '';
+
+                #SIMBOL
+                $a_simbol = array();
+                $s_simbol = '';
+
+                for ($j = 0; $j < count($arr_batch); $j++) 
+                { 
+                    if($arr_batch[$j] == $arr_batch_2[$i]){
+                        $s_id       .= $arr_data_sampels_id[$j].'-';
+                        $s_no_lab   .= $arr_no_lab[$j].'-';
+                        $s_tahun    .= $arr_tahun[$j].'-';
+                        $s_simbol   .= $arr_simbol[$j].'-';
+                    }
+                }
+                #SAMPEL ID
+                $s_id = substr($s_id, 0, -1);
+                array_push($a_id, explode('-', $s_id));
+                $data_sampels_id[$arr_batch_2[$i]] = $a_id;
+
+                #NO LAB
+                $s_no_lab = substr($s_no_lab, 0, -1);        
+                array_push($a_no_lab, explode('-', $s_no_lab));
+                $no_lab[$arr_batch_2[$i]] = $a_no_lab;
+                $no_lab2[$arr_batch_2[$i]] = $a_no_lab;
+
+                #TAHUN
+                $s_tahun = substr($s_tahun, 0, -1);        
+                array_push($a_tahun, explode('-', $s_tahun));
+                $tahun[$arr_batch_2[$i]] = $a_tahun;
+
+                #SIMBOL
+                $s_simbol = substr($s_simbol, 0, -1);        
+                array_push($a_simbol, explode('-', $s_simbol));
+                $simbol[$arr_batch_2[$i]] = $a_simbol;
+            }
+        }
+
+        $s_sampel_id    = '';
+        $s_no_lab_1     = '';
+        $s_no_lab_2     = '';
+        $s_batch        = '';
+
+        for ($i = 0; $i < count($arr_batch_2); $i++) 
+        {
+            $s_id   = '';
+            $s_nl_1 = ''; 
+            $s_nl_2 = ''; 
+            if($arr_batch_2[$i] == $b_s){
+                for ($j = 0; $j < count($data_sampels_id[$arr_batch_2[$i]]); $j++) { 
+                    $s_id       = current($data_sampels_id[$arr_batch_2[$i]][$j]);
+                    $s_nl_1     = current($no_lab[$arr_batch_2[$i]][$j]).'-'.end($no_lab[$arr_batch_2[$i]][$j]);
+                    $s_nl_2     = current($tahun[$arr_batch_2[$i]][$j]).current($simbol[$arr_batch_2[$i]][$j]).'.'.current($no_lab2[$arr_batch_2[$i]][$j]).'-'.end($tahun[$arr_batch_2[$i]][$j]).end($simbol[$arr_batch_2[$i]][$j]).'.'.end($no_lab2[$arr_batch_2[$i]][$j]);
+                }                
+                $s_sampel_id .= $s_id.'|';
+                $s_no_lab_1  .= $s_nl_1.'|';
+                $s_no_lab_2  .= $s_nl_2.'|';
+                $s_batch     .= $arr_batch_2[$i].'|';
+            }
+        }
+
+        $response->sampel_id = substr($s_sampel_id, 0, -1);
+        $response->no_lab_1  = substr($s_no_lab_1, 0, -1);
+        $response->no_lab_2  = substr($s_no_lab_2, 0, -1);
+        $response->batch     = substr($s_batch, 0, -1);
+
+        return json_encode($response);
+    }
+    
+    public static function QrCodeAll($sampel_id){       
+        $qrcode = app('App\Http\Controllers\ApiController')->GetQrCode($sampel_id);
+        $qrcode = json_decode($qrcode, true);
+        
+        $d_s_id         = explode('|', $qrcode['sampel_id']);
+        $d_s_no_lab_1   = explode('|', $qrcode['no_lab_1']);
+        $d_s_no_lab_2   = explode('|', $qrcode['no_lab_2']);
+        $d_s_batch      = explode('|', $qrcode['batch']);
+        
+        $arr_cr_code    = array();
+        $arr_data       = [
+            'no_lab'   => explode('|', $qrcode['no_lab_2']),
+            'batch'    => explode('|', $qrcode['batch'])
+        ];
+        
+        for ($i = 0; $i < count($d_s_id); $i++) { 
+            $s_id       = $d_s_id[$i];
+            $s_no_lab_1 = $d_s_no_lab_1[$i];
+            $s_no_lab_2 = $d_s_no_lab_2[$i]; 
+            $s_batch    = $d_s_batch[$i];
+
+            /* $qrcd   = QrCode::generate($qrcode);
+            echo $qrcd.'<br><br>'; */
+
+            $dataqrcode = '{"sid":"'.$s_id.'","nl1":"'.$s_no_lab_1.'","nl2":"'.$s_no_lab_2.'","b":"'.$s_batch.'"}';  
+            $qrcodes = urlencode(app('App\Http\Controllers\ApiController')->Enkripsi($dataqrcode));
+            $qrcd       = QrCode::generate($qrcodes);
+            array_push($arr_cr_code, $qrcd);
+        }  
+    }
+
     #15. GET HASIL ANALISA
     /**
      * @OA\Get(
@@ -1995,42 +2274,72 @@ class ApiController extends Controller
             if ($hasilanalisa == []) {
                 $response->success  = 0;
                 $response->message  = "DATA TIDAK DITEMUKAN";
-                die(json_encode($response));
             } else {
                 $str_id                 = '';
+                $str_data_sampels_id    = '';
                 $str_tahun              = '';
                 $str_jenis_samples_id   = '';
                 $str_parameters_id_s    = '';
                 $str_no_lab             = '';
+                $str_kode_contoh        = '';
                 $str_hasil              = '';
+                $str_hasil_verifikasi   = '';
                 $str_status             = '';
+                $str_batch              = '';
+                $str_log                = '';
+
+                $str_simbol             = '';
 
                 foreach ($hasilanalisa as $keys => $value) {
 
                     $str_id                 .= $value['id'] . '-';
+                    $str_data_sampels_id    .= $value['data_sampels_id'] .'-';
                     $str_tahun              .= $value['tahun'] . '-';
                     $str_jenis_samples_id   .= $value['jenis_sampels_id'] . '-';
-                    $str_parameters_id_s    .= $value['parameters_id_s'] . ';';
+                    $str_parameters_id_s    .= $value['parameters_id'] . ';';
                     $str_no_lab             .= $value['no_lab'] . '-';
-                    $str_hasil              .= $value['hasil'] . '-';
+                    $str_kode_contoh        .= $value['kode_contoh'] . '-';
+                    $str_hasil              .= $value['hasil'] . '|';
+                    $str_hasil_verifikasi   .= $value['hasil_verifikasi'] . '|';
                     $str_status             .= $value['status'] . '-';
+                    $str_batch              .= $value['batch'] . '-';
+                    $str_log                .= $value['log'] . '|';
+
+                    $str_simbol             .= $value['simbol'].'-';
                 }
 
                 $str_id                 = substr($str_id, 0, -1);
-                $str_tahun              = substr($str_id, 0, -1);
+                $str_data_sampels_id    = substr($str_data_sampels_id, 0, -1);
+                $str_tahun              = substr($str_tahun, 0, -1);
                 $str_jenis_samples_id   = substr($str_jenis_samples_id, 0, -1);
                 $str_parameters_id_s    = substr($str_parameters_id_s, 0, -1);
                 $str_no_lab             = substr($str_no_lab, 0, -1);
+                $str_kode_contoh        = substr($str_kode_contoh, 0, -1);
                 $str_hasil              = substr($str_hasil, 0, -1);
+                $str_hasil_verifikasi   = substr($str_hasil_verifikasi, 0, -1);
                 $str_status             = substr($str_status, 0, -1);
+                $str_batch              = substr($str_batch, 0, -1);
+                $str_log                = substr($str_log, 0, -1);
+
+                
+                $str_simbol             = substr($str_simbol, 0, -1);
 
                 $response->id               = $str_id;
+                $response->data_sampels_id  = $str_data_sampels_id;
                 $response->tahun            = $str_tahun;
-                $response->jenis_samples_id = $str_jenis_samples_id;
+                $response->jenis_sampels_id = $str_jenis_samples_id;
                 $response->parameters_id_s  = $str_parameters_id_s;
                 $response->no_lab           = $str_no_lab;
+                $response->kode_contoh      = $str_kode_contoh;
                 $response->hasil            = $str_hasil;
+                $response->hasil_verifikasi = $str_hasil_verifikasi;
                 $response->status           = $str_status;
+                $response->batch            = $str_batch;
+                $response->log              = $str_log;
+
+                $response->simbol           = $str_simbol;
+
+
                 $response->success          = 1;
                 $response->message          = 'DATA DITEMUKAN';
             }
@@ -2038,7 +2347,7 @@ class ApiController extends Controller
             $response->success = 0;
             $response->message = "KUPA TIDAK BOLEH KOSONG";
         }
-        die(json_encode($response));
+        return json_encode($response);
     }
     #15. GET HASIL ANALISA
 
@@ -4311,12 +4620,16 @@ class ApiController extends Controller
         return json_encode($response);
     }
 #32 - 36 GROUP AKTIFITAS
-    public static function Enkripsi($sampels_id){
+
+
+    public static function Enkripsi($sampels_id){        
+        
+        error_reporting(0);
         $data           = $sampels_id;
         $cipher         = "aes-128-cbc"; 
         $encryption_key = '%smartlabcbi2021'; 
 
-        $decrypted_data = openssl_decrypt($data, 
+        $decrypted_data = openssl_encrypt($data, 
                                           $cipher, 
                                           $encryption_key, 
                                           0, 

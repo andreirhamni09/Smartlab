@@ -16,10 +16,18 @@ Route::get('/logout', [MasterController::class, 'Logout']);
 Route::post('/cekresi', [MasterController::class, 'CekResi']);
 
 
+
+
+
 Route::prefix('admin')->group(function () {
-    Route::get('/', function () {
-        return redirect('admin/login');
-    });
+    
+    Route::get('/', [MasterController::class, 'AdminHome']);
+
+    Route::get('deadline', [MasterController::class, 'DeadLine']);
+
+    Route::get('qrcode/{sampel_id}/{batch}', [MasterController::class, 'QrCodeAll']);
+
+    Route::get('kirimemail/{sampels_id?}', [MasterController::class, 'KirimEmail']);
 
 #1 - 4 PARAMETER
     Route::get('/parameters', [MasterController::class, 'Parameters']);
@@ -131,6 +139,10 @@ Route::prefix('admin')->group(function () {
     #DEKRIP
 
     Route::get('/latihantabel', [MasterController::class, 'LatihanTabel']);
+
+    #ANALISA SAMPEL
+    Route::get('/analisasampel/{sampels_id}', [MasterController::class, 'AnalisaSampel']);
+    #ANALISA SAMPEL
 });
 
 

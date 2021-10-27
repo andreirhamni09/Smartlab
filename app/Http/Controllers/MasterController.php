@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -8,10 +7,18 @@ use App\Models\AksesLevel;
 
 use App\Controllers\ApiController;
 use App\Models\HasilAnalisa;
-
+use DateTime;
+use Illuminate\Support\Facades\Date;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
+
+use function PHPUnit\Framework\isNull;
+
+
+date_default_timezone_set("Asia/Jakarta");
+
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 require 'vendor/autoload.php';
 
@@ -273,6 +280,34 @@ class MasterController extends Controller
 #8 HALAMANS -> PAGES
 
 #9 DETAIL TRACKING -> PAGES
+    public static function Tracking($id){
+        $gettracking    = app('App\Http\Controllers\ApiController')->GetDetailTrackings($id);
+        $gettracking    = json_decode($gettracking, true);
+        $tracking       = array();
+        if($gettracking['success'] == '1')
+        {
+            $tracking = [
+                'aktivitas_waktu'   => explode('-', $gettracking['aktivitas_waktu']),
+                'aktivitas_id'      => explode('-', $gettracking['aktivitas_id']),
+                'aktivitas'         => explode('-', $gettracking['aktivitas']),
+                'lab_akuns_id'      => explode('-', $gettracking['lab_akuns_id']),
+                'lab_akuns_nama'    => explode('-', $gettracking['lab_akuns_nama']),  
+                'group'             => explode('-', $gettracking['group']),                
+                'success'           => $gettracking['success'],
+                'message'           => $gettracking['message']
+            ];  
+        }
+        else{
+            $tracking = [             
+                'success'           => $gettracking['success'],
+                'message'           => $gettracking['message']
+            ];  
+        }
+
+        return view('admin.tracking.tracking', [
+            'tracking' => $tracking
+        ]);
+    }
 #9 DETAIL TRACKING -> PAGES
 
 #11 14 DATA SAMPELS -> PAGES
@@ -396,26 +431,42 @@ class MasterController extends Controller
         
         
         $insertdatasampels = json_decode($insertdatasampels, true);
+        return redirect()->back()->with('insert', $insertdatasampels['message']);
         
-        if($insertdatasampels['success'] == 1)
-        {    
+    }
+
+    public static function KirimEmail($sampels_id){
+        $request = new Request();
+        $getdatasampels     = app('App\Http\Controllers\ApiController')->GetDataSampelsById($request, $sampels_id); 
+        $getdatasampels     = json_decode($getdatasampels, true);
+
+        if($getdatasampels['success'] == 1)
+        {
+        
+            $waktu      = $getdatasampels['tanggal_masuk'];
+            $date       = date_create($waktu);
+            $waktu      = date_format($date, 'H:i:s d-m-Y');
+            
             $getpelanggans  = DB::table('pelanggans')
-                              ->where('pelanggans.id', '=', $insertdatasampels['pelanggans_id'])
+                              ->where('pelanggans.id', '=', $getdatasampels['pelanggans_id'])
                               ->first();
             $getpelanggans  = json_decode(json_encode($getpelanggans), true);
             $email          = $getpelanggans['email'];
-            $sampels_id     = app('App\Http\Controllers\MasterController')->Enkripsi($insertdatasampels['sampels_id']);
+            $nama           = $getpelanggans['nama'];
+            $sampels_id     = app('App\Http\Controllers\MasterController')->Enkripsi($getdatasampels['id']);
             $mail           = new PHPMailer(true);
             try {
                 //Server settings
                 $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
                 $mail->isSMTP();                                            //Send using SMTP
                 $mail->Host       = env('MAIL_HOST');                     //Set the SMTP server to send through
-                $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+                $mail->SMTPAuth   = true;                           //Enable SMTP authentication
                 $mail->Username   = env('MAIL_USERNAME');                     //SMTP username
-                $mail->Password   = env('MAIL_PASSWORD');                               //SMTP password
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
-                $mail->Port       = env('MAIL_PORT');                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+                $mail->Password   = env('MAIL_PASSWORD');          
+                $mail->SMTPSecure = 'ssl';          //Enable implicit TLS encryption
+                $mail->Port       = env('MAIL_PORT');
+
+              
             
                 //Recipients
                 $mail->setFrom('lab-email@slab.srs-ssms.com', 'Tracking Sampel');
@@ -425,30 +476,87 @@ class MasterController extends Controller
                 $link = 'https://slab.srs-ssms.com/tracking?resi='.$sampels_id.'';
                 //Content
                 $mail->isHTML(true);                                  //Set email format to HTML
-                $mail->Subject = 'Tracking Sampel';
-                $mail->Body    = '<a href='.$link.'>'.$link.'</a>';
-                $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+                $mail->Subject = 'Sampel Anda Telah Terdaftar';
+                $html_ini           = '
+                    <html>
+                    <style>
+                        .hitam {
+                            color:black;
+                        }
+                    </style>
+                    <body style="color:black;">
+                        <label>Dear '.$nama.',</label>
+                        <p>Terima kasih telah memilih laboratorium PT. Sawit Sumbermas Sarana, tbk. sebagai penyedia jasa analisa laboratorium anda, berikut link untuk tracking dan kode resi yang dapat digunakan untuk melacak sampel :</p>
+                        <br><br>
+                        <p>Link : <a href='.$link.'>'.$link.'</a></p> 
+                        <p>Resi : '.urldecode($sampels_id).'</p> 
+                        <p>Tanggal registrasi sampel : '.$waktu.'</p>                         
+                        <br><br>                                              
+                        <p>Jika ada pertanyaan silahkan hubungi nomor ini atau dapat mengirim email ke </p>
+
+                        <p><b>Terima kasih</b></p>
+                    </body>
+                    </html>
+                
+                ';
+
+                $mail->Body    = $html_ini;
             
-                if(!$mail->send()){
-                    return redirect()->back()->with('insert', $mail->ErrorInfo);              
+                if($mail->send())
+                {
+                    return redirect()->back()->with('kirim_email', 'INFORMASI RESI TELAH DIKIRIMKAN KE EMAIL PELANGGAN');
                 }
                 else{
-                    return redirect()->back()->with('insert', 'BERHASIL MENGIRIMKAN INFORMASI RESI');  
+                    $pesankesalahan = 'GAGAL KIRIM EMAIL :'.$mail->ErrorInfo;
+                    return redirect()->back()->with('kirim_email', $pesankesalahan);
                 }
             } catch (Exception $e) {
                 $pesankesalahan = 'KONFIGURASI KIRIM EMAIL GAGAL, PESAN KESALAHAN :'.$mail->ErrorInfo;
-                return redirect()->back()->with('insert', $pesankesalahan);
+                return redirect()->back()->with('kirim_email', $pesankesalahan);
             }
-        }  
+        }
         else{
-            return redirect()->back()->with('insert', $insertdatasampels['message']);
-        } 
-        
+            return redirect()->back()->with('kirim_email', 'GAGAL KIRIM EMAIL DATA TIDAK DITEMUKAN');
+        }
     }
 
 #11 14 DATA SAMPELS -> PAGES
 
 #15 16 HASIL ANALISAS -> PAGES
+    #CRUD HASIL ANALISA
+    public static function CrudHasilAnalisis(Request $request)
+    {
+        $status_update  = 0;
+        $id_analisis    = array();
+        $d_analisis     = DB::table('hasil_analisas')
+        ->where('data_sampels_id', $request->id_kupa)->get();
+        foreach($d_analisis as $analisis)
+        {
+            array_push($id_analisis, $analisis->id);
+        }
+        $kode_contoh = $request->kode_contoh;
+
+        try {
+            for($i = 0; $i < count($id_analisis); $i++)
+            {
+                DB::table('hasil_analisas')
+                ->where('id', '=', $id_analisis[$i])
+                ->update([
+                    'kode_contoh'             => $kode_contoh[$i]
+                ]);
+            }
+            $status_update = 1;
+        } catch (Exception $e) {
+            return redirect()->back()->with('update', $e->getMessage());
+        } 
+
+        if($status_update == 1)
+        {
+            return redirect()->back()->with('update', 'BERHASIL UPDATE DATA');
+        }
+    }
+    #CRUD HASIL ANALISA
+
     public static function HasilAnalisis(Request $request, $id = null)
     {  
         #JENIS SAMPELS
@@ -528,12 +636,67 @@ class MasterController extends Controller
         else{
             $datasampels    = array();
         }
+
+        $gethasilanalisa   = app('App\Http\Controllers\ApiController')->GetHasilAnalisas($id);
+        $gethasilanalisa   = json_decode($gethasilanalisa, true);
+        $hasilanalisa      = array();
+        if($gethasilanalisa['success'] == 1){
+            $hasilanalisa = [
+                'id'                => explode('-', $gethasilanalisa['id']),
+                'tahun'             => explode('-', $gethasilanalisa['tahun']),
+                'jenis_sampels_id'  => explode('-', $gethasilanalisa['jenis_sampels_id']),
+                'paket_id'          => explode(';', $gethasilanalisa['parameters_id_s']),
+                'no_lab'            => explode('-', $gethasilanalisa['no_lab']),
+                'kode_contoh'       => explode('-', $gethasilanalisa['kode_contoh']),
+                'hasil'             => explode('|', $gethasilanalisa['hasil']),
+                'status'            => explode('-', $gethasilanalisa['status'])
+            ];
+        } 
+        else{
+            $hasilanalisa = array();
+        }
+        
+        #QR CODE
+        $qrcode = app('App\Http\Controllers\ApiController')->GetQrCode($id);
+        $qrcode = json_decode($qrcode, true);
+        
+        $d_s_id         = explode('|', $qrcode['sampel_id']);
+        $d_s_no_lab_1   = explode('|', $qrcode['no_lab_1']);
+        $d_s_no_lab_2   = explode('|', $qrcode['no_lab_2']);
+        $d_s_batch      = explode('|', $qrcode['batch']);
+        
+        $arr_qr_code        = array();
+        $arr_data_qr_code       = [
+            'sampel_id'   => explode('|', $qrcode['sampel_id']),
+            'no_lab'   => explode('|', $qrcode['no_lab_2']),
+            'batch'    => explode('|', $qrcode['batch'])
+        ];
+        
+        for ($i = 0; $i < count($d_s_id); $i++) { 
+            $s_id       = $d_s_id[$i];
+            $s_no_lab_1 = $d_s_no_lab_1[$i];
+            $s_no_lab_2 = $d_s_no_lab_2[$i]; 
+            $s_batch    = $d_s_batch[$i];
+
+            /* $qrcd   = QrCode::generate($qrcode);
+            echo $qrcd.'<br><br>'; */
+
+            $dataqrcode = '{"sid":"'.$s_id.'","nl1":"'.$s_no_lab_1.'","nl2":"'.$s_no_lab_2.'","b":"'.$s_batch.'"}';  
+            $qrcodes = urlencode(app('App\Http\Controllers\ApiController')->Enkripsi($dataqrcode));
+            $qrcd       = QrCode::generate($qrcodes);
+            array_push($arr_qr_code, $qrcd);
+        }  
+
         return view('admin.sampel.hasil_analisis',  [
                 'datasampels'   => $datasampels,
                 'jenissampels'  => $jenissampels,
                 'pelanggans'    => $pelanggans,
                 'pakets'        => $pakets,
-                'halamans'      => $halamans
+                'halamans'      => $halamans,
+                'hasilanalisa'  => $hasilanalisa,
+                'kupa'          => $id,
+                'qrcode'        => $arr_qr_code,
+                'dataqrcode'    => $arr_data_qr_code
         ]);
     }
 #15 16 HASIL ANALISAS -> PAGES
@@ -987,17 +1150,61 @@ class MasterController extends Controller
     }
 #32 -35 GRUP AKTIVITAS
 
+#ANALISA SAMPEL
+    public static function AnalisaSampel($sampels_id){
+        $halamans = app('App\Http\Controllers\MasterController')->GetHal();  
+        
+        $gethasilanalisa = app('App\Http\Controllers\ApiController')->GetHasilAnalisas($sampels_id);       
+        $gethasilanalisa = json_decode($gethasilanalisa, true);
 
-    public static function LatihanTabel(){
+        $analisa_sampel  = '';
+        if($gethasilanalisa['success'] == '1')
+        {
+            $analisa_sampel = [
+                'id'               => explode('-', $gethasilanalisa['id']),
+                'tahun'            => explode('-', $gethasilanalisa['tahun']),
+                'jenis_sampels_id' => explode('-', $gethasilanalisa['jenis_sampels_id']),
+                'parameters_id_s'  => explode(';', $gethasilanalisa['parameters_id_s']),
+                'no_lab'           => explode('-', $gethasilanalisa['no_lab']),
+                'kode_contoh'      => explode('-', $gethasilanalisa['kode_contoh']),
+                'hasil'            => explode('|', $gethasilanalisa['hasil']),
+                'hasil_verifikasi' => explode('|', $gethasilanalisa['hasil_verifikasi']),
+                'status'           => explode('-', $gethasilanalisa['status']),
+                'batch'            => explode('-', $gethasilanalisa['batch']),
+                'log'              => explode('|', $gethasilanalisa['log']),
+                'success'          => $gethasilanalisa['success'],
+                'message'          => $gethasilanalisa['message']
+            ];
+        }
+        else
+        {
+            $analisa_sampel = [
+                'success'          => $gethasilanalisa['success'],
+                'message'          => $gethasilanalisa['message']
+            ];
+        }
 
-        $l_hasil_analisis   = DB::table('hasil_analisas')
-            ->where('jenis_sampels_id', '=', 1)
-            ->orderByDesc('no_lab')->take(1)->get();
+        $getjenissampels   = app('App\Http\Controllers\ApiController')->GetJenisSampels(); 
+        $getjenissampels   = json_decode($getjenissampels, true);
+        $jenissampels      = '';
+        if($getjenissampels['success'] == '1'){
+            $jenissampels      = [
+                'id'                => explode('-', $getjenissampels['id']),
+                'jenis_sampel'      => explode('-', $getjenissampels['jenis_sampel']),
+                'lambang_sampel'    => explode('-', $getjenissampels['lambang_sampel'])
+            ];
+        }
+        else{
+            $jenissampels = array();
+        }
 
-        $l_hasil_analisis   = json_decode(json_encode($l_hasil_analisis), true);
+        return view('admin.sampel.analisa_sampel', [
+            'halamans'          => $halamans,
+            'analisasampel'     => $analisa_sampel,
+            'jenissampels'      => $jenissampels
+        ]);
     }
-
-
+#ANALISA SAMPEL
 
 #PELANGGAN
     public static function LoginPelanggan(Request $request)
@@ -1035,8 +1242,10 @@ class MasterController extends Controller
         return view('tracking');
     }
 
-    public static function CekResi(Request $request){
-        $resi       = urldecode($request->resi);
+    public static function CekResi(Request $request){        
+        session_start();
+        session_destroy();
+        $resi       = $request->resi;
         $user_id    = $request->id;
 
         $pelanggans = [
@@ -1081,7 +1290,6 @@ class MasterController extends Controller
         return $decrypted_data;
     }
 
-    
     public static function Logout(){
         session_start();
         session_destroy();
@@ -1091,4 +1299,176 @@ class MasterController extends Controller
     }
 
 #PELANGGAN
+
+#QRCODE
+
+    public static function QrCodeAll($sampel_id, $batch)
+    {   
+        $qrcode = app('App\Http\Controllers\ApiController')->GetQrCodeBatch($sampel_id, $batch);
+        $qrcode = json_decode($qrcode, true);
+        
+        $d_s_id         = explode('|', $qrcode['sampel_id']);
+        $d_s_no_lab_1   = explode('|', $qrcode['no_lab_1']);
+        $d_s_no_lab_2   = explode('|', $qrcode['no_lab_2']);
+        $d_s_batch      = explode('|', $qrcode['batch']);
+        
+        $arr_qr_code        = array();
+        $arr_data_qr_code   = [
+            'sampel_id'   => explode('|', $qrcode['sampel_id']),
+            'no_lab'   => explode('|', $qrcode['no_lab_2']),
+            'batch'    => explode('|', $qrcode['batch'])
+        ];
+        
+        for ($i = 0; $i < count($d_s_id); $i++) { 
+            $s_id       = $d_s_id[$i];
+            $s_no_lab_1 = $d_s_no_lab_1[$i];
+            $s_no_lab_2 = $d_s_no_lab_2[$i]; 
+            $s_batch    = $d_s_batch[$i];
+
+            /* $qrcd   = QrCode::generate($qrcode);
+            echo $qrcd.'<br><br>'; */
+
+            $dataqrcode = '{"sid":"'.$s_id.'","nl1":"'.$s_no_lab_1.'","nl2":"'.$s_no_lab_2.'","b":"'.$s_batch.'"}';  
+            $qrcodes = app('App\Http\Controllers\ApiController')->Enkripsi($dataqrcode);
+            $qrcd       = QrCode::size(200)->generate($qrcodes);
+            array_push($arr_qr_code, $qrcd);
+        }
+        /* for ($i = 0; $i < count($arr_qr_code); $i++) { 
+            echo $arr_qr_code[$i].'<br>'.$arr_data_qr_code['sampel_id'][$i].'<br><br>';
+        } */
+
+        $halamans           = app('App\Http\Controllers\MasterController')->GetHal(); 
+        
+        
+                                                    
+        return view('admin.daftarqrcode.qrcode', [
+                                                    'halamans'      => $halamans,
+                                                    'qrcode'        => $arr_qr_code,
+                                                    'dataqrcode'    => $arr_data_qr_code
+                                                ]);
+    }
+
+
+
+    public static function QCEncript($data){        
+        
+        error_reporting(0);
+        $cipher = "aes-128-cbc"; 
+
+        //Generate a 256-bit encryption key 
+        $encryption_key = '%smartlabcbi2021'; 
+        
+        $encrypted_data = openssl_encrypt($data, $cipher, $encryption_key, 0, '');
+        
+        return $encrypted_data;
+    }
+#QRCODE
+
+#DEADLINE
+    public static function DeadLine(){
+        $halamans           = app('App\Http\Controllers\MasterController')->GetHal();
+
+        $getdatasampels     = app('App\Http\Controllers\ApiController')->GetDataSampelsAll();
+        $getdatasampels     = json_decode($getdatasampels, true);
+        $datasampels        = '';
+        if($getdatasampels['success'] == '1')
+        {
+            $datasampels    = [
+                'id'                    => explode('-', $getdatasampels['id']),
+                'pakets_id_s'           => explode(';', $getdatasampels['pakets_id_s']),
+                'tanggal_masuk'         => explode('-', $getdatasampels['tanggal_masuk']),
+                'tanggal_selesai'       => explode('-', $getdatasampels['tanggal_selesai']),
+                'nomor_surat'           => explode('-', $getdatasampels['nomor_surat']),
+                'jumlah_sampel'         => explode('-', $getdatasampels['jumlah_sampel']),
+                'catatan_userlabs'      => explode('-', $getdatasampels['catatan_userlabs']),
+                'status'                => explode('-', $getdatasampels['status']),
+                'pelanggans_id'         => explode('-', $getdatasampels['pelanggans_id']),
+                'pelanggans'            => explode('-', $getdatasampels['pelanggans']),
+                'jenis_sampels_id'      => explode('-', $getdatasampels['jenis_sampels_id']),
+                'jenis_sampel'          => explode('-', $getdatasampels['jenis_sampel']),
+                'ketersediaan_alat'     => explode('-', $getdatasampels['ketersediaan_alat'])
+            ];
+        }
+        else{
+            $datasampels    = array();
+        }
+
+        $sampels_id         = $datasampels['id'];
+        $n_lab              = array();
+        $batch              = array();
+        $tanggal_masuk      = $datasampels['tanggal_masuk'];
+        $batas_selesai      = $datasampels['tanggal_selesai'];
+        $tanggal_selesai    = array();
+        $tanggal_selesai_2  = array();
+        $aktivitas          = array();
+        $status             = $datasampels['status'];
+        
+        for ($i = 0; $i < count($sampels_id); $i++) { 
+            $str_gethasilanalisas  = app('App\Http\Controllers\ApiController')->GetHasilAnalisas($sampels_id[$i]);
+            $gethasilanalisas = json_decode($str_gethasilanalisas, true);
+    
+            $b = array_unique(explode('-', $gethasilanalisas['batch']));
+            $b = array_values($b);
+    
+            array_push($batch, implode(',', $b));
+        
+            
+            $t          = explode('-', $gethasilanalisas['tahun']);
+            $s          = explode('-', $gethasilanalisas['simbol']);
+            $n          = explode('-', $gethasilanalisas['no_lab']);
+            $no_lab     = current($t).current($s).'.'.current($n).'-'.end($t).end($s).'.'.end($n);
+           
+            array_push($n_lab, $no_lab);
+    
+    
+    
+            $add_d      = "+".$batas_selesai[$i]." days"; 
+            $batas      = strtotime(str_replace('/', '-', $tanggal_masuk[$i]). $add_d);
+            $t_now      = strtotime("now");
+            $tg_batas   = $batas - $t_now;
+            $deadline   = floor($tg_batas / (60 * 60 * 24));
+            array_push($tanggal_selesai, date('H:i d-m-Y', $batas));
+            array_push($tanggal_selesai_2, $deadline);
+    
+            $str_get_aktivitas = app('App\Http\Controllers\ApiController')->GetDetailTrackings($sampels_id[$i]);
+            $getdetailtrackings = json_decode($str_get_aktivitas, true);
+    
+            $waktu_detailtrack      = explode('-', $getdetailtrackings['aktivitas_waktu']);
+            $aktivitas_detailtrack  = explode('-', $getdetailtrackings['aktivitas']);
+            $akt    = 'Aktivitas Terakhir: '.strtoupper(current($aktivitas_detailtrack)). ', Tanggal Pengerjaan : '.date('H:i d-m-Y', strtotime(str_replace('/', '-', current($waktu_detailtrack))));
+            array_push($aktivitas, $akt);
+        }
+
+        $deadline   = [
+            'sampels_id'        => $sampels_id,
+            'batch'             => $batch,
+            'n_lab'             => $n_lab,
+            'tanggal_masuk'     => $tanggal_masuk,        
+            'batas_selesai'     => $batas_selesai,        
+            'tanggal_selesai'   => $tanggal_selesai,       
+            'tanggal_selesai_2'   => $tanggal_selesai_2,           
+            'aktivitas'         => $aktivitas,    
+            'status'            => $status    
+        ];
+
+        return view('admin.sampel.deadline', [
+            'halamans'  => $halamans,    
+            'deadline'  => $deadline
+        ]);
+    }
+#DEADLINE
+
+#ADMIN    
+    #ADMIN HOME
+    public static function AdminHome(){
+        $halamans   = app('App\Http\Controllers\MasterController')->GetHal(); 
+        return view('admin.home' ,
+            ['halamans'      => $halamans]
+        );
+    }
+
+    public static function LoginAdmin(Request $request){
+        
+    }
+#ADMIN
 }

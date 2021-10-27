@@ -54,6 +54,10 @@
             background-color: #001494;
             color: white;
         }    
+        .merah{
+            background-color: red;
+            color: red;
+        }
     </style>
 
 </head>

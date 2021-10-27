@@ -25,32 +25,33 @@
                             <table class="table table-bordered table-hover text-center" style="width: 60%; margin-left: auto; margin-right: auto;">
                                 <thead>
                                     <tr>
-                                        <th class="hijau">TANGGAL</th>
+                                        <th class="hijau">NO</th>
+                                        <th class="biru">WAKTU</th>
                                         <th class="biru">AKTIVITAS</th>
                                         <th class="biru">PETUGAS</th>
-                                        <th class="biru">JABATAN</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if(isset($tracking_null))
+                                    @if($tracking['success'] == 0)
                                         <tr>
                                             <td colspan="4"><h4>{{ $tracking_null }}</h4></td>
                                         </tr>
-                                    @elseif(!isset($tracking_null))
-                                        @if(count($tracking) == 0)
+                                    @else
+                                        <?php $nomor = 1; ?>
+                                        @for($i = 0; $i < count($tracking['aktivitas_id']); $i++)
                                             <tr>
-                                                <td colspan="4"><h4>BELUM ADA AKTIVITAS</h4></td>
+                                                <td>{{ $nomor }}</td>
+                                                <?php
+                                                    $waktu      = $tracking['aktivitas_waktu'][$i];
+                                                    $date       = date_create($waktu);
+                                                    $waktu      = date_format($date, 'H:i:s d-m-Y');
+                                                ?>
+                                                <td>{{ $waktu }}</td>
+                                                <td>{{ $tracking['aktivitas'][$i] }}</td>
+                                                <td>{{ $tracking['lab_akuns_nama'][$i] }}</td>
                                             </tr>
-                                        @elseif(count($tracking) !== 0)
-                                            @foreach($tracking as $dtracking)
-                                                <tr>
-                                                    <td>{{ $dtracking->waktu }}</td>
-                                                    <td>{{ $dtracking->aktivitas }}</td>
-                                                    <td>{{ strtoupper($dtracking->petugas) }}</td>
-                                                    <td>{{ strtoupper($dtracking->jabatan) }}</td>
-                                                </tr>
-                                            @endforeach
-                                        @endif
+                                        <?php $nomor += 1; ?>
+                                        @endfor
                                     @endif
                                 </tbody>
                             </table>

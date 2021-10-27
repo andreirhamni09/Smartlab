@@ -19,10 +19,11 @@ class CreateHasilAnalisasTable extends Migration
             $table->smallInteger('data_sampels_id');
             $table->string('tahun', 2);
             $table->integer('no_lab');
-            $table->string('kode_contoh', 45);
+            $table->string('kode_contoh', 45)->nullable();
             $table->text('lab_akuns_id');
             $table->string('parameters_id', 45);
             $table->text('hasil');
+            $table->text('hasil_verifikasi');
             $table->enum('status', ['0', '1']);
             $table->text('log');
             $table->tinyInteger('batch');

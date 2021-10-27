@@ -23,10 +23,13 @@ class HasilAnalisas extends Seeder
                     'tahun'                 => '21',
                     'no_lab'                => $i,
                     'kode_contoh'           => '',
-                    'parameters_id_s'       => '1-2-3',
+                    'lab_akuns_id'          => '',
+                    'parameters_id'         => '1-2-3',
                     'hasil'                 => '-;-;-',
                     'status'                => '0',
-                    'retry'                 => 0
+                    'log'                   => 0,
+                    'batch'                 => 0,
+                    'verifikasi_hasil'      => 0
                 )
             )); 
         }

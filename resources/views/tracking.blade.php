@@ -1,104 +1,127 @@
-@include('layout.header')
 <?php
-    if(session('resi')){
-        $_SESSION['resi'] = session('resi');
-    }
+ session_start();
+ 
+ if(session('resi')){
+    $_SESSION['resi'] = session('resi');
+}
 ?>
-<div class="content-wrapper">
-    <section class="content-header">
-        <div class="content-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1 class="m-0 pl-2 text-success">
-                    </h1>
-                </div>
-            </div>
-        </div>
-    </section>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link rel="SHORTCUT ICON" href="{{ asset('public/img/CBI-logo.png') }}">
+
+    <title>TRACKING</title>
+</head>
+
+<body style="background-color:#349549;">
+
+    <style>
+        .br-radius {
+            border: 5px;
+            border-radius: 10px;
+            s
+        }
+    </style>
     @if(isset($_GET['pelanggan']) OR !empty($_GET['pelanggan']) )
-        <section class="content">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="card card-primary card-outline">
-                            <div class="card-header">
-                                <h3 class="text-success"><strong>TRACKING SAMPEL</strong></h3>
-                            </div>
-                            <div class="card-body table-responsive">
-                                <form action="{{ url('/cekresi') }}" style="width: 70%; margin-left: auto; margin-right: auto;" method="post">
+    <div id="login">
+        <div class="container" style="margin-top:5%; margin-bottom:5%;">
+            <div class="row justify-content-center">
+                <div class="col-sm-5">
+                    <div class="card">
+                        <div class="row justify-content-center">
+                            <div class="col-sm-10 mt-5 text-center">
+                                <img src="{{ asset('public/img/LOGO-SRS.png') }}" alt="" height="80" class="mb-4" />
+                                <form action="{{ url('/cekresi') }}" method="post">
                                 {{ csrf_field() }}
                                     <input type="hidden" name="id" value="{{ $_GET['pelanggan']['id'] }}">
-                                    <div class="row">
-                                        <div class="col-sm-11">
-                                            <div class="form-group">
-                                                <label for="">RESI</label>
-                                                @if(isset($_SESSION['resi']))
-                                                    <input value="{{ $_SESSION['resi'] }}" type="text" name="resi" class="form-control">
-                                                @else
-                                                    <input type="text" name="resi" class="form-control">
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-1">
-                                            <div class="form-group">
-                                                <label for="">Submit</label>
-                                                <button type="submit" class="btn btn-primary form-control">
-                                                    <abbr title="CEK RESI"><i class="fas fa-search"></i></abbr>
-                                                </button>
-                                            </div>
-                                        </div>
+                                    
+                                    <div class="mb-2">
+                                        <label for="exampleFormControlInput1" class="form-label">Masukkan Nomor Resi</label>
+                                        @if(isset($_SESSION['resi']))                                               
+                                            <input value="{{ urldecode($_SESSION['resi']) }}" type="text" name="resi" class="form-control" placeholder="Masukan Resi ...">
+                                        @else
+                                            <input type="text" name="resi" class="form-control" placeholder="Masukan Resi ...">
+                                        @endif
                                     </div>
+                                    <button class="w-30 btn btn-lg mb-2" style="background-color:#349549; color:white;" type="submit">Cek Resi</button>
                                 </form>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="card card-primary card-outline">
-                            <div class="card-header">
-                                <h3 class="text-success"><strong>TRACKING RESULT</strong></h3>
-                            </div>                            
-                            @if(isset($_GET['tracking']))
-
-                            <div class="card-body table-responsive">
-                                 <table id="data_sampels" class="table table-bordered table-hover text-center" style="width: 70%; margin-left:auto; margin-right:auto;">
-                                    <thead>
-                                        <tr>
-                                            <th class="hijau">NO</th>
-                                            <th class="biru">WAKTU</th>
-                                            <th class="biru">AKTIVITAS</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @if($_GET['tracking']['success'] == 1)
-                                            <?php $nomor = 1; ?>
-                                            @for($i = 0; $i < count($_GET['tracking']['aktivitas_waktu']); $i++)
-                                            <tr>
-                                                <td>{{ $nomor }}</td>
-                                                <?php
-                                                    $time = date('H:i d-m-Y', strtotime($_GET['tracking']['aktivitas_waktu'][$i])); 
-                                                ?>
-                                                <td>{{ $time }}</td>
-                                                <td>{{ $_GET['tracking']['group'][$i] }}</td>
-                                            </tr>
-                                            @endfor
-                                        @else
-                                            <tr>
-                                                <td colspan="3">{{ $_GET['tracking']['message'] }}</td>
-                                            </tr>
-                                        @endif
-                                    </tbody>
-                                </table>
+                        <div class="row justify-content-center">
+                            <div class="col-sm-3 mb-5">
+                                <img src="{{ asset('public/img/KAN.png') }}" alt="" height="50" class="mt-4" />
                             </div>
-                            @endif
+                            <div class="col-sm-3 mb-5">
+                                <img src="{{ asset('public/img/Logo-CBI.png') }}" alt="" height="50" class="mt-4" />
+                            </div>
+                            <div class="col-sm-3 mb-5">
+                                <img src="{{ asset('public/img/Logo-SSS.png') }}" alt="" height="50" class="mt-4" />
+                            </div>
                         </div>
+
+                        <div class="row justify-content-center text-center">
+                            <div class="col-md-12">
+                                <img src="img/LOGO-SRS.png" alt="" height="80" class="" />
+                            </div>
+                        </div>
+                        <div class="my-3 p-3 bg-body rounded shadow-sm">
+                            <small class="d-block text-right mt-3 mb-2">
+                                <a href="{{ url('logout') }}">LOGOUT</a>
+                            </small>
+                        </div>
+                         
+                        @if(isset($_GET['tracking']))
+                            <div class="row justify-content-center text-center">
+                                <div class="col-md-12">
+                                    <h2>Tracking</h2>
+                                </div>
+                            </div>
+                            <div class="my-3 p-3 bg-body rounded shadow-sm">
+                                <h6 class="border-bottom pb-2 mb-0">Recent updates</h6>
+                                @if($_GET['tracking']['success'] == '1')
+                                    @for($i = 0; $i < count($_GET['tracking']['lab_akuns_nama']); $i++)
+                                        <?php
+                                            $waktu      = $_GET['tracking']['aktivitas_waktu'][$i];
+                                            $date       = date_create($waktu);
+                                            $waktu      = date_format($date, 'H:i:s d-m-Y');
+                                        ?>
+                                        <div class="d-flex text-muted pt-3">
+                                            <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32" preserveAspectRatio="xMidYMid slice" focusable="false">
+                                                <title>Placeholder</title>
+                                                <rect width="100%" height="100%" fill="#e83e8c" /><text x="50%" y="50%" fill="#e83e8c" dy=".3em">32x32</text>
+                                            </svg>
+
+                                            <p class="pb-3 mb-0 small lh-sm border-bottom ml-2">
+                                                <strong class="d-block text-gray-dark">Telah sampai ke tahap {{ $_GET['tracking']['group'][$i] }}</strong>
+                                                {{ $waktu }}
+                                            </p>
+                                        </div>
+                                    @endfor
+                                @else
+                                    <div class="d-flex text-muted pt-3">
+                                        <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32" preserveAspectRatio="xMidYMid slice" focusable="false">
+                                            <title>Placeholder</title>
+                                            <rect width="100%" height="100%" fill="#e83e8c" /><text x="50%" y="50%" fill="#e83e8c" dy=".3em">32x32</text>
+                                        </svg>
+
+                                        <p class="pb-3 mb-0 small lh-sm border-bottom ml-2">
+                                            <strong class="d-block text-gray-dark">{{ $_GET['tracking']['message'] }}</strong>
+                                        </p>
+                                    </div>
+                                @endif
+                            </div>                        
+                        @endif
                     </div>
                 </div>
-            </div><!-- /.container-fluid -->
-        </section>
-
-
+            </div>
+        </div>
     @else
         @if(isset($_GET['resi']))
             @php
@@ -112,5 +135,10 @@
             @endphp
         @endif
     @endif
-</div>
-@include('layout.footer')
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+
+</body>
+
+</html>

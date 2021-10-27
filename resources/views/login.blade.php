@@ -1,87 +1,90 @@
-<head>
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link rel="SHORTCUT ICON" href="{{ asset('public/img/CBI-logo.png') }}">
+
     <title>LOGIN</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('public/img/favicon.ico') }}">
-    <link rel="stylesheet" href="{{ asset('public/plugins/fontawesome-free/css/all.min.css') }}">
-    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link rel="stylesheet" href="{{ asset('public/plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('public/css/adminlte.min.css') }}">
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-</head>
-<body class="hold-transition login-page">
-@if(isset($_GET['status']))
-    <script>
-        var status = <?= json_encode($_GET['status']) ?>;
-        alert(status);
-    </script>
-@endif
+  </head>
+  <body style="background-color:#349549;">
 
-    <div class="login-box">
-        <div class="login-logo">
-        </div>
-        <div class="card">
-            <div class="card-body login-card-body">
-                <div class="row">
-                    <div class="col-md">
-                        <h1 class="login-box-msg text-success">Smart<b>LAB</b>
-                        <img src="{{ asset('public/img/CBI-logo.png') }}" style="width: 50px; height:50px; margin-top:-5%; margin-left:-1%;">
-                        </h1>
+  <style>
+   .br-radius {
+     border: 5px;
+     border-radius: 10px;
+   }
+    </style>
+
+    <div id="login">        
+    @if(isset($_GET['status']))
+        <script>
+            var status = <?= json_encode($_GET['status']) ?>;
+            alert(status);
+        </script>
+    @endif
+        <div class="container text-center" style="margin-top:5%; margin-bottom:5%;">
+            <div class="row justify-content-center">
+                <div class="col-sm-5">
+                    <div class="card">
+                        <div class="row justify-content-center">
+                            <div class="col-sm-10 mt-5">
+                            <form action="{{ url('/login_p') }}" method="post">
+                            {{ csrf_field() }}
+                                @if(isset($_GET['resi']))
+                                    <input type="hidden" name="resi" value="{{ urlencode($_GET['resi']) }}">
+                                @endif
+                                <img src="{{ asset('public/img/LOGO-SRS.png') }}" alt="" height="80" class="mb-4"/>
+
+                                <div class="form-floating">
+                                  <input type="email" name="email" class="form-control mb-2 text-center" id="floatingInput" placeholder="name@email.com">
+                                </div>
+                                <div class="form-floating">
+                                  <input type="password" name="password" class="form-control mb-2 text-center" id="floatingPassword" placeholder="password">
+                                </div>
+                                <button class="w-100 btn btn-lg mb-2" style="background-color:#349549; color:white;" type="submit">Sign in </button>
+                                <br/>
+                                    <a id="lupalogin" style="color:#349549;" class="lupapassword">Lupa Password?</a>
+                                <br/>
+                                <h1></h1>
+                            </form>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-sm-3 mb-5">
+                                <img src="{{ asset('public/img/KAN.png') }}" alt="" height="50" class="mt-4"/>
+                            </div>
+                            <div class="col-sm-3 mb-5">
+                                <img src="{{ asset('public/img/Logo-CBI.png') }}" alt="" height="50" class="mt-4"/>
+                            </div>
+                            <div class="col-sm-3 mb-5">
+                                <img src="{{ asset('public/img/Logo-SSS.png') }}" alt="" height="50"  class="mt-4"/>
+                            </div>
+                        </div>
+
                     </div>
+
                 </div>
-                <form action="{{ url('/login_p') }}" method="post">
-                {{ csrf_field() }}
-                    @if(isset($_GET['resi']))
-                    <input type="hidden" name="resi" value="{{ urlencode($_GET['resi']) }}">
-                    @endif
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" name="email" placeholder="E-mail">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-envelope"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="input-group mb-3">
-                        <input type="password" class="form-control" name="password" placeholder="Password">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md">
-                            <button type="submit" class="btn btn-success w-100 btn-block" name="login">LOGIN</button>
-                        </div>
-                    </div>
-
-                    <div class="row mt-2">
-                        <div class="col-md">
-                            <a href="{{ url('/admin/register') }}" class="text-success float-sm-right">Daftar?</a>
-                        </div>
-                    </div>
-
-                </form>
             </div>
         </div>
     </div>
 
-    <script src="{{ asset('public/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('public/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('public/js/adminlte.min.js') }}"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-</body>
-
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+    
+  </body>
 </html>
+
 <script>
   jQuery(document).ready(function($) {
     if (window.history && window.history.pushState) {
-      window.history.pushState('forward', null, './');
+      window.history.pushState('forward', null, './#');
       $(window).on('popstate', function() {
-        window.location.href = "{{ URL::to('tracking')}} ";
+        window.location.href = "{{ URL::to('/')}} ";
       });
     }
   });

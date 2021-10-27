@@ -53,8 +53,9 @@
                                             <label for="">Pelanggan</label>
                                             @if(!empty($pelanggans))
                                             <select name="pelanggans_id" id="" class="form-control">
-                                                @for($i = 0; $i < count($pelanggans['id']); $i++) <option value="{{ $pelanggans['id'][$i] }}">{{ strtoupper($pelanggans['nama'][$i]) }} - {{ strtoupper($pelanggans['perusahaan'][$i]) }}</option>
-                                                    @endfor
+                                                @for($i = 0; $i < count($pelanggans['id']); $i++) 
+                                                    <option value="{{ $pelanggans['id'][$i] }}">{{ strtoupper($pelanggans['nama'][$i]) }} - {{ strtoupper($pelanggans['perusahaan'][$i]) }}</option>
+                                                @endfor
                                             </select>
                                             @else
                                             <a href="{{ url('admin/pelanggans') }}" class="btn btn-primary"><abbr title="TAMBAHKAN PELANGGAN"><i class="fas fa-plus"></i></abbr></a>
@@ -154,6 +155,10 @@
                                 <script>
                                     alert("{{ session('tracking_error') }}");
                                 </script>
+                                @elseif(session('kirim_email'))
+                                <script>
+                                    alert("{{ session('kirim_email') }}");
+                                </script>
                                 @endif
                         </div>
                         <div class="card-footer">
@@ -186,6 +191,7 @@
                                             <th class="biru">CATATAN USERLAB</th>
                                             <th class="biru">STATUS</th>
                                             <th class="biru">DETAIL</th>
+                                            <th class="biru">KIRIM EMAIL</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -233,6 +239,7 @@
                                                 <td>{{ strtoupper($datasampels['catatan_userlabs'][$i]) }}</td>                                               
                                                 <td>{{$datasampels['status'][$i] }}</td>                                           
                                                 <td><a href="hasilanalisis/{{ $datasampels['id'][$i] }}" class="btn btn-primary">HASIL ANALISA</a></td> 
+                                                <td><a href="kirimemail/{{ $datasampels['id'][$i]}}" class="btn btn-primary">KIRIM RESI</a></td> 
                                             </tr>
                                         <?php $no_+=1; ?>
                                         @endfor
