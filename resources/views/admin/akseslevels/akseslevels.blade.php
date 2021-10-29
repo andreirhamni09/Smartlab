@@ -19,6 +19,7 @@
         color: white;
     }
 </style>
+@if(isset($_SESSION['adminlab']) && !empty($_SESSION['adminlab']))
 <div class="content-wrapper">
     <section class="content-header">
         <div class="content-fluid">
@@ -166,6 +167,10 @@
     </section>
     <!-- /.content -->
 </div>
-
-
+@else
+    @php
+        header("Location: " . URL::to('/admin/login?status=Lakukan Login Terlebih Dahulu'), true, 302);
+        exit();
+    @endphp
+@endif
 @include('admin.layout.footer')

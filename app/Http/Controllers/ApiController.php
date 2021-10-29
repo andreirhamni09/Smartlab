@@ -4621,7 +4621,7 @@ class ApiController extends Controller
     }
 #32 - 36 GROUP AKTIFITAS
 
-
+#
     public static function Enkripsi($sampels_id){        
         
         error_reporting(0);

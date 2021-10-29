@@ -2,6 +2,7 @@
     $nama_file = '';
 ?>
 
+@if(isset($_SESSION['adminlab']))
 <!DOCTYPE html>
 <html>
 <head>
@@ -151,3 +152,9 @@
         $('#print').attr('hidden', false);
     }
 </script>
+@else
+    @php
+        header("Location: " . URL::to('/admin/login?status=Lakukan Login Terlebih Dahulu'), true, 302);
+        exit();
+    @endphp
+@endif

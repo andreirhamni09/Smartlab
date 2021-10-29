@@ -1,4 +1,6 @@
 @include('admin.layout.header')
+@if(isset($_SESSION['adminlab']))
+
 <div class="content-wrapper">
     <section class="content-header">
         <div class="content-fluid">
@@ -209,11 +211,11 @@
     </section>
     <!-- /.content -->
 </div>
-
-
 @include('admin.layout.footer')
 
-
-<script>
-    
-</script>
+@else
+    @php
+        header("Location: " . URL::to('/admin/login?status=Lakukan Login Terlebih Dahulu'), true, 302);
+        exit();
+    @endphp
+@endif

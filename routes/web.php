@@ -7,6 +7,8 @@ use App\Http\Controllers\MasterController;
 Route::get('/', function () {
     return view('login');
 })->name('login');
+
+
 Route::post('/login_p', [MasterController::class, 'LoginPelanggan']);
 Route::get('/tracking/{resi?}', [MasterController::class, 'TrackingPelanggan'])
 ->name('tracking');
@@ -15,13 +17,15 @@ Route::get('/logout', [MasterController::class, 'Logout']);
 
 Route::post('/cekresi', [MasterController::class, 'CekResi']);
 
-
-
-
-
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->group(function () {   
     
-    Route::get('/', [MasterController::class, 'AdminHome']);
+    Route::get('/', [MasterController::class, 'AdminHome'])->name('adminhome');
+
+    Route::get('/login', [MasterController::class, 'Login'])->name('loginadmin');
+    Route::post('/login_adm', [MasterController::class, 'LoginAdmin']);
+    Route::get('/register', [MasterController::class, 'Register']);
+
+    Route::get('/logout', [MasterController::class, 'LogoutAdmin']);
 
     Route::get('deadline', [MasterController::class, 'DeadLine']);
 
@@ -114,9 +118,6 @@ Route::prefix('admin')->group(function () {
 
     Route::get('ajaxtest', [MasterController::class, 'AjaxTest']);
 #32 - 35 GRUP AKTIVITAS
-
-    Route::get('/login', [MasterController::class, 'Login']);
-    Route::get('/register', [MasterController::class, 'Register']);
 
     #INPUTSAMPEL
     Route::get('/inputsampel', [MasterController::class, 'DataSampels']);   

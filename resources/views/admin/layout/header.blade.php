@@ -1,3 +1,6 @@
+<?php
+ session_start();
+?>
 <!DOCTYPE html>
 <html>
 
@@ -54,6 +57,7 @@
     </style>
 
 </head>
+
 
 <body class="hold-transition sidebar-mini sidebar-collapse layout-fixed layout-navbar-fixed">
     <div class="wrapper">
@@ -114,7 +118,7 @@
 
                         <!-- LOGOUT -->
                         <li class="nav-item">                            
-                            <a href="" class="nav-link">
+                            <a href="{{ url('admin/logout') }}" class="nav-link">
                                 <i class="nav-icon fa fa-window-close"></i>
                                 <p>
                                     Logout

@@ -1,5 +1,5 @@
 @include('admin.layout.header')
-
+@if(isset($_SESSION['adminlab']) && !empty($_SESSION['adminlab']))
 <div class="content-wrapper">
     <section class="content-header">
         <div class="content-fluid">
@@ -23,7 +23,7 @@
                         </div>
                         
                         <div class="card-body table-responsive">
-                            <h4>ANDRE SEPTIO IRHAMNI WICAKSANA</h4>
+                            <h4>{{ strtoupper($_SESSION['adminlab']['nama']) }}</h4>
                             <div class="row justify-content-center">
                                 <div class="col-md-4" style="margin-left:auto; margin-right: auto;">
                                     <img  src="{{ asset('public/img/LOGO-SRS.png') }}" height="100" class="mt-4 w-100"/>                           
@@ -50,4 +50,10 @@
     </section>
     <!-- /.content -->
 </div>
+@else
+    @php
+        header("Location: " . URL::to('/admin/login?status=Lakukan Login Terlebih Dahulu'), true, 302);
+        exit();
+    @endphp
+@endif
 @include('admin.layout.footer')

@@ -1,5 +1,5 @@
 @include('admin.layout.header')
-
+@if(isset($_SESSION['adminlab']))
 <style>
     .hijau {
         background-color: #00621A;
@@ -248,5 +248,10 @@
         }     
     });
 </script>
-
 @include('admin.layout.footer')
+@else
+    @php
+        header("Location: " . URL::to('/admin/login?status=Lakukan Login Terlebih Dahulu'), true, 302);
+        exit();
+    @endphp
+@endif

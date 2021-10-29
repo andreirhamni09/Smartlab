@@ -22,7 +22,6 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 require 'vendor/autoload.php';
 
-
 class MasterController extends Controller
 {
 #GENERAL FUNCTION
@@ -1206,100 +1205,6 @@ class MasterController extends Controller
     }
 #ANALISA SAMPEL
 
-#PELANGGAN
-    public static function LoginPelanggan(Request $request)
-    {        
-        $email      = $request->email;
-        $password   = $request->password;
-        
-        $resi       = '';
-        if(isset($request->resi))
-        {
-            $resi       = $request->resi;
-        }
-        else{
-            $resi       = '';
-        }
-
-        $loginpelanggan = app('App\Http\Controllers\ApiController')->LoginPelanggans($request, $email, $password);        
-        $loginpelanggan = json_decode($loginpelanggan, true);
-
-        if($loginpelanggan['success'] == 1)
-        {
-            $pelanggans = [
-                'id'    => $loginpelanggan['id']
-            ];
-            return redirect()->route('tracking', ['pelanggan' => $pelanggans])->with('resi', $resi);
-        }
-        else
-        {
-            return redirect()->route('login', ['status' => $loginpelanggan['message']]);  
-        }
-    }
-
-    public static function TrackingPelanggan()
-    {
-        return view('tracking');
-    }
-
-    public static function CekResi(Request $request){        
-        session_start();
-        session_destroy();
-        $resi       = $request->resi;
-        $user_id    = $request->id;
-
-        $pelanggans = [
-            'id'    => $user_id 
-        ];
-
-        $cekresi    = app('App\Http\Controllers\ApiController')->CekResi($user_id, $resi);        
-        $cekresi    = json_decode($cekresi, true);
-        $resi       = array();
-        if($cekresi['success'] == 1){
-            $resi   = [
-                'aktivitas_waktu'   => explode('-', $cekresi['aktivitas_waktu']),
-                'lab_akuns_nama'    => explode('-', $cekresi['lab_akuns_nama']),
-                'group'             => explode('-', $cekresi['group']),
-                'success'           => $cekresi['success'],
-                'message'           => $cekresi['message']
-            ];
-        }
-        else{
-            $resi   = [
-                'success'           => $cekresi['success'],
-                'message'           => $cekresi['message']
-            ];
-        }
-        return redirect()->route('tracking', [
-            'pelanggan' => $pelanggans,
-            'tracking'  => $resi
-        ]);
-    }
-    public static function Dekrip($sampels_id){
-        error_reporting(0);
-        $cipher = "aes-128-cbc"; 
-
-        //Generate a 256-bit encryption key 
-        $encryption_key = '%smartlabcbi2021'; 
-        $decrypted_data = openssl_decrypt($sampels_id, 
-                                          $cipher, 
-                                          $encryption_key, 
-                                          0, 
-                                          ''); 
-
-        return $decrypted_data;
-    }
-
-    public static function Logout(){
-        session_start();
-        session_destroy();
-        return redirect()->route('login', [
-            'status' => 'TELAH LOGOUT'
-        ]);
-    }
-
-#PELANGGAN
-
 #QRCODE
 
     public static function QrCodeAll($sampel_id, $batch)
@@ -1458,6 +1363,102 @@ class MasterController extends Controller
     }
 #DEADLINE
 
+
+#PELANGGAN
+    public static function LoginPelanggan(Request $request)
+    {        
+        $email      = $request->email;
+        $password   = $request->password;
+        
+        $resi       = '';
+        if(isset($request->resi))
+        {
+            $resi       = $request->resi;
+        }
+        else{
+            $resi       = '';
+        }
+
+        $loginpelanggan = app('App\Http\Controllers\ApiController')->LoginPelanggans($request, $email, $password);        
+        $loginpelanggan = json_decode($loginpelanggan, true);
+
+        if($loginpelanggan['success'] == 1)
+        {
+            $pelanggans = [
+                'id'    => $loginpelanggan['id']
+            ];
+            return redirect()->route('tracking', ['pelanggan' => $pelanggans])->with('resi', $resi);
+        }
+        else
+        {
+            return redirect()->route('login', ['status' => $loginpelanggan['message']]);  
+        }
+    }
+
+    public static function TrackingPelanggan()
+    {
+        return view('tracking');
+    }
+
+    public static function CekResi(Request $request){        
+        session_start();
+        session_destroy();
+        $resi       = $request->resi;
+        $user_id    = $request->id;
+
+        $pelanggans = [
+            'id'    => $user_id 
+        ];
+
+        $cekresi    = app('App\Http\Controllers\ApiController')->CekResi($user_id, $resi);        
+        $cekresi    = json_decode($cekresi, true);
+        $resi       = array();
+        if($cekresi['success'] == 1){
+            $resi   = [
+                'aktivitas_waktu'   => explode('-', $cekresi['aktivitas_waktu']),
+                'lab_akuns_nama'    => explode('-', $cekresi['lab_akuns_nama']),
+                'group'             => explode('-', $cekresi['group']),
+                'success'           => $cekresi['success'],
+                'message'           => $cekresi['message']
+            ];
+        }
+        else{
+            $resi   = [
+                'success'           => $cekresi['success'],
+                'message'           => $cekresi['message']
+            ];
+        }
+        return redirect()->route('tracking', [
+            'pelanggan' => $pelanggans,
+            'tracking'  => $resi
+        ]);
+    }
+
+    public static function Dekrip($sampels_id){
+        error_reporting(0);
+        $cipher = "aes-128-cbc"; 
+
+        //Generate a 256-bit encryption key 
+        $encryption_key = '%smartlabcbi2021'; 
+        $decrypted_data = openssl_decrypt($sampels_id, 
+                                        $cipher, 
+                                        $encryption_key, 
+                                        0, 
+                                        ''); 
+
+        return $decrypted_data;
+    }
+
+    public static function Logout(){
+        session_start();
+        session_destroy();
+        return redirect()->route('login', [
+            'status' => 'TELAH LOGOUT'
+        ]);
+    }
+
+#PELANGGAN
+
 #ADMIN    
     #ADMIN HOME
     public static function AdminHome(){
@@ -1467,8 +1468,39 @@ class MasterController extends Controller
         );
     }
 
-    public static function LoginAdmin(Request $request){
-        
+    public static function Login()
+    {
+        return view('admin.login');
+    }
+
+    public static function LoginAdmin(Request $request)
+    {        
+        session_start();
+        $email      = $request->email;
+        $password   = $request->password;
+
+        $loginadmin = app('App\Http\Controllers\ApiController')->LoginPelanggans($request, $email, $password);        
+        $loginadmin = json_decode($loginadmin, true);
+
+        if($loginadmin['success'] == '1'){
+            $_SESSION['adminlab'] = [
+                'id'    => $loginadmin['id'],
+                'nama'  => $loginadmin['nama'],
+                'email' => $loginadmin['email']
+            ];
+            return redirect()->route('adminhome');
+        }
+        else{
+            return redirect()->route('loginadmin', ['status' => $loginadmin['message']]);  
+        }
+       /*  $_SESSION['adminlab'] = 'ANDRE S IRHAMNI WICAKSANA';*/
+    }
+
+    public static function LogoutAdmin()
+    {
+        session_start();
+        unset($_SESSION['adminlab']);
+        return redirect()->route('loginadmin', ['status' => 'ANDA TELAH LOGOUT']);  
     }
 #ADMIN
 }

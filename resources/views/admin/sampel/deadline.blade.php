@@ -1,5 +1,5 @@
 @include('admin.layout.header')
-
+@if(isset($_SESSION['adminlab']))
 <div class="content-wrapper">
     <section class="content-header">
         <div class="content-fluid">
@@ -41,10 +41,19 @@
                                                         <td style="background-color: red;"></td>
                                                         <td>Lewati {{ abs($deadline['tanggal_selesai_2'][$i]) }} Hari</td>
                                                     @elseif($deadline['tanggal_selesai_2'][$i] > 0 )
-                                                        <td style="background-color: grey;"></td>
-                                                        <td class="merah">{{ abs($deadline['tanggal_selesai_2'][$i]) }} Hari Lagi</td>
+                                                        @if($deadline['tanggal_selesai_2'][$i] == 2 || $deadline['tanggal_selesai_2'][$i] == 3)
+                                                            <td style="background-color: yellow;"></td>
+                                                            <td class="merah">{{ abs($deadline['tanggal_selesai_2'][$i]) }} Hari Lagi</td>
+                                                        @elseif($deadline['tanggal_selesai_2'][$i] >= 4)
+                                                            <td style="background-color: grey;"></td>
+                                                            <td class="merah">{{ abs($deadline['tanggal_selesai_2'][$i]) }} Hari Lagi</td>                                                            
+                                                        @elseif($deadline['tanggal_selesai_2'][$i] == 1)
+                                                            <td style="background-color: orange;"></td>
+                                                            <td class="merah">{{ abs($deadline['tanggal_selesai_2'][$i]) }} Hari Lagi</td>
+                                                        @endif
                                                     @else
-                                                        <td class="merah">Deadline Pengerjaan Sampel Hari Ini</td>
+                                                        <td style="background-color: red;"></td>
+                                                        <td class="merah">Deadline Hari Ini</td>
                                                     @endif
                                                 <td> 
                                                     {{ $deadline['batch'][$i] }}
@@ -72,5 +81,10 @@
     </section>
     <!-- /.content -->
 </div>
-
+@else
+    @php
+        header("Location: " . URL::to('/admin/login?status=Lakukan Login Terlebih Dahulu'), true, 302);
+        exit();
+    @endphp
+@endif
 @include('admin.layout.footer')
